@@ -1,0 +1,9 @@
+graft cafein_lca/data
+include LICENSE CITATION.cff CHANGELOG.md
+exclude life-cycle-assessment-calculations-2020*.xlsx
+exclude environmental-performance-new-mobility.pdf
+exclude gCO2-per-pkm-by-transport-mode.csv
+prune docs
+prune tests
+prune scripts
+prune ci

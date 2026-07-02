@@ -1,0 +1,26 @@
+{
+    "title": "cafein-lca: the ITF 'Good to go?' urban transport LCA model in Python",
+    "description": "A programmatic, golden-master-tested Python reimplementation of the life-cycle assessment model published by the International Transport Forum with Cazzola & Crist (2020), 'Good to Go? Assessing the Environmental Performance of New Mobility'. Computes life-cycle energy use and greenhouse-gas emissions per passenger-km, vehicle-km and vehicle for 56 urban transport modes, decomposed into manufacturing, delivery, use, operational services and infrastructure.",
+    "license": "MIT",
+    "upload_type": "software",
+    "creators": [
+        {
+            "name": "Tenkanen, Henrikki",
+            "affiliation": "Aalto University"
+        }
+    ],
+    "keywords": [
+        "life-cycle assessment",
+        "transport",
+        "shared mobility",
+        "micromobility",
+        "GHG emissions"
+    ],
+    "related_identifiers": [
+        {
+            "identifier": "https://www.itf-oecd.org/good-go-assessing-environmental-performance-new-mobility",
+            "relation": "isDerivedFrom",
+            "scheme": "url"
+        }
+    ]
+}

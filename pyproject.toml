@@ -9,14 +9,38 @@ description = "The ITF 'Good to go?' urban transport life-cycle assessment model
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Henrikki Tenkanen" }]
+authors = [{ name = "Henrikki Tenkanen", email = "henrikki.tenkanen@aalto.fi" }]
+keywords = [
+    "life-cycle assessment", "LCA", "transport", "mobility", "micromobility",
+    "ridesourcing", "shared mobility", "GHG emissions", "ITF",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering",
+]
 dependencies = [
     "numpy>=1.24",
     "pandas>=1.5",
 ]
 
+[project.urls]
+Homepage = "https://github.com/htenkanen/cafein-lca"
+Documentation = "https://cafein-lca.readthedocs.io"
+Repository = "https://github.com/htenkanen/cafein-lca"
+Changelog = "https://github.com/htenkanen/cafein-lca/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
-dev = ["pytest", "openpyxl"]
+dev = ["pytest", "pytest-cov", "openpyxl", "black", "flake8"]
+docs = ["sphinx", "myst-nb", "sphinx-book-theme", "sphinx-design"]
 
 [tool.setuptools.packages.find]
 include = ["cafein_lca*"]
