@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cafein-lca"
+version = "0.1.0.dev0"
+description = "The ITF 'Good to go?' urban transport life-cycle assessment model in Python"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Henrikki Tenkanen" }]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=1.5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "openpyxl"]
+
+[tool.setuptools.packages.find]
+include = ["cafein_lca*"]
+
+[tool.setuptools.package-data]
+cafein_lca = ["data/*.csv"]
