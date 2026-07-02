@@ -1,0 +1,17 @@
+fuel,ghg_wtw_g_per_l,ghg_ttw_g_per_l
+Gasoline (Oil),2.7712969199999997,2.3207183999999996
+Gasoline (GTL Fischer-Tropsch),3.2463419849999995,2.3207183999999996
+Diesel (Oil),2.9834686533333334,2.480344533333333
+Diesel (GTL Fischer-Tropsch),3.405968118333333,2.480344533333333
+Diesel (CTL Fischer-Tropsch),6.3371915733333335,2.480344533333333
+Ethanol - Grain,1.0464784649999999,2.336007490636704
+Ethanol - Sugar beet conventional process EU,2.773887490636704,2.336007490636704
+Ethanol - Sugar cane,0.19638918000000005,2.336007490636704
+Ethanol - Enzymatic conversion of cellulose,0.6477887250000001,2.336007490636704
+"Natural Gas (fossil, EU mix)",2.413492485,1.8786768
+LPG,2.661406463333333,2.111976533333333
+Hydrogen (NG central plant),3.173042685,0
+"Hydrogen (electrolysis, renewable electricity)",0,0
+Hydrigen (gasification of wood),0.3725264100000001,0
+Biodiesel (rapeseed),0.5068734675000001,2.5249952
+Biodiesel (wood),0.34351686000000003,2.480344533333333
