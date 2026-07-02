@@ -1,0 +1,126 @@
+"""Public entry point: the TransportLCA session object."""
+
+import math
+
+import numpy as np
+
+from . import modes as modes_registry
+from .config import POWER_SOURCES, conf
+from .engine import delivery, infrastructure, manufacturing, services, use
+from .parameters import ModeParameters
+from .results import Result
+
+_MIX_SUM_TOLERANCE = 1e-6
+
+
+class TransportLCA:
+    """Life-cycle assessment session with shared environment assumptions.
+
+    Parameters
+    ----------
+    power_mix : str or dict, default "World"
+        Electricity generation mix used by every calculation whose mode does
+        not pin an explicit ``electricity_region``. Either the name of a
+        packaged region preset (see ``conf.power_mix_catalog``) or a custom
+        mapping of the six generation sources (oil, natural_gas, coal,
+        nuclear, biomass, other_renewables) to shares summing to 1.
+    """
+
+    def __init__(self, power_mix="World"):
+        self._custom_mixes = {}
+        if isinstance(power_mix, dict):
+            self._default_mix = self._validate_mix(power_mix)
+            self.power_mix = "custom"
+        else:
+            if power_mix not in conf.power_mix_catalog:
+                raise KeyError(
+                    f"unknown power mix region '{power_mix}'. Available: "
+                    f"{', '.join(sorted(conf.power_mix_catalog))}"
+                )
+            self._default_mix = conf.power_mix_catalog[power_mix]
+            self.power_mix = power_mix
+
+    @staticmethod
+    def _validate_mix(mix):
+        unknown = set(mix) - set(POWER_SOURCES)
+        if unknown:
+            raise KeyError(
+                f"unknown generation source(s): {', '.join(sorted(unknown))}."
+                f" Valid sources: {', '.join(POWER_SOURCES)}"
+            )
+        shares = [float(mix.get(s, 0.0)) for s in POWER_SOURCES]
+        if abs(sum(shares) - 1) > _MIX_SUM_TOLERANCE:
+            raise ValueError(
+                f"generation mix shares must sum to 1, got {sum(shares):.6f}"
+            )
+        return shares
+
+    def _mix_for(self, params):
+        """Session/mode electricity-mix precedence (plan section 7)."""
+        if params.electricity_region is None:
+            return self._default_mix
+        return conf.power_mix_catalog[params.electricity_region]
+
+    def calculate(self, mode, **overrides):
+        """Calculate life-cycle energy and GHG for a mode.
+
+        ``mode`` is a mode slug (see :func:`cafein_lca.list_modes`) or a
+        :class:`~cafein_lca.parameters.ModeParameters` object; keyword
+        overrides are applied with ``.replace()``.
+        """
+        if isinstance(mode, str):
+            params = modes_registry.mode(mode)
+        elif isinstance(mode, ModeParameters):
+            params = mode
+        else:
+            raise TypeError(
+                "mode must be a slug string or ModeParameters, got "
+                f"{type(mode).__name__}"
+            )
+        if overrides:
+            params = params.replace(**overrides)
+        data = modes_registry._data_for(params)
+        mix = self._mix_for(params)
+
+        # Stage results (per vehicle; infrastructure per vkm).
+        battery_weight = manufacturing.battery_weight_kg(params)
+        mfg_e, mfg_g = manufacturing.run(params, data)
+        del_e, del_g = delivery.run(params, data, battery_weight)
+        use_e, use_g = use.run(params, mix)
+        srv_e, srv_g = services.run(params, data, use_e, use_g)
+        inf_e_vkm, inf_g_vkm = infrastructure.run(params, data)
+
+        # 0_Total R17/R22: deadheading of self-serviced fleets stretches the
+        # lifetime mileage with zero-occupancy km.
+        lifetime_km = params.lifetime_km  # R7
+        deadhead_km = 0.0
+        if data.self_service:
+            deadhead_km = (params.service_km_per_vehicle_day * 365
+                           * params.lifetime_years)
+        lifetime_km_total = lifetime_km + deadhead_km          # R22
+        occupancy_effective = (params.occupancy * lifetime_km
+                               / lifetime_km_total)            # R17
+
+        per_vehicle = np.array([mfg_e, del_e, use_e, srv_e, math.nan]), \
+            np.array([mfg_g, del_g, use_g, srv_g, math.nan])
+        energy, ghg = {}, {}
+        energy["vehicle"], ghg["vehicle"] = per_vehicle
+        energy["vkm"] = np.append(
+            energy["vehicle"][:4] / lifetime_km_total, inf_e_vkm)
+        ghg["vkm"] = np.append(
+            ghg["vehicle"][:4] / lifetime_km_total, inf_g_vkm)
+        energy["pkm"] = energy["vkm"] / occupancy_effective
+        ghg["pkm"] = ghg["vkm"] / occupancy_effective
+        return Result(params, energy, ghg)
+
+    def summary(self, per="pkm", metric="ghg"):
+        """DataFrame of all canonical modes x components (like the report
+        tables)."""
+        import pandas as pd
+
+        rows = {}
+        for slug in modes_registry.CANONICAL_MODES:
+            result = self.calculate(slug)
+            series = result._series(metric, per)
+            rows[slug] = series
+        return pd.DataFrame(rows).T
