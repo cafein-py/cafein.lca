@@ -1,0 +1,11 @@
+name: cafein-lca-tests
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - numpy
+  - pandas
+  - pytest
+  - pytest-cov
+  - openpyxl
+  - pip

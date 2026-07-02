@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite both the software and the underlying
+  ITF model (Cazzola & Crist 2020).
+type: software
+title: "cafein-lca: the ITF 'Good to go?' urban transport LCA model in Python"
+authors:
+  - family-names: Tenkanen
+    given-names: Henrikki
+    affiliation: Aalto University
+license: MIT
+repository-code: "https://github.com/htenkanen/cafein-lca"
+keywords:
+  - life-cycle assessment
+  - transport
+  - shared mobility
+  - GHG emissions
+references:
+  - type: report
+    title: "Good to Go? Assessing the Environmental Performance of New Mobility"
+    authors:
+      - family-names: Cazzola
+        given-names: Pierpaolo
+      - family-names: Crist
+        given-names: Philippe
+    year: 2020
+    institution:
+      name: International Transport Forum
+    url: "https://www.itf-oecd.org/good-go-assessing-environmental-performance-new-mobility"
