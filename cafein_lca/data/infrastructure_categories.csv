@@ -1,0 +1,8 @@
+category,infrastructure_1,infrastructure_2,share_infrastructure_1
+"Bicycles, e-scooters",Bike lane,Urban road,0.2
+Motorbikes,Urban road,,1
+Cars,Urban road including parking,,1
+Shared cars,Urban road,,1
+Buses,Bus lane,Urban road,0.03356022289872266
+Light rail,Light rail track,,1
+Metro,Metro track,,1

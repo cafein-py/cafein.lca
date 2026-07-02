@@ -1,0 +1,25 @@
+name,value
+battery_assembly_energy_mj_per_kwh,216.21914712700408
+battery_assembly_ghg_g_per_kwh,13854.30547718205
+battery_disposal_energy_mj_per_kg,2.265756636805004
+battery_disposal_ghg_g_per_kg,153.35318310942364
+battery_reference_kwh,26.91458823529412
+electrolysis_label,Electroysis (Global power mix)
+infra_energy_asphalt_mj_per_kg,0.24754999999999994
+infra_energy_cement_mj_per_kg,5.060107179215543
+infra_energy_recycled_steel_mj_per_kg,19.06166303723609
+infra_energy_virgin_steel_mj_per_kg,24.183271295973196
+infra_ghg_asphalt_g_per_kg,47.25
+infra_ghg_cement_g_per_kg,1731.8663440531363
+infra_ghg_recycled_steel_g_per_kg,1287.3398874743875
+infra_ghg_virgin_steel_g_per_kg,2302.149315761283
+infra_recycled_share_steel,0.264
+mfg_region_coal_al,With Al smelting mostly form coal
+mfg_region_default,Default
+mj_per_kwh,3.6
+mj_per_l_gasoline_x100,33.488
+mj_per_mmbtu,1055.05585262
+recycled_share_cast_aluminum,0.85
+recycled_share_steel,0.264
+recycled_share_wrought_aluminum,0.10999999999999999
+reference_car_weight_kg,1494.1010327851752
