@@ -109,10 +109,22 @@ class _Conf:
     @functools.cached_property
     def service_vehicles(self):
         return {
-            r["vehicle"]: (_num(r["energy_mj_per_km"]),
-                           _num(r["ghg_g_per_km"]))
+            r["vehicle"]: {
+                "fuel_mj_per_km": _num(r["fuel_mj_per_km"]),
+                "electricity_mj_per_km": _num(r["electricity_mj_per_km"]),
+                "fuel": r["fuel"],
+                "electric_share": _num(r["electric_share"]),
+                "low_carbon_electricity": r["low_carbon_electricity"] == "1",
+                "energy_mj_per_km_world": _num(r["energy_mj_per_km_world"]),
+                "ghg_g_per_km_world": _num(r["ghg_g_per_km_world"]),
+            }
             for r in _read("service_vehicles.csv")
         }
+
+    @functools.cached_property
+    def fuel_ghg_ttw(self):
+        return {r["fuel"]: _num(r["ghg_ttw_g_per_l"])
+                for r in _read("fuel_ghg.csv")}
 
     @functools.cached_property
     def infrastructure_types(self):

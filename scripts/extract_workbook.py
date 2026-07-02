@@ -202,10 +202,12 @@ def extract_delivery_env(values):
 
 
 def extract_service_vehicles(values):
+    # Helper table EI3:EV15. Leaf rows 4 (fuel MJ/km), 5 (electricity MJ/km),
+    # 7 (fuel), 9 (electric share); the intensity rows 12/15 are kept as the
+    # workbook's World-mix reference values (regression-tested against the
+    # engine's dynamic computation). 'Van - BEV (low carbon)' pins its
+    # electricity factors to renewables (EX12/EX14) regardless of the mix.
     v = values["4_Operational_Services"]
-    rows = []
-    for col in range(139, 152):  # EI..EU (EV handled below; range covers all)
-        pass
     rows = []
     for col in range(139, 153):  # EI..EV
         name = v.get((3, col))
@@ -213,11 +215,18 @@ def extract_service_vehicles(values):
             continue
         rows.append([
             name,
+            v.get((4, col), 0) or 0,
+            v.get((5, col), 0) or 0,
+            v.get((7, col), ""),
+            v.get((9, col), 0) or 0,
+            int(name == "Van - BEV (low carbon)"),
             v.get((12, col), 0),
             v.get((15, col), 0),
         ])
     write_csv(DATA_DIR / "service_vehicles.csv",
-              ["vehicle", "energy_mj_per_km", "ghg_g_per_km"], rows)
+              ["vehicle", "fuel_mj_per_km", "electricity_mj_per_km", "fuel",
+               "electric_share", "low_carbon_electricity",
+               "energy_mj_per_km_world", "ghg_g_per_km_world"], rows)
 
 
 def extract_infrastructure_env(values):
@@ -316,7 +325,7 @@ def extract_modes(formulas, values):
          "delivery_weight_computed", "delivery_weight_kg",
          ] + [f"delivery_km_{leg}" for leg in DELIVERY_LEGS] + [
          # services leaf
-         "services_uses_intensity_table",
+         "services_uses_intensity_table", "services_ref_column",
          # infrastructure leaf (resolved per column)
          "infra_category", "infra1_type", "infra2_type",
          "infra1_asphalt_t_per_km", "infra1_cement_t_per_km",
@@ -354,6 +363,14 @@ def extract_modes(formulas, values):
         uses_table = isinstance(o15, str) and re.match(
             rf"^={letter}12\*{letter}10\*{letter}6$", o15.replace(" ", "")
         ) is not None
+        # A few columns (BL/BM/BN) take the servicing burden from another
+        # column's use phase: '=3_Use!<ref>43*<own>10' with ref != own.
+        services_ref = ""
+        if isinstance(o15, str):
+            m = re.match(r"^='?3_Use'?!\$?([A-Z]+)\$?43\*",
+                         o15.replace(" ", ""))
+            if m and m.group(1) != letter:
+                services_ref = m.group(1)
 
         f135 = fm.get((135, c))
         fluids_scaled = isinstance(f135, str) and bool(
@@ -376,7 +393,7 @@ def extract_modes(formulas, values):
              vu.get((14, c), ""),
              int(t3_canon), num(vt, 3),
              ] + [num(vt, 7 + i) for i in range(10)] + [
-             int(uses_table),
+             int(uses_table), services_ref,
              vi.get((3, c), ""), vi.get((5, c), ""), vi.get((6, c), ""),
              num(vi, 11), num(vi, 12), num(vi, 13),
              num(vi, 16), num(vi, 17), num(vi, 18),
@@ -408,6 +425,132 @@ def extract_golden(values):
               ["column", "name", "metric", "per", "component", "value"], rows)
 
 
+def extract_golden_adjustments(values):
+    """Waivers for golden values the engine intentionally does not reproduce.
+
+    - 0_Total columns E, S, T, U reference the wrong 5_Infrastructure columns
+      (audit item 4); the corrected expectations are the columns' own
+      5_Infrastructure values, with totals recomputed.
+    - Column AF derives its 0_Total result rows by cross-column scaling
+      (=AF113/W113*W91 etc.), a display-layer construct outside the per-mode
+      model; the column is skipped entirely (audit item 6). Its own stage
+      sheets ARE reproduced (see the per-stage unit tests).
+    """
+    v0 = values["0_Total"]
+    v5 = values["5_Infrastructure"]
+    rows = []
+    for letter in ("E", "S", "T", "U"):
+        c = openpyxl.utils.column_index_from_string(letter)
+        own = {"energy": v5.get((56, c)), "ghg": v5.get((79, c))}
+        occupancy_eff = v0.get((17, c))
+        for metric, vkm_rows in (("energy", (83, 88)), ("ghg", (105, 110))):
+            total_row, infra_row = vkm_rows
+            wrong = v0.get((infra_row, c))
+            corrected_vkm = own[metric]
+            rows.append([letter, metric, "vkm", "infrastructure",
+                         corrected_vkm])
+            rows.append([letter, metric, "pkm", "infrastructure",
+                         corrected_vkm / occupancy_eff])
+            total_vkm = v0.get((total_row, c)) - wrong + corrected_vkm
+            rows.append([letter, metric, "vkm", "total", total_vkm])
+            rows.append([letter, metric, "pkm", "total",
+                         total_vkm / occupancy_eff])
+    for metric in ("energy", "ghg"):
+        for per in ("pkm", "vkm", "vehicle"):
+            for component in COMPONENTS + ["total"]:
+                rows.append(["AF", metric, per, component, "skip"])
+    write_csv(TESTS_DATA_DIR / "golden_adjustments.csv",
+              ["column", "metric", "per", "component", "value"], rows)
+
+
+def extract_variants(values, formulas):
+    """Map each sensitivity-variant column to its canonical central case.
+
+    A variant is `.replace()`-expressible when its leaf data (everything in
+    modes.csv beyond the scenario-input columns) is identical to a canonical
+    column's and only scenario inputs differ. Others are marked column-based.
+    """
+    import json
+
+    # Reload what extract_modes wrote, so the comparison uses the exact
+    # packaged values.
+    with open(DATA_DIR / "modes.csv", newline="") as f:
+        modes = {r["column"]: r for r in csv.DictReader(f)}
+    scenario_fields = [
+        "lifetime_years", "annual_km", "electricity_region",
+        "vehicle_weight_kg", "battery_capacity_kwh", "production_region",
+        "battery_chemistry", "hydrogen_pathway", "occupancy",
+        "service_vehicle", "service_km_per_vehicle_day",
+        "vehicles_per_service_trip", "fuel_consumption_per_100km",
+        "electricity_consumption_kwh_per_km",
+        "hydrogen_consumption_per_100km", "electric_driving_share",
+        "fuel_type",
+    ]
+    skip_fields = set(scenario_fields) | {"column", "name", "lifetime_km"}
+
+    # Canonical columns as defined in cafein_lca.modes (kept in sync by the
+    # test suite).
+    canonical = [
+        "D", "W", "AE", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN",
+        "AO", "AP", "AQ", "AX", "BB", "BI", "BJ", "BK", "BT", "CC", "CG",
+        "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR",
+        "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC",
+        "DD", "DE", "DF", "DH", "DI", "DJ", "DQ", "DR", "DU", "DT", "DW",
+        "ED",
+    ]
+
+    def normalized(row):
+        """Copy with representation artifacts removed before comparison."""
+        r = dict(row)
+        # Self-servicing modes name themselves; the sentinel makes variants
+        # comparable to their central case.
+        if r["service_vehicle"] == r["name"]:
+            r["service_vehicle"] = "SELF"
+        # The delivery weight is engine-computed for canonical-formula
+        # columns; the cached value legitimately differs with battery size.
+        if r["delivery_weight_computed"] == "1":
+            r["delivery_weight_kg"] = ""
+        # Weight-scaled fluids: compare the per-kg value.
+        if r["fluids_weight_scaled"] == "1" and float(
+                r["vehicle_weight_kg"] or 0):
+            w = float(r["vehicle_weight_kg"])
+            r["fluids_energy_mj"] = repr(float(r["fluids_energy_mj"]) / w)
+            r["fluids_ghg_g"] = repr(float(r["fluids_ghg_g"]) / w)
+        return r
+
+    def leaf(row):
+        r = normalized(row)
+        return tuple(v for k, v in r.items() if k not in skip_fields)
+
+    rows = []
+    for column, row in modes.items():
+        if column in canonical or row["name"] == "AVAILABLE":
+            continue
+        if column == "AF":  # display-layer column, excluded (audit item 6)
+            rows.append([column, row["name"], "excluded", "", ""])
+            continue
+        matches = [k for k in canonical if leaf(modes[k]) == leaf(row)]
+        fixture = "column"
+        central = ""
+        overrides = ""
+        if matches:
+            # Prefer the family member whose scenario inputs differ least.
+            nrow = normalized(row)
+            central = min(matches, key=lambda k: sum(
+                nrow[f] != normalized(modes[k])[f] for f in scenario_fields))
+            ncen = normalized(modes[central])
+            diff = {
+                f: row[f] for f in scenario_fields
+                if nrow[f] != ncen[f]
+            }
+            fixture = "replace"
+            overrides = json.dumps(diff)
+        rows.append([column, row["name"], fixture, central, overrides])
+    write_csv(TESTS_DATA_DIR / "variants.csv",
+              ["column", "name", "fixture", "central_column", "overrides"],
+              rows)
+
+
 def main():
     print(f"reading {SOURCE.name} ...")
     formulas, values = load(SOURCE)
@@ -424,6 +567,8 @@ def main():
     extract_constants(values, extra)
     cols = extract_modes(formulas, values)
     extract_golden(values)
+    extract_golden_adjustments(values)
+    extract_variants(values, formulas)
     print(f"extracted {len(cols)} mode columns")
 
 

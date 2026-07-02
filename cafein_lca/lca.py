@@ -87,14 +87,24 @@ class TransportLCA:
         mfg_e, mfg_g = manufacturing.run(params, data)
         del_e, del_g = delivery.run(params, data, battery_weight)
         use_e, use_g = use.run(params, mix)
-        srv_e, srv_g = services.run(params, data, use_e, use_g)
+        # Servicing vehicles run on the session default mix (the workbook
+        # derives their intensities from its default-region column).
+        ref_use_energy = ref_annual_km = None
+        if data.services_ref_column:
+            ref_params, _ = modes_registry._mode_by_column(
+                data.services_ref_column)
+            ref_use_energy, _ = use.run(ref_params, self._mix_for(ref_params))
+            ref_annual_km = ref_params.annual_km
+        srv_e, srv_g = services.run(params, data, use_e, use_g,
+                                    self._default_mix,
+                                    ref_use_energy, ref_annual_km)
         inf_e_vkm, inf_g_vkm = infrastructure.run(params, data)
 
         # 0_Total R17/R22: deadheading of self-serviced fleets stretches the
         # lifetime mileage with zero-occupancy km.
         lifetime_km = params.lifetime_km  # R7
         deadhead_km = 0.0
-        if data.self_service:
+        if params.service_vehicle == params.name:  # R19 == R2
             deadhead_km = (params.service_km_per_vehicle_day * 365
                            * params.lifetime_years)
         lifetime_km_total = lifetime_km + deadhead_km          # R22
