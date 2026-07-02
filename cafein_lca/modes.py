@@ -97,6 +97,7 @@ class ModeData:
     delivery_weight_kg: float
     delivery_km: tuple                # 2_Transport R7-R16 (10 legs)
     services_uses_intensity_table: bool  # 4_Op R15 branch
+    services_ref_column: str          # 4_Op R15 use-phase source (audit #5)
     infra_category: str               # 5_Infrastructure R3
     infra1_type: str
     infra2_type: str
@@ -108,7 +109,6 @@ class ModeData:
     infra2_annual_use_mvkm: float
     infra_share_1: float              # 5_Infrastructure R7
     infra_rail_allocation: bool       # rail block: plain VLOOKUP share
-    self_service: bool                # 0_Total R19 == mode name
 
 
 def _num(value):
@@ -174,6 +174,7 @@ def _registry():
                     _num(r[f"delivery_km_{leg}"]) for leg in DELIVERY_LEGS),
                 services_uses_intensity_table=(
                     r["services_uses_intensity_table"] == "1"),
+                services_ref_column=r["services_ref_column"],
                 infra_category=r["infra_category"],
                 infra1_type=r["infra1_type"],
                 infra2_type=r["infra2_type"],
@@ -191,7 +192,6 @@ def _registry():
                 infra2_annual_use_mvkm=_num(r["infra2_annual_use_mvkm"]),
                 infra_share_1=_num(r["infra_share_1"]),
                 infra_rail_allocation=r["infra_rail_allocation"] == "1",
-                self_service=r["service_vehicle"] == name,
             )
             registry[column] = (params, data)
     return registry

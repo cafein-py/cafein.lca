@@ -53,18 +53,35 @@ def test_use_private_escooter():
 
 def test_services_shared_escooter():
     # 4_Operational_Services!W15 / W17
+    lca = TransportLCA()
     params = mode("shared_escooter_first_gen")
     data = _data_for(params)
-    mix = TransportLCA()._mix_for(params)
+    mix = lca._mix_for(params)
     use_energy, use_ghg = use.run(params, mix)
-    energy, ghg = services.run(params, data, use_energy, use_ghg)
+    energy, ghg = services.run(params, data, use_energy, use_ghg,
+                               lca._default_mix)
     assert energy == _approx(1211.0365091761366)
     assert ghg == _approx(83924.83008590626)
 
 
+def test_service_vehicle_intensities_match_workbook():
+    # Dynamic computation with the World mix must reproduce the workbook's
+    # cached helper-table intensities (4_Op rows 12/15) for every type.
+    from cafein_lca.config import conf
+
+    world = conf.power_mix_catalog["World"]
+    for vehicle, row in conf.service_vehicles.items():
+        energy, ghg = services.service_vehicle_intensity(vehicle, world)
+        assert energy == _approx(row["energy_mj_per_km_world"]) or (
+            energy == 0 and row["energy_mj_per_km_world"] == 0)
+        assert ghg == _approx(row["ghg_g_per_km_world"]) or (
+            ghg == 0 and row["ghg_g_per_km_world"] == 0)
+
+
 def test_services_zero_for_private_modes():
     params = mode("private_car_ice")
-    energy, ghg = services.run(params, _data_for(params), 1e6, 1e6)
+    energy, ghg = services.run(params, _data_for(params), 1e6, 1e6,
+                               TransportLCA()._default_mix)
     assert energy == 0 and ghg == 0
 
 

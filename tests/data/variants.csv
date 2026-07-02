@@ -1,0 +1,74 @@
+column,name,fixture,central_column,overrides
+E,"Shared e-scooter (first generation, worst case)",replace,W,"{""lifetime_years"": ""0.5"", ""annual_km"": ""1450"", ""electricity_region"": ""100% coal"", ""vehicle_weight_kg"": ""13.601849846090737"", ""service_km_per_vehicle_day"": ""16.875"", ""vehicles_per_service_trip"": ""5"", ""electricity_consumption_kwh_per_km"": ""0.0061875""}"
+F,"Shared e-scooter (first generation, best case)",replace,D,"{""lifetime_years"": ""1.5"", ""annual_km"": ""4350"", ""electricity_region"": ""100% solar, wind or hydro"", ""production_region"": ""Default"", ""service_vehicle"": ""Van - BEV"", ""service_km_per_vehicle_day"": ""5.625"", ""vehicles_per_service_trip"": ""15"", ""electricity_consumption_kwh_per_km"": ""0.0061875""}"
+G,"Shared e-scooter (first generation central case, daily distance 50% lower)",replace,W,"{""annual_km"": ""1450"", ""electricity_consumption_kwh_per_km"": ""0.0061875""}"
+H,"Shared e-scooter (first generation central case, daily distance 50% higher)",replace,W,"{""annual_km"": ""4350"", ""electricity_consumption_kwh_per_km"": ""0.0061875""}"
+I,"Shared e-scooter (first generation central case, low-carbon EVs for operational services)",replace,W,"{""service_vehicle"": ""Van - BEV (low carbon)"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+J,"Shared e-scooter (first generation central case, EVs for operational services)",replace,W,"{""service_vehicle"": ""Van - BEV"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+K,"Shared e-scooter (first generation central case, 50% more vehicles per servicing trip)",replace,W,"{""vehicles_per_service_trip"": ""15"", ""electricity_consumption_kwh_per_km"": ""0.0061875""}"
+L,"Shared e-scooter (first generation central case, 50% less vehicles per servcing trip)",replace,W,"{""vehicles_per_service_trip"": ""5"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+M,"Shared e-scooter (first generation central case, vehicle servicing distance 50% down)",replace,W,"{""service_km_per_vehicle_day"": ""5.625"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+N,"Shared e-scooter (first generation central case, vehicle servicing distance 50% up)",replace,W,"{""service_km_per_vehicle_day"": ""16.875"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+O,"Shared e-scooter (first generation central case, 50% higher lifetime)",replace,W,"{""lifetime_years"": ""1.5"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+P,"Shared e-scooter (first generation central case, 50% lower lifetime)",replace,W,"{""lifetime_years"": ""0.5"", ""electricity_consumption_kwh_per_km"": ""0.00825""}"
+Q,"Shared e-scooter (first generation central case, 25% less battery capacity)",replace,W,"{""battery_capacity_kwh"": ""0.2475""}"
+R,"Shared e-scooter (first generation central case, 25% more battery capacity)",replace,W,"{""battery_capacity_kwh"": ""0.41250000000000003""}"
+S,"Shared e-scooter (first generation central case, 25% heavier vehicle)",replace,W,"{""vehicle_weight_kg"": ""13.601849846090737""}"
+T,"Shared e-scooter (first generation central case, low carbon Al smelting)",replace,W,"{""production_region"": ""Default""}"
+U,"Shared e-scooter (first generation central case, high carbon electricity in use phase)",replace,W,"{""electricity_region"": ""100% coal""}"
+V,"Shared e-scooter (first generation central case, low carbon electricity in use phase)",replace,W,"{""electricity_region"": ""100% solar, wind or hydro""}"
+X,"Shared e-scooter (new generation),- All improvements combined",replace,AE,"{""annual_km"": ""4350"", ""electricity_region"": ""100% solar, wind or hydro"", ""production_region"": ""Default"", ""service_vehicle"": ""Van - BEV (low carbon)"", ""service_km_per_vehicle_day"": ""5.625"", ""vehicles_per_service_trip"": ""21.0875""}"
+Y,Shared e-scooter (new generation) - Low-carbon electricity in use phase,replace,AE,"{""electricity_region"": ""100% solar, wind or hydro""}"
+Z,Shared e-scooter (new generation) - 50% lower service distance,replace,AE,"{""service_km_per_vehicle_day"": ""5.625""}"
+AA,Shared e-scooter (new generation) - 50% higher daily e-scooter distance,replace,AE,"{""annual_km"": ""4350""}"
+AB,Shared e-scooter (new generation) - Low carbon Al smelting,replace,AE,"{""production_region"": ""Default""}"
+AC,Shared e-scooter (new generation) - Low-carbon EVs for operational services,replace,AE,"{""service_vehicle"": ""Van - BEV (low carbon)""}"
+AD,Shared e-scooter (new generation) - 50% more vehicles per servicing trip,replace,AE,"{""vehicles_per_service_trip"": ""21.0875""}"
+AF,Shared e-scooter (Hollingsworth et al. 2019 simulation),excluded,,
+AS,Private car - BEV (high carbon intensity of electricity in use phase),replace,AX,"{""electricity_region"": ""100% coal""}"
+AT,Private car - BEV (low carbon intensity of electricity in use phase),replace,AX,"{""electricity_region"": ""100% solar, wind or hydro""}"
+AU,Private car - BEV (Lower carbon intensity of battery manufacturing),replace,AX,"{""production_region"": ""Default""}"
+AV,Private car - BEV (25% smaller battery),column,,
+AW,Private car - BEV (25% larger battery),column,,
+AY,"Private car - FCEV (hydrogen from electrolysis, 100% natural gas electricity)",replace,BB,"{""hydrogen_pathway"": ""Electrolysis (Natural gas)""}"
+AZ,"Private car - FCEV (hydrogen from electrolysis, 100% renewable electricity)",column,,
+BA,"Private car - FCEV (hydrogen from electrolysis, global grid mix)",replace,BB,"{""hydrogen_pathway"": ""Electroysis (Global power mix)""}"
+BC,Ridesourcing - car - ICE (25% lower deadheading km share and 2.25 passengers),replace,BI,"{""occupancy"": ""1.5988235294117648""}"
+BD,"Ridesourcing - car - ICE (average load, 25% higher deadheading km share)",replace,BI,"{""occupancy"": ""0.8023529411764707""}"
+BE,"Ridesourcing - car - ICE (average load, 25% lower deadheading km share)",replace,BI,"{""occupancy"": ""1.1014117647058823""}"
+BF,"Ridesourcing - car - ICE (single passenger on board, no change in deadheading km share)",replace,BI,"{""occupancy"": ""0.6141176470588235""}"
+BG,"Ridesourcing - car - ICE (two passengers on board, no change in deadheading km share)",replace,BI,"{""occupancy"": ""1.228235294117647""}"
+BH,"Ridesourcing - car - ICE (25% higher average load: 1.94 passengers on board, no change in deadheading km share)",replace,BI,"{""occupancy"": ""1.1898529411764707""}"
+BL,"Ridesourcing - car - BEV single passenger on board, no change in deadheading km share)",column,,
+BM,"Ridesourcing - car - BEV two passengers on board, no change in deadheading km share)",column,,
+BN,"Ridesourcing - car - BEV 25% higher average load: 1.94 passengers on board, no change in deadheading km share)",column,,
+BO,Ridesourcing - car - BEV (high carbon intensity of electricity in use phase),replace,BT,"{""electricity_region"": ""100% coal""}"
+BP,Ridesourcing - car - BEV (low carbon intensity of electricity in use phase),replace,BT,"{""electricity_region"": ""100% solar, wind or hydro""}"
+BQ,Ridesourcing - car - BEV (Lower carbon intensity of battery manufacturing),replace,BT,"{""production_region"": ""Default""}"
+BR,Ridesourcing - car - BEV (25% smaller battery),column,,
+BS,Ridesourcing - car - BEV (25% larger battery),column,,
+BU,"Ridesourcing - car - BEV (two packs) single passenger on board, no change in deadheading km share)",replace,CC,"{""occupancy"": ""0.6141176470588235""}"
+BV,"Ridesourcing - car - BEV (two packs) two passengers on board, no change in deadheading km share)",replace,CC,"{""occupancy"": ""1.228235294117647""}"
+BW,"Ridesourcing - car - BEV (two packs) 25% higher average load: 1.94 passengers on board, no change in deadheading km share)",replace,CC,"{""occupancy"": ""1.1898529411764707""}"
+BX,Ridesourcing - car - BEV (two packs) (high carbon intensity of electricity in use phase),replace,CC,"{""electricity_region"": ""100% coal""}"
+BY,Ridesourcing - car - BEV (two packs) (low carbon intensity of electricity in use phase),replace,CC,"{""electricity_region"": ""100% solar, wind or hydro""}"
+BZ,Ridesourcing - car - BEV (two packs) (Lower carbon intensity of battery manufacturing),replace,CC,"{""production_region"": ""Default""}"
+CA,Ridesourcing - car - BEV (two packs) (25% smaller battery),column,,
+CB,Ridesourcing - car - BEV (two packs) (25% larger battery),column,,
+CD,"Ridesourcing car - FCEV (hydrogen from electrolysis, 100% natural gas electricity)",column,,
+CE,"Ridesourcing car - FCEV (hydrogen from electrolysis, 100% renewable electricity)",column,,
+CF,"Ridesourcing car - FCEV (hydrogen from electrolysis, global grid mix)",column,,
+DK,Bus - ICE (lifetime 25% lower),column,,
+DL,Bus - ICE (lifetime 25% larger),column,,
+DM,Bus - ICE (100% bus lane),column,,
+DN,Bus - ICE (deadheading doubled),column,,
+DO,Bus - ICE (ridership down by 50%),column,,
+DP,Bus - ICE (ridership up by 50%),column,,
+DS,"Bus - BEV (two packs, 100% zero-carbon electricity)",replace,DT,"{""electricity_region"": ""100% solar, wind or hydro""}"
+DV,"Bus - FCEV, hydrogen from electrolysis (100% zero-carbon electricity)",column,,
+DX,Metro/urban train (infrastructure lifetime 25% higher),column,,
+DY,Metro/urban train (infrastructure lifetime 25% lower),column,,
+DZ,Metro/urban train (network usage frequency down by 25%),column,,
+EA,Metro/urban train (network usage frequency up by 25%),column,,
+EB,Metro/urban train (ridership per train down by 50%),replace,ED,"{""occupancy"": ""142.5""}"
+EC,Metro/urban train (ridership per train up by 50%),replace,ED,"{""occupancy"": ""237.5""}"

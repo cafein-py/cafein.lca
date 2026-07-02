@@ -54,11 +54,21 @@ the workbook's own cached values.
    record the referenced column.
 
 6. **Column AF (Hollingsworth et al. 2019 simulation).** A study-replication
-   column with bespoke sourcing (a second external GREET workbook and its own
-   assumption chain); several leaf rows deviate from the e-scooter family
-   pattern. Requires column-specific fixture data.
+   display column: its `0_Total` result rows are derived by cross-column
+   scaling (e.g. `AF91 = AF113/W113*W91`) rather than from its own stage
+   sheets, which a per-mode model cannot express. AF is excluded from the
+   golden matrix entirely; its *stage sheets* are reproduced by the engine
+   (they equal column D's, verified by the per-stage unit tests).
 
 7. **Empty column AR** (header "AVAILABLE") — a placeholder; skipped.
+
+8. **Figure-sheet deadheading split.** The report figures (and the derived
+   `gCO2-per-pkm-by-transport-mode.csv`) reallocate the deadheading share of
+   the use-phase burden (Tech_Spec_TNC!P14 ≈ 38.6%) from "Fuel" into
+   "Operational services" for taxi and ridesourcing modes. This is a
+   presentation-layer split on top of `0_Total`; the library reports the
+   `0_Total` decomposition, and the Finland acceptance test applies the same
+   split when comparing against the CSV.
 
 ## External-workbook links
 
