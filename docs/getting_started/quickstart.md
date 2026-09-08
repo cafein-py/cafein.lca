@@ -22,6 +22,9 @@ assumption. It takes about ten minutes.
 - [Change an assumption](#change-an-assumption)
 - [Where to next](#where-to-next)
 
+The first cell loads the two things the page uses: pandas for tables and
+the session class of the library.
+
 ```{code-cell}
 import pandas as pd
 
@@ -43,11 +46,22 @@ car
 
 The summary line gives the two headline numbers: greenhouse-gas emissions
 in grams of CO₂-equivalent per passenger-kilometre, and energy use in
-megajoules per passenger-kilometre. Both are available as plain floats:
+megajoules per passenger-kilometre. Both are available as plain floats,
+shown here with their units:
 
 ```{code-cell}
-round(car.ghg_per_pkm, 1)
+headline = pd.Series(
+    {
+        "g CO₂e per passenger-km": car.ghg_per_pkm,
+        "MJ per passenger-km": car.energy_per_pkm_total,
+    }
+)
+headline.round(2)
 ```
+
+Every passenger-kilometre by this car costs about 125 g of CO₂e and
+1.7 MJ of primary energy over the vehicle's whole life, under the global
+default assumptions.
 
 ## See what the result is made of
 
@@ -72,7 +86,7 @@ Each component covers one stage of the vehicle's life:
   maintenance attributed to each kilometre driven.
 
 For this car, use dominates and manufacturing is the second largest
-component; the battery is a large part of it.
+component.
 
 ## Compare modes
 
@@ -92,32 +106,51 @@ all_modes = lca.summary()
 all_modes.loc[comparison_modes].round(1)
 ```
 
-Under the global defaults, a full bus emits about half as much per
-passenger-kilometre as a private car, and the metro less again. The
-differences come mostly from occupancy: the model assumes 1.5 passengers
-in a car, 17 in a bus and 190 in a metro train.
+Under the global defaults, a diesel bus emits a little more than half as
+much per passenger-kilometre as a combustion car, and the metro less
+again. The differences come mostly from occupancy. The assumed passengers
+per vehicle are part of each mode's parameters, which the session can
+show:
+
+```{code-cell}
+rows = []
+
+for slug in comparison_modes:
+    parameters = lca.parameters(slug)
+    rows.append({"mode": slug, "passengers per vehicle": parameters.occupancy})
+
+occupancies = pd.DataFrame(rows).set_index("mode")
+occupancies
+```
+
+A car carries 1.5 people, a bus 17 and a metro train 190, so the same
+vehicle emissions are shared by many more passengers.
 
 ## Change an assumption
 
-Every assumption behind a mode is a named parameter, and any of them can
-be overridden for a single calculation. Raising the car's occupancy from
+The main assumptions behind a mode, such as occupancy, lifetime, mileage
+and energy consumption, are named parameters that can be overridden for a
+single calculation; the fixed per-mode data behind them is described in
+the modes guide. Raising the car's occupancy from
 1.5 to 3 passengers spreads the same vehicle emissions over twice as many
 passenger-kilometres:
 
 ```{code-cell}
 occupancy_settings = [
-    ("default (1.5)", None),
-    ("car-pooling (3.0)", 3.0),
+    ("default", 1.5),
+    ("car-pooling", 3.0),
 ]
 rows = []
 
 for label, occupancy in occupancy_settings:
-    if occupancy is None:
-        result = lca.calculate("private_car_bev")
-    else:
-        result = lca.calculate("private_car_bev", occupancy=occupancy)
-
-    rows.append({"setting": label, "g CO₂e per passenger-km": result.ghg_per_pkm})
+    result = lca.calculate("private_car_bev", occupancy=occupancy)
+    rows.append(
+        {
+            "setting": label,
+            "passengers": occupancy,
+            "g CO₂e per passenger-km": result.ghg_per_pkm,
+        }
+    )
 
 occupancy_comparison = pd.DataFrame(rows).round(1)
 occupancy_comparison
@@ -125,8 +158,9 @@ occupancy_comparison
 
 The per-passenger result halves, as expected for a quantity that scales
 with occupancy alone. Other parameters, such as the vehicle's lifetime or
-its electricity consumption, act on individual components rather than on
-the total; the user guide explains which parameter drives which component.
+its electricity consumption, act on individual components rather than
+scaling every component equally; the user guide explains which parameter
+drives which component.
 
 ## Where to next
 
@@ -136,5 +170,7 @@ the total; the user guide explains which parameter drives which component.
   modes and every parameter you can change.
 - [Electricity mix](../user_guide/electricity_mix): running the model for
   a country or a custom grid.
+- [Sensitivity analysis](../user_guide/sensitivity_analysis): sweeping
+  one parameter over a range and ranking which ones matter.
 - [Scenarios](../scenarios/scenarios): bundling regional assumptions into
   a reusable file with best, central and worst cases.

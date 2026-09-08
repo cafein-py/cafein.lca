@@ -30,6 +30,7 @@ myst_heading_anchors = 3
 
 nb_execution_mode = "auto"
 nb_execution_timeout = 120
+nb_output_stderr = "remove"
 
 html_theme = "sphinx_book_theme"
 html_title = "cafein.lca"

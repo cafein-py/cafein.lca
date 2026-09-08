@@ -8,74 +8,241 @@ kernelspec:
   name: python3
 ---
 
-# Scenarios: regional operating conditions
+# Scenarios
 
 The library's defaults are the source model's global central case. A
-*scenario* replaces them with a coherent set of per-mode overrides plus an
-electricity mix, defined once in a TOML file. Two scenarios are packaged:
+*scenario* replaces them with a coherent set of per-mode overrides and an
+electricity mix, defined once in a file, and carries three cases so that
+the uncertainty of the assumptions is part of the result. This guide
+loads a packaged scenario, compares its cases, reads the evidence behind
+every value, and shows how to write your own.
+
+**How to?**
+
+- [Load a packaged scenario](#load-a-packaged-scenario)
+- [Compare the three cases](#compare-the-three-cases)
+- [Read the provenance of a value](#read-the-provenance-of-a-value)
+- [Combine a scenario with overrides](#combine-a-scenario-with-overrides)
+- [Write your own scenario](#write-your-own-scenario)
+- [Know what the cases mean](#know-what-the-cases-mean)
+- [Where to next](#where-to-next)
+
+The first cell loads pandas for tables and the library's scenario and
+session classes.
 
 ```{code-cell}
-import cafein.lca
-from cafein.lca import Scenario, TransportLCA
+import pandas as pd
 
+import cafein.lca
+from cafein.lca import Scenario, TransportLCA, mode
+```
+
+## Load a packaged scenario
+
+`list_scenarios()` names the scenarios shipped with the package and
+describes each in one line:
+
+```{code-cell}
 cafein.lca.list_scenarios()
 ```
 
-Every scenario carries three cases named by their effect on emissions per
-passenger-km: `best`, `central` and `worst`. Load one by name (or by path
-to your own file) and pass it to the session:
+Two are shipped: `finland_2020`, which changes only the electricity mix,
+and `india_metropolitan`, a composite of Delhi and Mumbai operating
+conditions with three cases, used throughout this page.
+
+`Scenario.load()` takes a packaged name or a path to your own file, and a
+`case`, which is `central` unless you say otherwise. Passing the scenario
+to a session applies it to every mode:
 
 ```{code-cell}
-india = Scenario.load("india_metropolitan")            # case="central"
+india = Scenario.load("india_metropolitan")
 lca = TransportLCA(scenario=india)
-lca.parameters("bus_ice")
+india.name, india.case, lca.power_mix
 ```
+
+The session took the scenario's electricity mix, the packaged `India`
+preset. The parameters a mode now runs with are available from the
+session; a diesel bus under the central case carries 53 passengers, drives
+55,000 km a year and lasts 12 years, against 17, 44,000 and 9 in the
+global defaults:
+
+```{code-cell}
+default_bus = mode("bus_ice")
+scenario_bus = lca.parameters("bus_ice")
+parameter_settings = [
+    ("occupancy", "passengers"),
+    ("annual_km", "km per year"),
+    ("lifetime_years", "years"),
+]
+rows = []
+
+for name, unit in parameter_settings:
+    rows.append(
+        {
+            "parameter": name,
+            "unit": unit,
+            "global default": getattr(default_bus, name),
+            "india_metropolitan, central": getattr(scenario_bus, name),
+        }
+    )
+
+bus_parameters = pd.DataFrame(rows).set_index("parameter")
+bus_parameters
+```
+
+The scenario triples the occupancy, adds a quarter to the annual
+mileage and a third to the lifetime, all from Indian sources named in
+the file. The result for that bus, in g CO₂e per passenger-km:
 
 ```{code-cell}
 lca.calculate("bus_ice").per_pkm.round(1)
 ```
 
-The cases bracket each mode. Compare modes *within* one case; the best
-and worst cases stack every optimistic or pessimistic assumption at once,
-so they are envelopes rather than likely outcomes:
+The bus emits about 23 g CO₂e per passenger-km against 91 under the
+global defaults, and almost all of the change comes from the higher
+occupancy spreading the same vehicle over three times as many passengers.
+
+## Compare the three cases
+
+Every scenario carries three cases, named by their effect on emissions
+per passenger-km: `best` holds every low-emission value, `worst` every
+high-emission one, `central` the best estimate. Loading each case into
+its own session and running a few modes gives the envelope:
 
 ```{code-cell}
-import pandas as pd
+case_settings = ["best", "central", "worst"]
+comparison_modes = [
+    "private_car_ice",
+    "private_car_bev",
+    "private_moped_ice",
+    "taxi_ice",
+    "bus_ice",
+    "bus_bev",
+    "metro_urban_train",
+]
+rows = []
 
-modes = ["private_car_ice", "private_car_bev", "private_moped_ice",
-         "taxi_ice", "bus_ice", "bus_bev", "metro_urban_train"]
-pd.DataFrame({
-    case: [TransportLCA(scenario=Scenario.load("india_metropolitan", case=case))
-           .calculate(m).ghg_per_pkm for m in modes]
-    for case in ("best", "central", "worst")
-}, index=modes).round(1)
+for case in case_settings:
+    session = TransportLCA(scenario=Scenario.load("india_metropolitan", case=case))
+    for slug in comparison_modes:
+        rows.append(
+            {
+                "mode": slug,
+                "case": case,
+                "g CO₂e per passenger-km": session.calculate(slug).ghg_per_pkm,
+            }
+        )
+
+case_results = pd.DataFrame(rows)
+case_results.head(6).round(1)
 ```
 
-Every override carries its provenance: evidence type (`observed`,
-`model_input`, `capacity`, `projection`, `derived` or `assumption`),
-geography, source, confidence and a note. Print it before trusting a case:
+Each row is one mode under one case. Pivoting the cases into columns
+puts the three values of a mode side by side:
 
 ```{code-cell}
-india.provenance().query("mode == 'bus_ice'").set_index("parameter")[
-    ["value", "evidence", "geography", "confidence"]]
+case_comparison = case_results.pivot(
+    index="mode",
+    columns="case",
+    values="g CO₂e per passenger-km",
+)
+case_comparison = case_comparison.loc[comparison_modes, case_settings]
+case_comparison.round(1)
 ```
 
-Keyword overrides still win over the scenario, and a parameter object
-built by hand is used as given:
+The values are g CO₂e per passenger-km. The spread is wide: a factor of
+three to eight between best and worst for every mode shown. Compare modes
+*within* one column. The best and worst
+columns stack every optimistic or pessimistic assumption at once, so they
+are envelopes rather than likely outcomes, and the central column is the
+one to quote.
+
+## Read the provenance of a value
+
+Every override in a packaged scenario carries its evidence type,
+geography, source, confidence and a note, and `provenance()` returns them
+as a table. The evidence vocabulary is `observed`, `model_input`,
+`capacity`, `projection`, `derived` and `assumption`. For the bus:
 
 ```{code-cell}
-lca.calculate("bus_ice", occupancy=70).ghg_per_pkm
+units = {
+    "occupancy": "passengers per vehicle",
+    "annual_km": "km per year",
+    "lifetime_years": "years",
+    "service_km_per_vehicle_day": "km per vehicle per day",
+    "vehicle_weight_kg": "kg",
+    "fuel_consumption_per_100km": "litres gasoline-equivalent per 100 km",
+}
+provenance = india.provenance()
+bus_records = provenance[provenance["mode"] == "bus_ice"]
+rows = []
+
+for record in bus_records.itertuples():
+    rows.append(
+        {
+            "parameter": record.parameter,
+            "value": record.value,
+            "unit": units[record.parameter],
+            "evidence": record.evidence,
+            "geography": record.geography,
+            "confidence": record.confidence,
+        }
+    )
+
+bus_provenance = pd.DataFrame(rows).set_index("parameter")
+bus_provenance
 ```
 
-## Writing your own
+The bus occupancy is a
+model input from a Mumbai life-cycle study rather than a national
+observation, and the servicing distance is a derived value of low
+confidence; both are things to know before quoting the result. The
+`source` and `note` columns name the study and table behind each value
+and any caveat. They are long, so one record is easier to read as a
+column; this is the full provenance of the bus occupancy:
 
-A scenario file has a `name`, an optional `description`, a `power_mix`
-(preset name, table of the six generation shares, or a per-case table of
-either) and `[modes.<slug>]` tables. Keys may be canonical slugs or glob
-patterns such as `"bus_*"`; exact slugs take precedence. A parameter is a
-scalar, a table with `value` plus provenance, or a table with the three
-cases plus provenance; `evidence`, `geography` and `source` may be per
-case:
+```{code-cell}
+occupancy_record = bus_records[bus_records["parameter"] == "occupancy"]
+occupancy_record.iloc[0]
+```
+
+The source names the study, its table and the three operating
+conditions the cases come from, so the value can be checked against the
+paper.
+
+## Combine a scenario with overrides
+
+Keyword overrides on `calculate()` win over the scenario. A bus filled to
+its 70-passenger capacity under the otherwise unchanged central case:
+
+```{code-cell}
+full_bus = lca.calculate("bus_ice", occupancy=70)
+round(full_bus.ghg_per_pkm, 1)
+```
+
+The value is in g CO₂e per passenger-km and is lower than the central
+case's 23 in proportion to the occupancy, 53 against 70. A parameter
+object you build yourself is used exactly as given, so it bypasses the
+scenario altogether:
+
+```{code-cell}
+default_bus = mode("bus_ice")
+default_bus_result = lca.calculate(default_bus)
+round(default_bus_result.ghg_per_pkm, 1)
+```
+
+This is the global-default bus again, run inside the Indian session; only
+the electricity mix differs, which does not touch a diesel bus.
+
+## Write your own scenario
+
+A scenario file is TOML. It has a `name`, an optional `description`, a
+`power_mix` (a preset name, a table of the six generation shares, or a
+per-case table of either) and `[modes.<slug>]` tables. Keys may be
+canonical mode slugs or glob patterns such as `"bus_*"`; exact slugs win
+over patterns. A parameter is a scalar, a table with `value` plus
+provenance, or a table with the three cases plus provenance; `evidence`,
+`geography` and `source` may be given per case:
 
 ```toml
 name = "my_city"
@@ -95,8 +262,12 @@ confidence = "medium"
 ```
 
 Loading validates slugs, parameter names and ranges, the evidence and
-confidence vocabularies, and the completeness of case tables, so mistakes
-surface at `Scenario.load()` rather than in results.
+confidence vocabularies, and the completeness of case tables, so a
+mistake surfaces at `Scenario.load()` rather than in a result. The
+packaged `india_metropolitan.toml` inside the package is a complete
+example with a source on every line.
+
+## Know what the cases mean
 
 The case names describe the emissions outcome, so the *direction* of each
 parameter differs. Put the low-emission value under `best` whatever its
@@ -111,32 +282,22 @@ magnitude:
 | service_km_per_vehicle_day | low | high |
 | power_mix | clean | carbon-intensive |
 
-A long lifetime lowers manufacturing emissions per km by allocation only;
-it does not make the vehicle better. The packaged-scenario tests check that
-emissions per pkm come out ordered best ≤ central ≤ worst for every mode.
+A long lifetime lowers manufacturing emissions per kilometre by
+allocation only; it does not make the vehicle better. The packaged
+scenarios are tested so that emissions per passenger-km come out ordered
+best ≤ central ≤ worst for every mode.
 
-## Notes on the `india_metropolitan` scenario
+Two limits of the packaged Indian scenario are worth knowing now. Its
+metro rows describe a six-coach Mumbai train and must be changed
+together, and its ridership is planned rather than measured. And CNG,
+which fuels most Delhi and Mumbai buses, taxis and auto-rickshaws, is not
+yet a fuel type in the model, so the combustion modes run on diesel or
+petrol.
 
-The values are a composite of Delhi and Mumbai surveys and Indian LCA
-studies, not national observations; the geography of every value is in
-its provenance. Points to keep in mind:
+## Where to next
 
-- **Occupancy** is the strongest lever: 53 passengers per bus against the
-  global 17 more than halves bus emissions per pkm, while 1.25 per car
-  raises car results by a fifth.
-- **Metro** rows describe a six-coach Mumbai train (weight, electricity
-  per train-km, occupancy) and must be changed together. Its ridership
-  figures are planned, not measured; the worst case takes a quarter of the
-  plan.
-- **Rated versus measured** consumption differs by 30 to 40 %; measured
-  fleet values are used where they exist. Electric-vehicle consumption is
-  derived from rated range and the hot- and cold-weather penalties
-  reported by Peshin et al. (2022); no measured Indian value exists in the
-  sources, so its confidence is low.
-- **Bus occupancy 53 against the global 17** is the single largest change
-  and comes from a Mumbai LCA's operating assumptions (Shinde et al.
-  2019); the central bus result of about 23 g CO2-eq/pkm compares with
-  the 17 g that study reports under its own system boundary.
-- **CNG**, which fuels most Delhi and Mumbai buses, taxis and
-  auto-rickshaws, is not yet a fuel type in the model; ICE modes run on
-  gasoline or diesel.
+- [Sensitivity analysis](../user_guide/sensitivity_analysis): one
+  parameter at a time, before bundling assumptions into a scenario.
+- [Electricity mix](../user_guide/electricity_mix): the presets a
+  scenario's `power_mix` can name.
+- [The model](../model/model): what the parameters feed into.

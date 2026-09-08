@@ -8,6 +8,21 @@ reimplementation of its arithmetic on top of the same coefficients. This
 page describes the model's scope, its five stages, how results are
 normalised, and how the library keeps faith with the source.
 
+This library is an adaptation of an original work by the OECD/ITF. The
+opinions expressed and arguments employed in this adaptation should not be
+reported as representing the official views of the OECD or of its Member
+countries.
+
+**How to?**
+
+- [Scope and functional unit](#scope-and-functional-unit)
+- [The five stages](#the-five-stages)
+- [Normalisation](#normalisation)
+- [Session assumptions](#session-assumptions)
+- [Coefficients and their provenance](#coefficients-and-their-provenance)
+- [What the library adds](#what-the-library-adds)
+- [Where to next](#where-to-next)
+
 ## Scope and functional unit
 
 The model estimates primary energy use, in megajoules, and greenhouse-gas
@@ -58,9 +73,12 @@ kilometres.
 car of a given type, whose well-to-wheel intensity per kilometre is
 computed from the session electricity mix; the burden is the servicing
 distance per fleet vehicle divided by the vehicles covered per trip and
-scaled to the fleet vehicle's lifetime kilometres. Self-serviced modes,
-where the servicing vehicle is the mode itself, instead add empty
-kilometres to the vehicle's own use phase.
+scaled to the fleet vehicle's lifetime kilometres. For self-serviced
+modes, where the servicing vehicle is the mode itself (taxis,
+ridesourcing, buses), the services component is the mode's own use-phase
+burden scaled by the ratio of empty to revenue kilometres: the fuel or
+electricity of the empty driving. The empty kilometres also enter the
+normalisation below.
 
 **Infrastructure.** Each vehicle class runs on one or two infrastructure
 types (bike lane, urban road with or without parking, bus lane, light
@@ -103,16 +121,20 @@ specifications. They were extracted once from the source spreadsheet by
 a script, and they are the library's source of truth: the spreadsheet is
 not distributed and is not read at runtime.
 
-The library is held to the source by a golden-master test suite. For all
-128 mode columns of the source that a per-mode model can express (the 56
-modes plus their sensitivity variants), every energy and emission value
-in every view is compared with the value the spreadsheet itself computes,
-and must agree within a relative tolerance of 1e-9. Two of the source's
-columns are excluded because they are derived across columns rather than
-from their own stages. The library deliberately changes nothing in the
-arithmetic, so a handful of peculiarities of the source are reproduced as
-published; they are listed, with their effect, in the
-[workbook audit](workbook_audit).
+The library is held to the source by a golden-master test suite. For
+128 mode columns of the source (the 56 modes plus their sensitivity
+variants), every energy and emission value in every view is compared
+with the value the spreadsheet itself computes and must agree within a
+relative tolerance of 1e-9. The scope has two documented exceptions. One
+column is excluded because the source derives its results by scaling
+another column rather than from its own stages, and an empty placeholder
+column is skipped. And four e-scooter sensitivity columns whose
+infrastructure rows in the source point at the wrong column are compared
+with the source's own per-column infrastructure sheet instead, which
+differs from the misaligned totals by about 0.1 % on that component
+alone. Apart from that documented correction, the library deliberately
+changes nothing in the arithmetic, so a handful of peculiarities of the source are reproduced as published; they
+are listed, with their effect, in the [workbook audit](workbook_audit).
 
 ## What the library adds
 
@@ -122,3 +144,14 @@ the propagation of the session mix to servicing vehicles, and scenario
 files with provenance and three cases. None of these change a default
 result: a session created without arguments reproduces the source's
 central cases exactly.
+
+## Where to next
+
+- [Workbook audit](workbook_audit): the peculiarities of the source that
+  the library reproduces, and the two it does not.
+- [Citing](citing): how to cite the model and the software, and the data
+  licence.
+- [Reading results](../user_guide/reading_results): the components and
+  views described here, seen from the user's side.
+- [Modes and parameters](../user_guide/modes_and_parameters): every
+  parameter and what it controls.

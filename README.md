@@ -6,9 +6,10 @@
 of urban transport modes per passenger-km, vehicle-km and vehicle,
 decomposed into vehicle and battery manufacturing, delivery, use, the
 servicing of shared fleets, and infrastructure. It covers 56 modes, from
-private e-scooters to metro trains, and every assumption behind a result
-is a named parameter: electricity mix, vehicle lifetime, mileage,
-occupancy, battery size, servicing logistics.
+private e-scooters to metro trains. The main assumptions behind a result
+are named parameters (electricity mix, vehicle lifetime, mileage,
+occupancy, battery size, servicing logistics), while the per-mode
+technical data and the shared coefficient tables ship as packaged data.
 
 The calculation model and its default coefficients are adapted from the
 life-cycle assessment model published by the International Transport Forum
@@ -24,25 +25,31 @@ of packages. It installs and runs on its own and does not require the
 
 ## Installation
 
+Until the first release is on PyPI, install from the repository:
+
 ```
-pip install cafein.lca
+pip install git+https://github.com/cafein-py/cafein.lca.git
 ```
 
-(Not yet on PyPI; install from source with `pip install .` until 0.1.0 is
-released.)
+Once 0.1.0 is released, `pip install cafein.lca` will do the same.
 
 ## Example
+
+A session holds the electricity mix, and a calculation returns the
+result for one mode. This computes the life-cycle emissions of a
+battery-electric car on the EU 28 grid, in g CO₂e per passenger-km:
 
 ```python
 from cafein.lca import TransportLCA
 
 lca = TransportLCA(power_mix="EU 28")
 car = lca.calculate("private_car_bev")
-car.ghg_per_pkm                      # g CO₂e per passenger-km
-car.per_pkm                          # the five life-cycle components
-lca.calculate("bus_ice", occupancy=40).ghg_per_pkm
-lca.summary()                        # all 56 modes, one row each
+round(car.ghg_per_pkm, 1)
 ```
+
+The result splits into five life-cycle components, every assumption can
+be overridden per calculation, and `summary()` gives one row per mode;
+the guides below show each of these.
 
 Regional operating conditions come as scenario files with best, central
 and worst cases, each value tagged with its evidence and source; an

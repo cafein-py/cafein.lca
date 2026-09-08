@@ -12,10 +12,11 @@ kernelspec:
 
 The electricity generation mix is the one environment assumption you set
 for a whole session. It determines the emissions of every kilowatt-hour
-the model consumes: charging electric vehicles, producing hydrogen by
+the model consumes, charging electric vehicles, producing hydrogen by
 electrolysis, and running the electric servicing vehicles of shared
-fleets. This guide shows the packaged presets, how to supply your own
-mix, and which results respond.
+fleets, except where a mode pins its own electricity region for its own
+charging. This guide shows the packaged presets, how to supply your own
+mix, which results respond, and that precedence rule.
 
 **How to?**
 
@@ -25,6 +26,10 @@ mix, and which results respond.
 - [Understand the precedence rule](#understand-the-precedence-rule)
 - [Compare regions](#compare-regions)
 - [Where to next](#where-to-next)
+
+The first cell loads matplotlib for charts, pandas for tables, the
+session class, and the configuration object that holds the packaged
+presets.
 
 ```{code-cell}
 import matplotlib.pyplot as plt
@@ -40,11 +45,16 @@ The session takes the mix as `power_mix`. A string selects one of the
 packaged presets, which are the regions of the source model:
 
 ```{code-cell}
-presets = pd.DataFrame.from_dict(
-    conf.power_mix_catalog,
-    orient="index",
-    columns=["oil", "natural_gas", "coal", "nuclear", "biomass", "other_renewables"],
-)
+sources = ["oil", "natural_gas", "coal", "nuclear", "biomass", "other_renewables"]
+rows = []
+
+for region, shares in conf.power_mix_catalog.items():
+    row = {"region": region}
+    for source, share in zip(sources, shares):
+        row[source] = share
+    rows.append(row)
+
+presets = pd.DataFrame(rows).set_index("region")
 presets.round(3)
 ```
 
@@ -53,10 +63,18 @@ Each row is the share of generation from six sources, summing to one.
 useful as bounds. The spelling of `Unitd Kingdom` is the source model's
 and is kept so that every packaged number stays traceable.
 
+A session on the EU 28 preset, and the battery-electric car's emissions
+on it, in g CO₂e per passenger-km:
+
 ```{code-cell}
 eu = TransportLCA(power_mix="EU 28")
-round(eu.calculate("private_car_bev").ghg_per_pkm, 1)
+eu_car = eu.calculate("private_car_bev")
+round(eu_car.ghg_per_pkm, 1)
 ```
+
+The value is in g CO₂e per passenger-km. On the EU 28 mix a
+battery-electric car emits about a fifth less than on the world average,
+which is 125.4 under the same defaults.
 
 ## Supply a custom mix
 
@@ -74,7 +92,8 @@ finland_2020 = {
     "other_renewables": 0.363,
 }
 finland = TransportLCA(power_mix=finland_2020)
-round(finland.calculate("private_car_bev").ghg_per_pkm, 1)
+finland_car = finland.calculate("private_car_bev")
+round(finland_car.ghg_per_pkm, 1)
 ```
 
 A battery-electric car emits about 70 g CO₂e per passenger-km on
@@ -84,7 +103,8 @@ two-thirds of Finnish generation is nuclear or renewable.
 ## See which results respond
 
 Three parts of the model consume electricity. Comparing the world mix
-with the Finnish one for three modes shows all three:
+with the Finnish one for four modes, component by component, shows which
+of them respond. The values are g CO₂e per passenger-km:
 
 ```{code-cell}
 world = TransportLCA()
@@ -94,18 +114,26 @@ response_modes = [
     "shared_escooter_first_gen",
     "private_car_ice",
 ]
+mix_settings = [
+    ("World", world),
+    ("Finland 2020", finland),
+]
 rows = []
 
 for slug in response_modes:
-    rows.append(
-        {
-            "mode": slug,
-            "World": world.calculate(slug).ghg_per_pkm,
-            "Finland 2020": finland.calculate(slug).ghg_per_pkm,
-        }
-    )
+    for label, session in mix_settings:
+        components = session.calculate(slug).per_pkm
+        rows.append(
+            {
+                "mode": slug,
+                "mix": label,
+                "use": components["use"],
+                "services": components["services"],
+                "total": components["total"],
+            }
+        )
 
-mix_response = pd.DataFrame(rows).set_index("mode").round(1)
+mix_response = pd.DataFrame(rows).set_index(["mode", "mix"]).round(1)
 mix_response
 ```
 
@@ -143,33 +171,51 @@ level.
 ## Compare regions
 
 Running one mode across all presets shows how much the grid matters for
-an electric vehicle. The world and single-source rows are kept for
-orientation:
+an electric vehicle. Each region gets the five components of the
+battery-electric car, in g CO₂e per passenger-km, so the chart can show
+which of them moves:
 
 ```{code-cell}
+component_columns = [
+    "manufacturing",
+    "delivery",
+    "use",
+    "services",
+    "infrastructure",
+]
 rows = []
 
 for region in conf.power_mix_catalog:
     session = TransportLCA(power_mix=region)
-    rows.append(
-        {
-            "region": region,
-            "g CO₂e per passenger-km": session.calculate("private_car_bev").ghg_per_pkm,
-        }
-    )
+    components = session.calculate("private_car_bev").per_pkm
+    row = {"region": region, "total": components["total"]}
+    for name in component_columns:
+        row[name] = components[name]
+    rows.append(row)
 
-by_region = pd.DataFrame(rows).set_index("region").sort_values("g CO₂e per passenger-km")
+by_region = pd.DataFrame(rows).set_index("region").sort_values("total")
+by_region.round(1)
+```
+
+The use column is the only one that varies; manufacturing, delivery and
+infrastructure are identical in every row, and services is zero for a
+private car. The same table as a stacked chart:
+
+```{code-cell}
 
 figure, axis = plt.subplots(figsize=(8, 6))
-axis.barh(by_region.index, by_region["g CO₂e per passenger-km"])
+by_region[component_columns].plot(ax=axis, kind="barh", stacked=True)
 axis.set_xlabel("g CO₂e per passenger-km")
+axis.set_ylabel("Electricity mix")
 axis.set_title("Battery-electric private car by electricity mix")
+axis.legend(title="Component", frameon=False)
 figure.tight_layout()
 ```
 
 The spread between the cleanest and the most carbon-intensive grid is a
-factor of about three and a half, and only the use component moves; manufacturing,
-delivery and infrastructure are the same bar segment in every region.
+factor of about three and a half in the total, and all of it is in the
+use segment; manufacturing, delivery and infrastructure are the same
+width in every bar.
 
 ## Where to next
 

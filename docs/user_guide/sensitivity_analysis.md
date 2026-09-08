@@ -23,6 +23,10 @@ break-even, and ranks the influence of a mode's parameters.
 - [Know which parameters matter for which modes](#know-which-parameters-matter-for-which-modes)
 - [Where to next](#where-to-next)
 
+The first cell loads matplotlib for charts, numpy for interpolation,
+pandas for tables and the library, and opens a session with the global
+defaults.
+
 ```{code-cell}
 import matplotlib.pyplot as plt
 import numpy as np
@@ -50,8 +54,8 @@ for years in lifetimes:
     rows.append(
         {
             "lifetime (years)": years,
-            "manufacturing": result.per_pkm["manufacturing"],
-            "total": result.ghg_per_pkm,
+            "manufacturing (g CO₂e per passenger-km)": result.per_pkm["manufacturing"],
+            "total (g CO₂e per passenger-km)": result.ghg_per_pkm,
         }
     )
 
@@ -67,11 +71,18 @@ one to two years removes about a quarter of the total.
 ## Find a break-even occupancy
 
 A bus beats a car per passenger only when enough people are on board.
-Sweeping the bus occupancy and interpolating where its emissions cross
-the car's gives the break-even:
+The comparison point is the combustion car under the global defaults,
+1.5 passengers on board, in g CO₂e per passenger-km:
 
 ```{code-cell}
 car_per_pkm = lca.calculate("private_car_ice").ghg_per_pkm
+round(car_per_pkm, 1)
+```
+
+Sweeping the bus occupancy from 1 to 30 passengers gives the bus's
+result at each occupancy:
+
+```{code-cell}
 occupancies = np.arange(1, 31)
 bus_per_pkm = []
 
@@ -80,9 +91,26 @@ for passengers in occupancies:
     bus_per_pkm.append(bus.ghg_per_pkm)
 
 bus_curve = pd.Series(bus_per_pkm, index=occupancies, name="bus g CO₂e per passenger-km")
-break_even = np.interp(car_per_pkm, bus_curve.values[::-1], occupancies[::-1])
+bus_curve.round(1).head(12)
+```
+
+The bus starts far above the car with one passenger and drops below it
+somewhere between 9 and 10. Linear interpolation between the two nearest
+samples gives an estimate of the crossing, accurate to a fraction of a
+passenger. `np.interp` needs its x values in increasing order, and the
+bus curve decreases with occupancy, so both arrays are reversed first:
+
+```{code-cell}
+emissions_ascending = bus_curve.values[::-1]
+occupancies_descending = occupancies[::-1]
+break_even = float(np.interp(car_per_pkm, emissions_ascending, occupancies_descending))
 round(break_even, 1)
 ```
+
+The bus needs this many passengers on board, on average, for its
+emissions per passenger-km to equal those of the car with 1.5 people.
+Plotting the whole curve shows how steeply the result falls with the
+first passengers:
 
 ```{code-cell}
 figure, axis = plt.subplots(figsize=(8, 5))
@@ -91,8 +119,9 @@ axis.axhline(car_per_pkm, color="grey", linestyle="--", label="Private car, ICE 
 axis.axvline(break_even, color="grey", linestyle=":")
 axis.set_xlabel("Bus occupancy (passengers)")
 axis.set_ylabel("g CO₂e per passenger-km")
+axis.set_ylim(0, 400)
 axis.set_title("Break-even occupancy of a diesel bus against a private car")
-axis.legend(frameon=False)
+axis.legend(title="Mode", frameon=False)
 figure.tight_layout()
 ```
 
@@ -104,8 +133,11 @@ few passengers matter far more than the last few.
 
 To see which inputs a result is most sensitive to, change each parameter
 by the same relative amount, one at a time, and record the change in the
-result. Here every numeric parameter of a battery-electric car moves by
-20% in each direction:
+result. Here six selected parameters of a battery-electric car move by
+20% in each direction. The fuel and hydrogen fields are zero for this
+mode and the servicing fields do not apply to a private car, so they are
+left out; `electric_driving_share` is 1 for a BEV and cannot rise by 20%,
+so it is left out too:
 
 ```{code-cell}
 car = mode("private_car_bev")
@@ -118,34 +150,57 @@ parameters = [
     "battery_capacity_kwh",
     "electricity_consumption_kwh_per_km",
 ]
+```
+
+The loop below sets one parameter at a time. Because the parameter's
+name is held in a variable, the override is passed as a dictionary,
+`{name: value}`, unpacked with `**` into the keyword argument that
+`replace()` expects; it is the same call as `car.replace(occupancy=1.2)`
+written for a name chosen at run time:
+
+```{code-cell}
 rows = []
 
 for name in parameters:
     default = getattr(car, name)
-    low = lca.calculate(car.replace(**{name: default * 0.8})).ghg_per_pkm
-    high = lca.calculate(car.replace(**{name: default * 1.2})).ghg_per_pkm
+    lowered = car.replace(**{name: default * 0.8})
+    raised = car.replace(**{name: default * 1.2})
     rows.append(
         {
             "parameter": name,
-            "-20%": low - base,
-            "+20%": high - base,
+            "change at -20%": lca.calculate(lowered).ghg_per_pkm - base,
+            "change at +20%": lca.calculate(raised).ghg_per_pkm - base,
         }
     )
 
-tornado = pd.DataFrame(rows).set_index("parameter")
-tornado["span"] = (tornado["+20%"] - tornado["-20%"]).abs()
+changes = pd.DataFrame(rows).set_index("parameter")
+changes.round(1)
+```
+
+Each value is the change in g CO₂e per passenger-km from the default
+result. Sorting the parameters by the width of their two changes ranks
+them:
+
+```{code-cell}
+tornado = changes.copy()
+tornado["span"] = (tornado["change at +20%"] - tornado["change at -20%"]).abs()
 tornado = tornado.sort_values("span")
+tornado.columns.name = "g CO₂e per passenger-km"
 tornado.round(1)
 ```
 
+The span is the width of the bar each parameter will get. Drawn as a
+tornado chart, the widest bars are at the top:
+
 ```{code-cell}
 figure, axis = plt.subplots(figsize=(8, 5))
-axis.barh(tornado.index, tornado["-20%"], label="parameter −20%")
-axis.barh(tornado.index, tornado["+20%"], label="parameter +20%")
+axis.barh(tornado.index, tornado["change at -20%"], label="parameter −20%")
+axis.barh(tornado.index, tornado["change at +20%"], label="parameter +20%")
 axis.axvline(0, color="black", linewidth=0.8)
 axis.set_xlabel("Change in g CO₂e per passenger-km")
-axis.set_title("Sensitivity of a battery-electric car to ±20% in each parameter")
-axis.legend(frameon=False)
+axis.set_ylabel("Parameter")
+axis.set_title("Sensitivity of a battery-electric car to ±20% in six parameters")
+axis.legend(title="Parameter change", frameon=False)
 figure.tight_layout()
 ```
 

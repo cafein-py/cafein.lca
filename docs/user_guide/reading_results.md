@@ -26,7 +26,12 @@ another, and how to get the numbers out as tables and charts.
 - [Plot the components](#plot-the-components)
 - [Where to next](#where-to-next)
 
+The first cell loads matplotlib for charts, pandas for tables and the
+session class, and opens a session with the global defaults.
+
 ```{code-cell}
+import dataclasses
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -38,7 +43,8 @@ lca = TransportLCA()
 ## Know the five components
 
 Take a shared e-scooter of the first generation, a mode where every
-component is non-zero:
+component is non-zero. `per_pkm` gives the components in g CO₂e per
+passenger-km:
 
 ```{code-cell}
 scooter = lca.calculate("shared_escooter_first_gen")
@@ -95,8 +101,8 @@ it drives about 23 empty kilometres per day between rides:
 taxi = lca.calculate("taxi_ice")
 taxi_views = pd.DataFrame(
     {
-        "per vehicle-km": taxi.per_vkm,
-        "per passenger-km": taxi.per_pkm,
+        "g CO₂e per vehicle-km": taxi.per_vkm,
+        "g CO₂e per passenger-km": taxi.per_pkm,
     }
 )
 taxi_views.round(1)
@@ -137,13 +143,40 @@ taxi.to_frame().round(2)
 ```
 
 The NaN in the per-vehicle total is the infrastructure convention
-described above. The `parameters` attribute of a result holds the exact
-parameter values that produced it, which is the record to keep next to
-any number you report:
+described above. The `parameters` attribute of a result holds the mode
+parameters that produced it. To reproduce a reported number you also
+need the session's electricity mix, the scenario file and case if one
+was used, and the `cafein.lca` version; keep all four next to the
+result. The mode parameters that matter most for the taxi, with their
+units:
 
 ```{code-cell}
-taxi.parameters
+parameter_settings = [
+    ("occupancy", "passengers per vehicle"),
+    ("lifetime_years", "years"),
+    ("annual_km", "km per year"),
+    ("service_km_per_vehicle_day", "empty km per day"),
+    ("fuel_consumption_per_100km", "litres gasoline-equivalent per 100 km"),
+]
+rows = []
+
+for name, unit in parameter_settings:
+    rows.append(
+        {
+            "parameter": name,
+            "value": round(getattr(taxi.parameters, name), 2),
+            "unit": unit,
+        }
+    )
+
+taxi_parameters = pd.DataFrame(rows).set_index("parameter")
+taxi_parameters
 ```
+
+The low occupancy and the empty kilometres between rides are what make
+the taxi's per-passenger result so much higher than a private car's with
+the same fuel consumption. `dataclasses.asdict(taxi.parameters)` returns
+all seventeen fields when you need the complete record.
 
 ## Summarise all modes
 

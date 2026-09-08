@@ -41,7 +41,7 @@ mix, and sensitivity analysis.
 :link-type: doc
 
 Regional operating conditions as reusable, evidence-tagged scenario
-files, with an Indian metropolitan case study.
+files; an Indian metropolitan scenario is packaged.
 :::
 
 :::{grid-item-card} API reference
@@ -72,8 +72,10 @@ per vehicle → per vehicle-km → per passenger-km, in five components
 emission factors for cafein         journeys and matrices with CO₂e per leg
 ```
 
-The `cafein` routing library uses factors computed this way for its
-shipped defaults; a guide on exporting your own factors to it is planned.
+The `cafein` routing library's shipped emission factors were derived
+from this model with the Finland 2020 electricity mix. A guide on
+exporting your own factors to `cafein`, and the regeneration of those
+defaults directly from this package, are planned for a later release.
 
 ```{toctree}
 :hidden:
