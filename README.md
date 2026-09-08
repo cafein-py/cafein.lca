@@ -3,21 +3,22 @@
 **Life-cycle assessment of urban passenger transport in Python.**
 
 `cafein.lca` computes life-cycle energy use and greenhouse-gas emissions
-of urban transport modes per passenger-km, vehicle-km and vehicle,
-decomposed into vehicle and battery manufacturing, delivery, use, the
-servicing of shared fleets, and infrastructure. It covers 56 modes, from
+of urban transport modes per passenger-km and per vehicle-km, decomposed
+into vehicle and battery manufacturing, delivery, use, the servicing of
+shared fleets, and infrastructure; the first four are also available per
+vehicle. It covers 56 modes, from
 private e-scooters to metro trains. The main assumptions behind a result
 are named parameters (electricity mix, vehicle lifetime, mileage,
 occupancy, battery size, servicing logistics), while the per-mode
 technical data and the shared coefficient tables ship as packaged data.
 
-The calculation model and its default coefficients are adapted from the
-life-cycle assessment model published by the International Transport Forum
-with Cazzola & Crist (2020), *Good to Go? Assessing the Environmental
-Performance of New Mobility*. `cafein.lca` is an independent
-reimplementation of that model, not an ITF or OECD product; its test suite
-holds every packaged coefficient to the source model's own results within
-a relative tolerance of 1e-9.
+The calculation is a standard attributional life-cycle assessment. The
+default coefficient set is extracted from the International Transport
+Forum's *Good to Go?* study (see the attribution below) and is held to
+that source by the test suite. Regional scenarios replace selected
+assumptions, such as occupancy, lifetimes and mileage, with sourced local
+values while the remaining defaults stay in force; complete alternative
+coefficient sets for other countries are the next step.
 
 `cafein.lca` is part of the [cafein](https://github.com/cafein-py) family
 of packages. It installs and runs on its own and does not require the
@@ -47,9 +48,10 @@ car = lca.calculate("private_car_bev")
 round(car.ghg_per_pkm, 1)
 ```
 
-The result splits into five life-cycle components, every assumption can
-be overridden per calculation, and `summary()` gives one row per mode;
-the guides below show each of these.
+The result splits into five life-cycle components, mode parameters such
+as occupancy can be overridden per calculation, the electricity mix and
+a scenario are chosen when the session is created, and `summary()` gives
+one row per mode; the guides below show each of these.
 
 Regional operating conditions come as scenario files with best, central
 and worst cases, each value tagged with its evidence and source; an

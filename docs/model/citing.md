@@ -1,9 +1,10 @@
 # Citing
 
-Results computed with this library rest on the model and coefficients
-published by the International Transport Forum, and the packaged data is
-redistributed under the OECD's terms. This page gives the citations to
-use and explains what the licences allow.
+The library is its own implementation of an attributional transport
+life-cycle assessment, but its default coefficient set is extracted from
+a study published by the International Transport Forum, and results
+computed with those defaults carry that study's citation with them. This
+page gives the citations to use and explains what the licences allow.
 
 **How to?**
 
@@ -13,11 +14,10 @@ use and explains what the licences allow.
 
 ## Cite the model and the software
 
-Cite the ITF work whenever you report the numbers:
+Whenever you report numbers computed with the default coefficient set,
+cite the study its coefficients come from:
 
-> Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
-> Performance of New Mobility*, International Transport Forum, Paris.
-> https://www.itf-oecd.org/good-go-assessing-environmental-performance-new-mobility
+> Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental Performance of New Mobility*, International Transport Forum Policy Papers, Paris. https://doi.org/10.1787/f5cd236b-en
 
 To cite the software itself, use the repository and the version you ran,
 which `cafein.lca.__version__` reports:
@@ -43,10 +43,13 @@ not cover them. They are extracted from the ITF workbook, © OECD/ITF
 following the two conditions those terms attach to adaptations: the
 source is cited, and the adaptation carries the statement below that it
 does not represent the views of the OECD. This documentation does not
-restate the terms; read them before redistributing the datasets
-themselves, and keep the citation and the statement in anything built on
-them. Results you compute with the library are your own work, for which
-the citation of the source model is the requirement. Several
+restate the terms. Two situations differ. If you redistribute or adapt
+the packaged datasets themselves, for example by shipping them in another
+tool, read the terms and keep both the citation and the statement. If you
+publish results computed with the library, they are your own work: cite
+the study above because its coefficients are behind the numbers; the
+statement is not required for results, and the library's own statement
+already covers the packaged adaptation. Several
 coefficients within the datasets originate in Argonne National
 Laboratory's GREET model, which is distributed by Argonne under its own
 licence; the values here come to us through the ITF workbook, and the
@@ -59,8 +62,8 @@ countries.
 
 ## Where to next
 
-- [The model](model): what the cited work contains and how the library
-  reproduces it.
+- [The model](model): the method, and where the default coefficients
+  come from.
 - [Workbook audit](workbook_audit): the source's peculiarities and how
   the library treats them.
 - [API reference](../reference): the public classes and functions.
