@@ -29,3 +29,14 @@ Batch summaries and discovery
 
    cafein.lca.list_modes
    cafein.lca.TransportLCA.summary
+
+Scenarios
+---------
+
+.. autosummary::
+   :toctree: generated/
+
+   cafein.lca.Scenario
+   cafein.lca.Scenario.load
+   cafein.lca.Scenario.parameters
+   cafein.lca.TransportLCA.parameters

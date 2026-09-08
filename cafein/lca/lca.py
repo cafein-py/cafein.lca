@@ -18,16 +18,23 @@ class TransportLCA:
 
     Parameters
     ----------
-    power_mix : str or dict, default "World"
+    power_mix : str or dict, optional
         Electricity generation mix used by every calculation whose mode does
         not pin an explicit ``electricity_region``. Either the name of a
         packaged region preset (see ``conf.power_mix_catalog``) or a custom
         mapping of the six generation sources (oil, natural_gas, coal,
-        nuclear, biomass, other_renewables) to shares summing to 1.
+        nuclear, biomass, other_renewables) to shares summing to 1. Defaults
+        to the scenario's mix, else "World".
+    scenario : Scenario, optional
+        Parameter overrides applied to every mode given by slug (see
+        :class:`~cafein.lca.Scenario`); keyword overrides on
+        :meth:`calculate` still win.
     """
 
-    def __init__(self, power_mix="World"):
-        self._custom_mixes = {}
+    def __init__(self, power_mix=None, scenario=None):
+        self.scenario = scenario
+        if power_mix is None:
+            power_mix = getattr(scenario, "power_mix", None) or "World"
         if isinstance(power_mix, dict):
             self._default_mix = self._validate_mix(power_mix)
             self.power_mix = "custom"
@@ -61,15 +68,22 @@ class TransportLCA:
             return self._default_mix
         return conf.power_mix_catalog[params.electricity_region]
 
+    def parameters(self, slug):
+        """Default parameters of a mode under the session scenario."""
+        if self.scenario is None:
+            return modes_registry.mode(slug)
+        return self.scenario.parameters(slug)
+
     def calculate(self, mode, **overrides):
         """Calculate life-cycle energy and GHG for a mode.
 
-        ``mode`` is a mode slug (see :func:`cafein.lca.list_modes`) or a
-        :class:`~cafein.lca.parameters.ModeParameters` object; keyword
-        overrides are applied with ``.replace()``.
+        ``mode`` is a mode slug (see :func:`cafein.lca.list_modes`), to which
+        the session scenario applies, or a
+        :class:`~cafein.lca.parameters.ModeParameters` object used as given;
+        keyword overrides are applied last with ``.replace()``.
         """
         if isinstance(mode, str):
-            params = modes_registry.mode(mode)
+            params = self.parameters(mode)
         elif isinstance(mode, ModeParameters):
             params = mode
         else:
