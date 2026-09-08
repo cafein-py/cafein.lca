@@ -3,14 +3,8 @@
 `cafein.lca` is an attributional life-cycle assessment model for urban
 passenger transport: it accounts for the energy and greenhouse-gas
 burdens of a vehicle over its whole life and expresses them per
-passenger-kilometre. The accounting steps are the ones common in
-transport LCA; the five-stage system boundary and the allocation rules
-are explicit choices of this model, described below. The library's
-contribution is a tested implementation with explicit parameters, a
-documented default coefficient set, and regional scenarios.
-This page describes the model's scope, its five stages, how results are
-normalised, where the default coefficients come from, and the literature
-the method rests on.
+passenger-kilometre. Its system boundary has five stages: manufacturing,
+delivery, use, operational services, and infrastructure.
 
 **How to?**
 
@@ -149,25 +143,38 @@ provenance.
 
 ## What the library adds
 
-On top of the default coefficient set, the library adds a typed parameter
-layer with validation, session-level electricity mixes including custom
-ones, the propagation of the session mix to servicing vehicles, and
-scenario files with provenance and three cases. None of these change a
-default result: a session created without arguments reproduces the
+The library wraps the default coefficient set in a few behaviours the
+workbook does not have. Parameters are validated as they are set. The
+electricity mix is chosen per session, custom mixes included, and it
+also drives the servicing vehicles of shared fleets. Scenario files
+supply per-mode overrides with their provenance and three cases. None of
+this changes a default result: a session created without arguments
+reproduces the
 default set's central cases exactly.
 
 ## Background reading
 
-The method is common ground in transport LCA. These works cover the
-choices the model makes:
+The wide system boundary follows Chester and Horvath (2009), who argued
+that passenger-transport assessments should count infrastructure and
+supply chains, not the vehicle alone. For the road vehicles themselves,
+Hawkins et al. (2012) is the reference comparison of combustion and
+battery-electric cars and shows how much the result turns on the
+electricity mix and on battery production, while Nordelöf et al. (2014)
+review why studies of the same vehicles reach such different numbers.
+Two findings shape which parameters matter most here: Schäfer and Yeh
+(2020) show that occupancy explains most of the variation in emissions
+per passenger-kilometre across modes, and Hollingsworth et al. (2019)
+and de Bortoli (2021) trace the servicing and lifetime effects that
+dominate shared micromobility. The default coefficients come from the
+workbook of Cazzola and Crist (2020).
 
-- Chester and Horvath (2009). Environmental assessment of passenger transportation should include infrastructure and supply chains. *Environmental Research Letters* 4(2), 024008. https://doi.org/10.1088/1748-9326/4/2/024008. The case for the wide system boundary used here.
-- Hawkins et al. (2012). Comparative environmental life cycle assessment of conventional and electric vehicles. *Journal of Industrial Ecology* 17(1), 53–64. https://doi.org/10.1111/j.1530-9290.2012.00532.x. The reference comparison of combustion and battery-electric cars, with the role of the electricity mix and of battery production.
-- Nordelöf et al. (2014). Environmental impacts of hybrid, plug-in hybrid, and battery electric vehicles: what can we learn from life cycle assessment? *The International Journal of Life Cycle Assessment* 19(11), 1866–1890. https://doi.org/10.1007/s11367-014-0788-0. A review of how such studies are set up and why their results differ.
-- Schäfer and Yeh (2020). A holistic analysis of passenger travel energy and greenhouse gas intensities. *Nature Sustainability* 3(6), 459–462. https://doi.org/10.1038/s41893-020-0514-9. Occupancy explains most of the variation in emissions per passenger-kilometre across modes; in this model it scales every per-passenger-kilometre result directly, which is why it is usually the parameter to examine first.
-- Hollingsworth, Copeland and Johnson (2019). Are e-scooters polluters? The environmental impacts of shared dockless electric scooters. *Environmental Research Letters* 14(8), 084031. https://doi.org/10.1088/1748-9326/ab2da8. The servicing and lifetime effects that dominate shared micromobility.
-- de Bortoli (2021). Environmental performance of shared micromobility and personal alternatives using integrated modal LCA. *Transportation Research Part D: Transport and Environment* 93, 102743. https://doi.org/10.1016/j.trd.2021.102743. Shared and private micromobility on one footing, including the vehicles' infrastructure.
-- Cazzola and Crist (2020). *Good to Go? Assessing the Environmental Performance of New Mobility*. International Transport Forum Policy Papers. https://doi.org/10.1787/f5cd236b-en. The study whose workbook provides the default coefficient set.
+- Cazzola, P. and Crist, P. (2020). *Good to Go? Assessing the Environmental Performance of New Mobility*. International Transport Forum Policy Papers. https://doi.org/10.1787/f5cd236b-en
+- Chester, M. and Horvath, A. (2009). Environmental assessment of passenger transportation should include infrastructure and supply chains. *Environmental Research Letters* 4(2), 024008. https://doi.org/10.1088/1748-9326/4/2/024008
+- de Bortoli, A. (2021). Environmental performance of shared micromobility and personal alternatives using integrated modal LCA. *Transportation Research Part D: Transport and Environment* 93, 102743. https://doi.org/10.1016/j.trd.2021.102743
+- Hawkins, T. R. et al. (2012). Comparative environmental life cycle assessment of conventional and electric vehicles. *Journal of Industrial Ecology* 17(1), 53–64. https://doi.org/10.1111/j.1530-9290.2012.00532.x
+- Hollingsworth, J., Copeland, B. and Johnson, J. X. (2019). Are e-scooters polluters? The environmental impacts of shared dockless electric scooters. *Environmental Research Letters* 14(8), 084031. https://doi.org/10.1088/1748-9326/ab2da8
+- Nordelöf, A. et al. (2014). Environmental impacts of hybrid, plug-in hybrid, and battery electric vehicles: what can we learn from life cycle assessment? *The International Journal of Life Cycle Assessment* 19(11), 1866–1890. https://doi.org/10.1007/s11367-014-0788-0
+- Schäfer, A. W. and Yeh, S. (2020). A holistic analysis of passenger travel energy and greenhouse gas intensities. *Nature Sustainability* 3(6), 459–462. https://doi.org/10.1038/s41893-020-0514-9
 
 ## Where to next
 

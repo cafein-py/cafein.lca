@@ -3,8 +3,7 @@
 The library is its own implementation of an attributional transport
 life-cycle assessment, but its default coefficient set is extracted from
 a study published by the International Transport Forum, and results
-computed with those defaults carry that study's citation with them. This
-page gives the citations to use and explains what the licences allow.
+computed with those defaults carry that study's citation with them.
 
 **How to?**
 
@@ -43,9 +42,9 @@ not cover them. They are extracted from the ITF workbook, © OECD/ITF
 following the two conditions those terms attach to adaptations: the
 source is cited, and the adaptation carries the statement below that it
 does not represent the views of the OECD. This documentation does not
-restate the terms. Two situations differ. If you redistribute or adapt
-the packaged datasets themselves, for example by shipping them in another
-tool, read the terms and keep both the citation and the statement. If you
+restate the terms. If you redistribute or adapt the packaged datasets
+themselves, for example by shipping them in another tool, read the terms
+and keep both the citation and the statement. If you
 publish results computed with the library, they are your own work: cite
 the study above because its coefficients are behind the numbers; the
 statement is not required for results, and the library's own statement

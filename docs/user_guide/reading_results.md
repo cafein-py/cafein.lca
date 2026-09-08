@@ -10,11 +10,9 @@ kernelspec:
 
 # Reading results
 
-A calculation returns a `Result` with energy use and greenhouse-gas
-emissions in three views (per vehicle, per vehicle-kilometre, per
-passenger-kilometre) and five life-cycle components. This guide explains
-what each component contains, how the three views derive from one
-another, and how to get the numbers out as tables and charts.
+A calculation returns a `Result`. It carries energy use and
+greenhouse-gas emissions in five life-cycle components and three views:
+per vehicle, per vehicle-kilometre, and per passenger-kilometre.
 
 **How to?**
 
@@ -26,8 +24,7 @@ another, and how to get the numbers out as tables and charts.
 - [Plot the components](#plot-the-components)
 - [Where to next](#where-to-next)
 
-The first cell loads matplotlib for charts, pandas for tables and the
-session class, and opens a session with the global defaults.
+All examples below use one session with the global defaults:
 
 ```{code-cell}
 import dataclasses
@@ -205,8 +202,8 @@ component and shorter lifetimes.
 
 ## Plot the components
 
-A stacked bar chart shows which component drives each mode. Here a
-handful of modes are compared under the global defaults:
+Compare the five components across six representative modes, from
+use-heavy cars to a manufacturing-heavy bicycle:
 
 ```{code-cell}
 plot_modes = [

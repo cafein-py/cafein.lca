@@ -10,9 +10,9 @@ kernelspec:
 
 # Quickstart
 
-This guide computes the life-cycle emissions of one transport mode,
-shows what the number is made of, compares a few modes, and changes one
-assumption. It takes about ten minutes.
+A result in `cafein.lca` is the life-cycle emissions of one transport
+mode, per passenger-kilometre, split into five components. Start by
+computing one.
 
 **How to?**
 
@@ -22,9 +22,6 @@ assumption. It takes about ten minutes.
 - [Change an assumption](#change-an-assumption)
 - [Where to next](#where-to-next)
 
-The first cell loads the two things the page uses: pandas for tables and
-the session class of the library.
-
 ```{code-cell}
 import pandas as pd
 
@@ -33,10 +30,10 @@ from cafein.lca import TransportLCA
 
 ## Compute a first result
 
-A calculation session is a `TransportLCA` object. Created without
-arguments, it uses the model's global default assumptions, including the
-world average electricity mix. Each mode is identified by a short name;
-here it is a battery-electric private car:
+You work through a `TransportLCA` session. With no arguments it uses the
+global default assumptions, including the world average electricity mix.
+Modes go by short names; `private_car_bev` is a battery-electric private
+car:
 
 ```{code-cell}
 lca = TransportLCA()
@@ -44,10 +41,10 @@ car = lca.calculate("private_car_bev")
 car
 ```
 
-The summary line gives the two headline numbers: greenhouse-gas emissions
-in grams of CO₂-equivalent per passenger-kilometre, and energy use in
-megajoules per passenger-kilometre. Both are available as plain floats,
-shown here with their units:
+The repr line already shows the two headline numbers: greenhouse-gas
+emissions in grams of CO₂-equivalent per passenger-kilometre, and energy
+use in megajoules per passenger-kilometre. Both are plain floats on the
+result:
 
 ```{code-cell}
 headline = pd.Series(
@@ -90,8 +87,8 @@ component.
 
 ## Compare modes
 
-`summary()` computes the same breakdown for every mode and returns one
-row per mode. Selecting a few rows makes a comparison:
+`summary()` runs that same breakdown for all 56 modes and returns a
+DataFrame, one row per mode. A few rows are enough to compare:
 
 ```{code-cell}
 comparison_modes = [
@@ -128,12 +125,11 @@ vehicle emissions are shared by many more passengers.
 
 ## Change an assumption
 
-The main assumptions behind a mode, such as occupancy, lifetime, mileage
-and energy consumption, are named parameters that can be overridden for a
-single calculation; the fixed per-mode data behind them is described in
-the modes guide. Raising the car's occupancy from
-1.5 to 3 passengers spreads the same vehicle emissions over twice as many
-passenger-kilometres:
+`calculate()` accepts a keyword override for any user parameter, from
+occupancy and lifetime to energy consumption, and leaves the fixed
+per-mode data described in the modes guide untouched. Occupancy is the
+clearest example: put three people in the car instead of the default 1.5,
+and the same vehicle emissions spread over twice the passenger-kilometres:
 
 ```{code-cell}
 occupancy_settings = [
@@ -156,11 +152,10 @@ occupancy_comparison = pd.DataFrame(rows).round(1)
 occupancy_comparison
 ```
 
-The per-passenger result halves, as expected for a quantity that scales
-with occupancy alone. Other parameters, such as the vehicle's lifetime or
-its electricity consumption, act on individual components rather than
-scaling every component equally; the user guide explains which parameter
-drives which component.
+Doubling occupancy halves every component per passenger-kilometre, so
+the total halves too. Most parameters are more selective: lifetime moves
+manufacturing and delivery, electricity consumption moves use, and the
+user guide maps each parameter to the component it drives.
 
 ## Where to next
 
