@@ -4,12 +4,11 @@ import math
 
 import pandas as pd
 
-COMPONENTS = ["manufacturing", "delivery", "use", "services",
-              "infrastructure"]
+COMPONENTS = ["manufacturing", "delivery", "use", "services", "infrastructure"]
 
 COMPONENT_LABELS = {
     "manufacturing": "Vehicle and battery manufacturing, assembly and "
-                     "disposal (incl. fluids)",
+    "disposal (incl. fluids)",
     "delivery": "Vehicle delivery at point of purchase",
     "use": "Vehicle use (including fuel production)",
     "services": "Operational services",
@@ -34,7 +33,7 @@ class Result:
     def _series(self, metric, per):
         values = self._frames[metric][per]
         s = pd.Series(values, index=COMPONENTS, name=f"{metric}_{per}")
-        s["total"] = (values.sum() if per != "vehicle" else math.nan)
+        s["total"] = values.sum() if per != "vehicle" else math.nan
         return s
 
     @property
@@ -75,10 +74,13 @@ class Result:
                 columns[(metric, per)] = self._series(metric, per)
         frame = pd.DataFrame(columns)
         frame.columns = pd.MultiIndex.from_tuples(
-            frame.columns, names=["metric", "per"])
+            frame.columns, names=["metric", "per"]
+        )
         return frame
 
     def __repr__(self):
-        return (f"<Result {self.parameters.slug}: "
-                f"{self.ghg_per_pkm:.1f} g CO2-eq/pkm, "
-                f"{self.energy_per_pkm_total:.2f} MJ/pkm>")
+        return (
+            f"<Result {self.parameters.slug}: "
+            f"{self.ghg_per_pkm:.1f} g CO2-eq/pkm, "
+            f"{self.energy_per_pkm_total:.2f} MJ/pkm>"
+        )

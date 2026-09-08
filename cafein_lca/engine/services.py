@@ -24,9 +24,8 @@ def service_vehicle_intensity(vehicle, session_mix):
     if row["fuel"] in conf.fuel_ghg:  # BEVs list 'Electricity'; no fuel row
         wtw = conf.fuel_ghg[row["fuel"]]
         ttw = conf.fuel_ghg_ttw[row["fuel"]]
-        fuel_wtt = wtw / ttw - 1                       # helper R10
-        fuel_ghg_mj = (wtw / conf.constant("mj_per_l_gasoline_x100")
-                       * 1000)                          # helper R13
+        fuel_wtt = wtw / ttw - 1  # helper R10
+        fuel_ghg_mj = wtw / conf.constant("mj_per_l_gasoline_x100") * 1000  # helper R13
     if row["low_carbon_electricity"]:
         # 'Van - BEV (low carbon)' pins renewables (EX12/EX14).
         paths = conf.electricity_pathways
@@ -36,18 +35,25 @@ def service_vehicle_intensity(vehicle, session_mix):
         elec_wtt, elec_ghg_kwh = electricity_factors(session_mix)  # EX11/EX13
     elec_ghg_mj = elec_ghg_kwh / conf.constant("mj_per_kwh")  # helper R14
 
-    energy = (fuel_mj * (1 - share) * (1 + fuel_wtt)
-              + share * elec_mj * (1 + elec_wtt))       # helper R12
+    energy = fuel_mj * (1 - share) * (1 + fuel_wtt) + share * elec_mj * (
+        1 + elec_wtt
+    )  # helper R12
     if share == 1:
-        ghg = elec_mj * elec_ghg_mj                     # helper R15
+        ghg = elec_mj * elec_ghg_mj  # helper R15
     else:
-        ghg = (fuel_mj * fuel_ghg_mj * (1 - share)
-               + elec_mj * elec_ghg_mj * share)
+        ghg = fuel_mj * fuel_ghg_mj * (1 - share) + elec_mj * elec_ghg_mj * share
     return energy, ghg
 
 
-def run(params, data, use_energy, use_ghg, session_mix,
-        ref_use_energy=None, ref_annual_km=None):
+def run(
+    params,
+    data,
+    use_energy,
+    use_ghg,
+    session_mix,
+    ref_use_energy=None,
+    ref_annual_km=None,
+):
     """Per-vehicle servicing energy [MJ] and GHG [g] (4_Op R15/R17).
 
     ``ref_use_energy``/``ref_annual_km`` support the workbook columns whose
@@ -59,16 +65,17 @@ def run(params, data, use_energy, use_ghg, session_mix,
     annual_km = ref_annual_km if ref_annual_km is not None else params.annual_km
     daily_km = annual_km / 365  # R5 (3_Use R11)
     # R10: service-vehicle km per serviced-vehicle km.
-    ratio = (params.service_km_per_vehicle_day
-             / params.vehicles_per_service_trip / daily_km)
+    ratio = (
+        params.service_km_per_vehicle_day / params.vehicles_per_service_trip / daily_km
+    )
     lifetime_km = params.lifetime_km  # R6 (3_Use R12)
 
     if data.services_uses_intensity_table:
         # Micromobility branch: intensity of the servicing vehicle type.
         energy_per_km, ghg_per_km = service_vehicle_intensity(
-            params.service_vehicle, session_mix)
-        return (energy_per_km * ratio * lifetime_km,
-                ghg_per_km * ratio * lifetime_km)
+            params.service_vehicle, session_mix
+        )
+        return (energy_per_km * ratio * lifetime_km, ghg_per_km * ratio * lifetime_km)
     # Canonical branch: use-phase burden scaled by the ratio.
     energy_base = ref_use_energy if ref_use_energy is not None else use_energy
     return energy_base * ratio, use_ghg * ratio

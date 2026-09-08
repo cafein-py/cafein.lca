@@ -50,8 +50,7 @@ CSV_MODES = {
     "Ridesourcing - car - HEV": "ridesourcing_car_hev",
     "Ridesourcing - car - PHEV": "ridesourcing_car_phev",
     "Ridesourcing - car - BEV": "ridesourcing_car_bev",
-    "Ridesourcing - car - BEV (two packs)":
-        "ridesourcing_car_bev_two_packs",
+    "Ridesourcing - car - BEV (two packs)": "ridesourcing_car_bev_two_packs",
     "Ridesourcing - car - FCEV": "ridesourcing_car_fcev",
     "Bus - ICE": "bus_ice",
     "Bus - HEV": "bus_hev",
@@ -74,8 +73,7 @@ CSV_COMPONENTS = {
 #: modes (Figure sheets row 60 = Tech_Spec_TNC!P14).
 DEADHEADING_SHARE = 0.38588235294117645
 DEADHEADING_MODES = frozenset(
-    slug for slug in CSV_MODES.values()
-    if slug.startswith(("taxi_", "ridesourcing_"))
+    slug for slug in CSV_MODES.values() if slug.startswith(("taxi_", "ridesourcing_"))
 )
 
 
@@ -91,8 +89,7 @@ def _read_reference():
     return table
 
 
-@pytest.mark.parametrize("csv_name,slug", CSV_MODES.items(),
-                         ids=CSV_MODES.values())
+@pytest.mark.parametrize("csv_name,slug", CSV_MODES.items(), ids=CSV_MODES.values())
 def test_finland_mix_reproduces_repo_csv(csv_name, slug):
     lca = TransportLCA(power_mix=FINLAND_2020)
     reference = _read_reference()[csv_name]
@@ -105,6 +102,6 @@ def test_finland_mix_reproduces_repo_csv(csv_name, slug):
             elif label == "Operational services":
                 ours += per_pkm["use"] * DEADHEADING_SHARE
         # The reference table holds values rounded to integers.
-        assert abs(ours - reference[label]) <= 0.5 + 1e-9, (
-            f"{slug} {label}: computed {ours:.3f}, reference "
-            f"{reference[label]}")
+        assert (
+            abs(ours - reference[label]) <= 0.5 + 1e-9
+        ), f"{slug} {label}: computed {ours:.3f}, reference {reference[label]}"
