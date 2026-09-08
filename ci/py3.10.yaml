@@ -7,5 +7,4 @@ dependencies:
   - pandas
   - pytest
   - pytest-cov
-  - openpyxl
   - pip

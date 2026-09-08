@@ -91,13 +91,12 @@ lca.summary()                             # all modes x components, one frame
 
 ## Relation to the Excel workbook
 
-This repository also carries the source material: the pristine ITF workbook
-(`life-cycle-assessment-calculations-2020_original.xlsx`), a copy customized
-with the Finland 2020 electricity mix, the report PDF, and a derived CSV of
-GHG per pkm by mode. The packaged datasets under `cafein_lca/data/` are
-extracted from the pristine workbook by `scripts/extract_workbook.py` and are
-regenerated only by that script. The derived CSV doubles as an acceptance
-test: the library reproduces it exactly when given the Finland 2020 mix.
+The packaged datasets under `cafein_lca/data/` and the golden fixtures under
+`tests/data/` were extracted from the pristine ITF workbook and are the
+library's source of truth. The golden-master suite pins every packaged number
+to the workbook's own computed results, and an acceptance test reproduces a
+GHG-per-pkm table produced from the workbook with the Finland 2020
+electricity mix.
 
 ## Related tools
 

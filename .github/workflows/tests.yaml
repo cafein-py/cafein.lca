@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install black flake8
-      - run: black --check cafein_lca tests scripts
-      - run: flake8 cafein_lca tests scripts
+      - run: black --check cafein_lca tests
+      - run: flake8 cafein_lca tests
 
   tests:
     needs: lint
