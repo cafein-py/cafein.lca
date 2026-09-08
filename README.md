@@ -95,6 +95,21 @@ lca.calculate("private_car_bev").ghg_per_pkm   # 70.3 g CO2-eq/pkm
 lca.summary()                             # all modes x components, one frame
 ```
 
+Regional operating conditions come as *scenarios*: per-mode parameter
+overrides plus an electricity mix in a TOML file, each with `best`,
+`central` and `worst` cases named by their effect on emissions per pkm,
+and every value carries its evidence type, geography and source. Two are
+packaged.
+
+```python
+from cafein.lca import Scenario
+
+lca = TransportLCA(scenario=Scenario.load("india_metropolitan", case="central"))
+lca.calculate("bus_ice").ghg_per_pkm
+lca.scenario.provenance()             # value, evidence, geography, source
+cafein.lca.list_scenarios()
+```
+
 ## Provenance of the coefficients
 
 The packaged datasets under `cafein/lca/data/` and the golden fixtures under

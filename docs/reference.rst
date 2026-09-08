@@ -39,4 +39,5 @@ Scenarios
    cafein.lca.Scenario
    cafein.lca.Scenario.load
    cafein.lca.Scenario.parameters
+   cafein.lca.list_scenarios
    cafein.lca.TransportLCA.parameters
