@@ -118,10 +118,7 @@ published with its study *Good to Go? Assessing the Environmental
 Performance of New Mobility* (Cazzola and Crist, 2020); many of its
 coefficients originate in Argonne National Laboratory's GREET model. The
 tables are the library's source of truth: the workbook is not
-distributed and is not read at runtime. This library is an adaptation of
-an original work by the OECD/ITF; the opinions expressed and arguments
-employed in this adaptation should not be reported as representing the
-official views of the OECD or of its Member countries.
+distributed and is not read at runtime.
 
 The default set is held to its source by a golden-master test suite. For
 128 mode columns of the workbook (the 56 modes plus their sensitivity

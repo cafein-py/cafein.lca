@@ -35,29 +35,19 @@ the repository is connected to Zenodo.
 The Python code is released under the MIT licence, which lets you use,
 modify and redistribute it with the licence notice attached.
 
-The packaged datasets are a different matter, and the MIT licence does
-not cover them. They are extracted from the ITF workbook, © OECD/ITF
-2020, and are used and adapted here with citation under the
-[OECD terms and conditions](https://www.oecd.org/termsandconditions/),
-following the two conditions those terms attach to adaptations: the
-source is cited, and the adaptation carries the statement below that it
-does not represent the views of the OECD. This documentation does not
-restate the terms. If you redistribute or adapt the packaged datasets
-themselves, for example by shipping them in another tool, read the terms
-and keep both the citation and the statement. If you
-publish results computed with the library, they are your own work: cite
-the study above because its coefficients are behind the numbers; the
-statement is not required for results, and the library's own statement
-already covers the packaged adaptation. Several
-coefficients within the datasets originate in Argonne National
-Laboratory's GREET model, which is distributed by Argonne under its own
-licence; the values here come to us through the ITF workbook, and the
-workbook is the source to cite for them.
+The MIT licence does not cover the packaged datasets. They are extracted
+from the ITF workbook (© OECD/ITF 2020) and are used and adapted with
+citation under the
+[OECD terms and conditions](https://www.oecd.org/termsandconditions/).
+Some of the coefficients originate in Argonne National Laboratory's GREET
+model and reach the library through the workbook, so the workbook is the
+source to cite for them.
 
-This library is an adaptation of an original work by the OECD/ITF. The
-opinions expressed and arguments employed in this adaptation should not be
-reported as representing the official views of the OECD or of its Member
-countries.
+This is an adaptation of OECD/ITF work and is not endorsed by the OECD.
+
+If you redistribute or adapt the datasets in another tool, keep the
+citation and that note. Results you compute with the library are your own
+work; cite the study above for the coefficients behind the numbers.
 
 ## Where to next
 
