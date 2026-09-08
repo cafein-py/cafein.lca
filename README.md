@@ -97,14 +97,16 @@ lca.summary()                             # all modes x components, one frame
 
 Regional operating conditions come as *scenarios*: per-mode parameter
 overrides plus an electricity mix in a TOML file, each with `best`,
-`central` and `worst` cases named by their effect on emissions per pkm.
-Two are packaged; the India one is sourced value by value.
+`central` and `worst` cases named by their effect on emissions per pkm,
+and every value carries its evidence type, geography and source. Two are
+packaged.
 
 ```python
 from cafein.lca import Scenario
 
-lca = TransportLCA(scenario=Scenario.load("india", case="central"))
+lca = TransportLCA(scenario=Scenario.load("india_metropolitan", case="central"))
 lca.calculate("bus_ice").ghg_per_pkm
+lca.scenario.provenance()             # value, evidence, geography, source
 cafein.lca.list_scenarios()
 ```
 

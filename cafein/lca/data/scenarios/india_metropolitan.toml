@@ -1,0 +1,324 @@
+# India, metropolitan operating conditions: a composite of Delhi and Mumbai
+# surveys and Indian LCA studies. Cases are named by their effect on emissions
+# per pkm: "best" holds every low-emission value, "worst" every high-emission
+# one. Every parameter carries its evidence type (observed, model_input,
+# capacity, projection, derived, assumption), geography, source and confidence.
+#
+# Sources: Goel et al. 2015 (doi 10.1016/j.tbs.2014.10.001); Goel et al. 2016
+# (10.1016/j.trd.2015.05.006); Guttikunda 2024 (10.3390/su16156298); Peshin et
+# al. 2022 (10.1021/acs.est.1c07718); Shinde et al. 2019
+# (10.1007/s10098-018-01661-1); Shinde et al. 2024 (10.1016/j.eiar.2024.107501);
+# Aryan et al. 2025a (10.1007/s43621-025-01994-0); Aryan et al. 2025b
+# (10.1007/s41062-024-01852-4); Ghate & Qamar 2020 (10.1016/j.cstp.2019.01.005).
+#
+# Survival medians "derived from Guttikunda 2024" use the Table 5 parameters
+# (alpha, beta, T) of the named vehicle category and survival case:
+# median = T * ln(2)^(1/beta) - alpha.
+
+name = "india_metropolitan"
+description = "Indian metropolitan operating conditions (Delhi and Mumbai composite), three cases"
+
+# central: packaged India preset (~837 g CO2/kWh; CEA 2018 gives 767, Peshin 2022).
+# best: assumption; the "100% natural gas" preset (~507 g/kWh) stands in for the
+#   2030 grid scenarios of 410-511 g/kWh in Peshin 2022, Table 4.
+# worst: assumption; "100% coal" is the upper sensitivity bound of Peshin 2022.
+[power_mix]
+best = "100% natural gas"
+central = "India"
+worst = "100% coal"
+
+# ---------------------------------------------------------------- private cars
+[modes."private_car_*".occupancy]
+best = 1.97
+central = 1.25
+worst = 1.0
+evidence = {best = "assumption", central = "model_input", worst = "assumption"}
+geography = {best = "Ahmedabad (abstract only)", central = "Mumbai", worst = "n/a"}
+source = {best = "Padiya & Bhatt 2020 (SSRN 3735390, not in collection)", central = "Aryan et al. 2025a, Table 3 (Mumbai CMP 2016)", worst = "single-occupant lower bound"}
+confidence = "low"
+
+[modes."private_car_*".annual_km]
+best = 12600
+central = 12200
+worst = 11600
+evidence = {best = "model_input", central = "observed", worst = "observed"}
+geography = "Delhi"
+source = {best = "Peshin et al. 2022, Methods", central = "Goel et al. 2015, Table 6 (all cars)", worst = "Goel et al. 2015, Table 6 (petrol cars)"}
+confidence = "high"
+
+[modes."private_car_*".lifetime_years]
+best = 15
+central = 12
+worst = 7
+evidence = {best = "derived", central = "model_input", worst = "derived"}
+geography = {best = "India, national survival case", central = "India", worst = "India, Tier-1 cities"}
+source = {best = "Guttikunda 2024, Table 5, 4W1 cars, high survival (median 14.7)", central = "Peshin et al. 2022, Methods", worst = "Guttikunda 2024, Table 5, 4W1 cars, low survival (median 7.1)"}
+confidence = "medium"
+note = "long life lowers manufacturing per km by allocation; it is not a better vehicle"
+
+[modes.private_car_ice.vehicle_weight_kg]
+best = 695
+central = 965
+worst = 1391
+evidence = "model_input"
+geography = "India, representative models"
+source = "Peshin et al. 2022, Table 2 (Alto 800, Swift, Octavia kerb weights)"
+confidence = "high"
+
+[modes.private_car_ice.fuel_consumption_per_100km]
+best = 4.5
+central = 6.5
+worst = 6.6
+evidence = {best = "model_input", central = "observed", worst = "model_input"}
+geography = {best = "India, rated", central = "Delhi fleet", worst = "India, rated"}
+source = {best = "Peshin et al. 2022, Table 2 (Alto BS6, 22 km/L rated)", central = "Goel et al. 2015, Table 4 (petrol cars 15.3 km/L, owner-reported)", worst = "Peshin et al. 2022, Table 2 (Octavia, 15.1 km/L rated)"}
+confidence = "medium"
+
+[modes.private_car_bev.vehicle_weight_kg]
+value = 937
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Mahindra e2o plus)"
+confidence = "high"
+
+[modes.private_car_bev.battery_capacity_kwh]
+value = 15
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Mahindra e2o plus)"
+confidence = "high"
+
+[modes.private_car_bev.electricity_consumption_kwh_per_km]
+best = 0.136
+central = 0.136
+worst = 0.18
+evidence = "derived"
+geography = "India, representative model"
+source = {best = "Peshin et al. 2022, Table 2: 15 kWh / 110 km rated range", central = "as best", worst = "best x 1.33; Peshin et al. 2022 report +33 % at 95 F for electric four-wheelers"}
+confidence = "low"
+note = "rated range flatters real use; no measured Indian BEV consumption in the collection"
+
+# ---------------------------------------------------------------- two-wheelers
+[modes."private_moped_*".occupancy]
+best = 1.4
+central = 1.4
+worst = 1.0
+evidence = {best = "model_input", central = "model_input", worst = "assumption"}
+geography = "Mumbai"
+source = {best = "Aryan et al. 2025a, Table 3", central = "Aryan et al. 2025a, Table 3", worst = "single-rider lower bound"}
+confidence = "medium"
+
+[modes."private_moped_*".annual_km]
+best = 12800
+central = 9240
+worst = 7255
+evidence = "observed"
+geography = {best = "Delhi", central = "Visakhapatnam", worst = "Rajkot"}
+source = "Goel et al. 2016, Table 6 (odometer surveys)"
+confidence = "high"
+
+[modes."private_moped_*".lifetime_years]
+best = 12
+central = 8
+worst = 7
+evidence = {best = "derived", central = "model_input", worst = "derived"}
+geography = {best = "India, national survival case", central = "India", worst = "India, Tier-1 cities"}
+source = {best = "Guttikunda 2024, Table 5, 2W, high survival (median 12.3)", central = "Peshin et al. 2022, Methods", worst = "Guttikunda 2024, Table 5, 2W, low survival (median 6.6)"}
+confidence = "medium"
+
+[modes.private_moped_ice.vehicle_weight_kg]
+value = 109
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Honda Activa)"
+confidence = "high"
+
+[modes.private_moped_ice.fuel_consumption_per_100km]
+best = 1.7
+central = 2.1
+worst = 2.1
+evidence = {best = "model_input", central = "observed", worst = "observed"}
+geography = {best = "India, rated", central = "Delhi fleet", worst = "Delhi fleet"}
+source = {best = "Peshin et al. 2022, Table 2 (60 km/L rated)", central = "Goel et al. 2015, Table 4 (48.5 km/L)", worst = "as central"}
+confidence = "medium"
+
+[modes.private_moped_bev.vehicle_weight_kg]
+value = 87
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Hero Photon)"
+confidence = "high"
+
+[modes.private_moped_bev.battery_capacity_kwh]
+value = 1.8
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Hero Photon)"
+confidence = "high"
+
+[modes.private_moped_bev.electricity_consumption_kwh_per_km]
+best = 0.0225
+central = 0.0225
+worst = 0.03
+evidence = "derived"
+geography = "India, representative model"
+source = {best = "Peshin et al. 2022, Table 2: 1.8 kWh / 80 km rated range", central = "as best", worst = "best x 1.33 (hot-weather penalty of four-wheelers applied)"}
+confidence = "low"
+
+# ---------------------------------------------------------------------- taxis
+[modes."taxi_*".occupancy]
+best = 4
+central = 1.9
+worst = 1
+evidence = "model_input"
+geography = "Mumbai Metropolitan Region"
+source = "Shinde et al. 2019, Table 7 (peak/shared, average, off-peak)"
+confidence = "medium"
+
+[modes."taxi_*".annual_km]
+best = 18600
+central = 18600
+worst = 15300
+evidence = "derived"
+geography = "Mumbai Metropolitan Region"
+source = {best = "Shinde et al. 2019: 51 km/day x 365", central = "as best", worst = "Shinde et al. 2019: fleet VKT over average fleet size, Table 2 and Appendix I"}
+confidence = "medium"
+
+[modes."taxi_*".lifetime_years]
+best = 15
+central = 8
+worst = 8
+evidence = {best = "model_input", central = "model_input", worst = "derived"}
+geography = {best = "Mumbai", central = "India, Tier-1 cities", worst = "India, Tier-1 cities"}
+source = {best = "Shinde et al. 2019 (15-year service life)", central = "Guttikunda 2024: 8-year retirement rule for taxis in Tier-1 cities", worst = "Guttikunda 2024, Table 5, 4WT taxis, low survival (median 7.8)"}
+confidence = "medium"
+
+[modes."taxi_*".service_km_per_vehicle_day]
+best = 9.08
+central = 9.08
+worst = 7.47
+evidence = "derived"
+geography = "n/a"
+source = "model default (23.42 km/day at 48,000 km/yr) scaled with annual_km"
+confidence = "low"
+note = "no Indian deadheading measurement; keeps the model's share of empty km"
+
+# ---------------------------------------------------------------------- buses
+[modes."bus_*".occupancy]
+best = 92
+central = 53
+worst = 25
+evidence = "model_input"
+geography = "Mumbai Metropolitan Region"
+source = "Shinde et al. 2019, Table 7 (peak, average, off-peak; capacity 70)"
+confidence = "medium"
+note = "operating-condition inputs of a Mumbai LCA (MCGM 2016), not national observations"
+
+[modes."bus_*".annual_km]
+best = 71175
+central = 55000
+worst = 44000
+evidence = {best = "derived", central = "derived", worst = "assumption"}
+geography = {best = "Delhi", central = "Mumbai", worst = "n/a"}
+source = {best = "Goel et al. 2015, 3.4: 195 km/day from GPS speed and hours", central = "Shinde et al. 2019: 15-year fleet VKT over average fleet size", worst = "model default retained"}
+confidence = "medium"
+
+[modes."bus_*".lifetime_years]
+best = 15
+central = 12
+worst = 8
+evidence = {best = "model_input", central = "model_input", worst = "derived"}
+geography = {best = "Mumbai and Delhi", central = "India", worst = "India, Tier-1 cities"}
+source = {best = "Shinde et al. 2019; Ghate & Qamar 2020, Table 3", central = "Peshin et al. 2022, Methods", worst = "Guttikunda 2024, Table 5, BUS, low survival (median 8.1)"}
+confidence = "medium"
+
+[modes."bus_*".service_km_per_vehicle_day]
+best = 21.67
+central = 16.74
+worst = 13.39
+evidence = "derived"
+geography = "n/a"
+source = "model default (13.39 km/day at 44,000 km/yr) scaled with annual_km"
+confidence = "low"
+
+[modes.bus_ice.vehicle_weight_kg]
+best = 7476
+central = 9850
+worst = 10398
+evidence = {best = "model_input", central = "model_input", worst = "assumption"}
+geography = "India, representative models"
+source = {best = "Peshin et al. 2022, Table 2 (Tata Starbus 9 m diesel)", central = "Shinde et al. 2019, Appendix A (12 m diesel bus)", worst = "model default retained"}
+confidence = "medium"
+
+[modes.bus_ice.fuel_consumption_per_100km]
+best = 22
+central = 32
+worst = 40.9
+evidence = {best = "model_input", central = "derived", worst = "assumption"}
+geography = {best = "India, rated", central = "Mumbai fleet", worst = "n/a"}
+source = {best = "Peshin et al. 2022, Table 2 (4.55 km/L rated)", central = "Shinde et al. 2019, Tables 1-2: 3.76 km/kg diesel at 0.83 kg/L", worst = "model default retained"}
+confidence = "medium"
+
+[modes.bus_bev.vehicle_weight_kg]
+value = 8125
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2 (Tata Starbus Ultra 9 m electric)"
+confidence = "high"
+
+[modes.bus_bev.battery_capacity_kwh]
+value = 124
+evidence = "model_input"
+geography = "India, representative model"
+source = "Peshin et al. 2022, Table 2"
+confidence = "high"
+
+[modes.bus_bev.electricity_consumption_kwh_per_km]
+best = 0.83
+central = 0.83
+worst = 1.17
+evidence = "derived"
+geography = "India, representative model"
+source = {best = "Peshin et al. 2022, Table 2: 124 kWh / 150 km rated range", central = "as best", worst = "best x 1.41; Peshin et al. 2022 report +41 % at 20 F for electric buses"}
+confidence = "low"
+
+# ---------------------------------------------------------------------- metro
+# The metro "vehicle" is a six-coach Mumbai train; these rows move together.
+[modes.metro_urban_train.occupancy]
+best = 1900
+central = 1000
+worst = 475
+evidence = {best = "model_input", central = "assumption", worst = "derived"}
+geography = "Mumbai Metro Line 3 (planned)"
+source = {best = "Shinde et al. 2024, Fig. 14 average occupancy (85 % of 2,244 capacity)", central = "midpoint train-load scenario (45 % of capacity)", worst = "a quarter of the plan; Shinde et al. 2024 note actual Indian metro ridership is at most a quarter of projections"}
+confidence = "low"
+note = "assumed passengers per six-coach train, not observed loads"
+
+[modes.metro_urban_train.vehicle_weight_kg]
+value = 420000
+evidence = "derived"
+geography = "Mumbai Metro Line 3"
+source = "Shinde et al. 2024: 80 kWh per 1000 gross t-km and 44 kWh/train-km at 1,900 passengers"
+confidence = "low"
+
+[modes.metro_urban_train.electricity_consumption_kwh_per_km]
+value = 44
+evidence = "derived"
+geography = "Mumbai Metro Lines 3 and 2A/7"
+source = "Shinde et al. 2024, Table 5 traction electricity over passenger-km at 1,900 per train; Aryan et al. 2025b gives 42 for the elevated line"
+confidence = "medium"
+note = "traction only; station auxiliary power (about twice the traction) is outside the model"
+
+[modes.metro_urban_train.lifetime_years]
+value = 30
+evidence = "model_input"
+geography = "India"
+source = "Aryan et al. 2025b; Ghate & Qamar 2020, Table 3 (rolling stock)"
+confidence = "high"
+
+[modes.metro_urban_train.annual_km]
+value = 107000
+evidence = "derived"
+geography = "Mumbai Metro Lines 2A/7"
+source = "Aryan et al. 2025b: 266 services/day on 16.5 km over 15 six-coach trains"
+confidence = "low"

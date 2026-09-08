@@ -2,6 +2,7 @@
 
 import textwrap
 
+import pandas as pd
 import pytest
 
 import cafein.lca
@@ -24,6 +25,12 @@ TOML = textwrap.dedent("""
 
     [modes.bus_bev]
     occupancy = 40
+
+    [modes.bus_bev.lifetime_years]
+    value = 10
+    evidence = "assumption"
+    source = {best = "a", central = "b", worst = "c"}
+    confidence = "low"
     """)
 
 
@@ -50,6 +57,14 @@ def test_load_resolves_cases_patterns_and_precedence(
     bus = s.parameters("bus_ice")
     assert (bus.occupancy, bus.lifetime_years) == (occupancy, 12)
     assert s.parameters("bus_bev").occupancy == 40  # exact slug wins over glob
+    assert s.parameters("bus_bev").lifetime_years == 10
+    prov = s.provenance().set_index(["mode", "parameter"])
+    assert (
+        prov.loc[("bus_bev", "lifetime_years"), "source"]
+        == "abc"[("best", "central", "worst").index(case)]
+    )
+    assert prov.loc[("bus_bev", "lifetime_years"), "evidence"] == "assumption"
+    assert pd.isna(prov.loc[("bus_ice", "occupancy"), "evidence"])
     assert s.parameters("bus_hev").lifetime_years == mode("bus_hev").lifetime_years
     assert s.parameters("private_car_ice") == mode("private_car_ice")
 
@@ -65,6 +80,17 @@ def test_load_resolves_cases_patterns_and_precedence(
         ("[modes.bus_ice]\noccupancy = 2", "typical", ValueError),
         ("modes = 3", "central", AttributeError),
         ("colour = 'red'", "central", ValueError),
+        (
+            "[modes.bus_ice.occupancy]\nvalue = 2\nevidence = 'guess'",
+            "central",
+            ValueError,
+        ),
+        (
+            "[modes.bus_ice.occupancy]\nvalue = 2\nconfidence = 'ok'",
+            "central",
+            ValueError,
+        ),
+        ("[modes.bus_ice.occupancy]\nvalue = 2\nbest = 3", "central", ValueError),
     ],
 )
 def test_load_rejects_invalid_scenarios(tmp_path, body, case, error):
@@ -91,7 +117,7 @@ def test_session_applies_scenario_before_keyword_overrides(toml_path):
     assert TransportLCA(power_mix="EU 28", scenario=scenario).power_mix == "EU 28"
 
 
-@pytest.mark.parametrize("name", ["india", "finland_2020"])
+@pytest.mark.parametrize("name", ["india_metropolitan", "finland_2020"])
 def test_packaged_scenarios_load_and_order_cases(name):
     results = {
         case: TransportLCA(scenario=Scenario.load(name, case=case)).summary()["total"]
@@ -103,8 +129,10 @@ def test_packaged_scenarios_load_and_order_cases(name):
 
 
 def test_list_and_locate_packaged_scenarios():
-    assert set(cafein.lca.list_scenarios()) == {"india", "finland_2020"}
+    assert set(cafein.lca.list_scenarios()) == {"india_metropolitan", "finland_2020"}
     finland = Scenario.load("finland_2020")
     assert finland.overrides == {} and finland.power_mix["nuclear"] > 0.3
+    india = Scenario.load("india_metropolitan").provenance()
+    assert india["evidence"].notna().all() and india["source"].notna().all()
     with pytest.raises(FileNotFoundError):
         Scenario.load("atlantis")
