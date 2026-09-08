@@ -19,6 +19,7 @@ extraction are documented in the
 
 tutorials/quickstart
 tutorials/custom-electricity-mix
+tutorials/scenarios
 ```
 
 ```{toctree}

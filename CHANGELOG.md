@@ -15,6 +15,9 @@ NEW
 - Scenario bundles: `Scenario.load()` reads a TOML file of per-mode
   parameter overrides plus an electricity mix, with `best`/`central`/`worst`
   cases, and `TransportLCA(scenario=...)` applies it to every mode.
+- Packaged scenarios `india` (Delhi/Mumbai operating conditions, sourced
+  per value) and `finland_2020` (electricity mix), listed by
+  `list_scenarios()`; tutorial page.
 - Results per pkm/vkm/vehicle decomposed into the five life-cycle
   components, as pandas objects; `TransportLCA.summary()` for all modes.
 

@@ -33,6 +33,7 @@ else:  # pragma: no cover
     import tomli as tomllib
 
 CASES = ("best", "central", "worst")
+PACKAGED_DIR = pathlib.Path(__file__).parent / "data" / "scenarios"
 _GLOB_CHARS = set("*?[")
 
 
@@ -90,10 +91,15 @@ class Scenario:
 
     @classmethod
     def load(cls, path, case="central"):
-        """Load a scenario TOML file for one of the three cases."""
+        """Load a scenario for one of the three cases.
+
+        ``path`` is a TOML file or the name of a packaged scenario (see
+        :func:`list_scenarios`).
+        """
         if case not in CASES:
             raise ValueError(f"case must be one of {', '.join(CASES)}, got {case!r}")
-        with open(pathlib.Path(path), "rb") as f:
+        path = _locate(path)
+        with open(path, "rb") as f:
             doc = tomllib.load(f)
         unknown = set(doc) - {"name", "description", "power_mix", "modes"}
         if unknown:
@@ -102,7 +108,7 @@ class Scenario:
         if isinstance(power_mix, dict) and set(power_mix) <= set(CASES):
             power_mix = _pick(power_mix, case, "power_mix")
         return cls(
-            name=doc.get("name", pathlib.Path(path).stem),
+            name=doc.get("name", path.stem),
             case=case,
             power_mix=power_mix,
             overrides=_resolve_modes(doc.get("modes", {}), case),
@@ -112,3 +118,25 @@ class Scenario:
     def parameters(self, slug):
         """Default parameters of a mode under this scenario."""
         return mode(slug).replace(**self.overrides.get(slug, {}))
+
+
+def _locate(path):
+    path = pathlib.Path(path)
+    if path.exists():
+        return path
+    packaged = PACKAGED_DIR / f"{path}.toml"
+    if path.parent == pathlib.Path(".") and packaged.exists():
+        return packaged
+    raise FileNotFoundError(
+        f"no scenario file '{path}'; packaged scenarios: "
+        f"{', '.join(sorted(list_scenarios()))}"
+    )
+
+
+def list_scenarios():
+    """Return {name: description} of the packaged scenarios."""
+    out = {}
+    for file in sorted(PACKAGED_DIR.glob("*.toml")):
+        with open(file, "rb") as f:
+            out[file.stem] = tomllib.load(f).get("description", "")
+    return out

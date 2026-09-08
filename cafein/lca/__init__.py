@@ -7,8 +7,15 @@ Mobility", International Transport Forum, Paris.
 
 from .lca import TransportLCA
 from .modes import list_modes, mode
-from .scenarios import Scenario
+from .scenarios import Scenario, list_scenarios
 
 __version__ = "0.1.0.dev0"
 
-__all__ = ["TransportLCA", "Scenario", "mode", "list_modes", "__version__"]
+__all__ = [
+    "TransportLCA",
+    "Scenario",
+    "list_scenarios",
+    "mode",
+    "list_modes",
+    "__version__",
+]

@@ -4,6 +4,7 @@ import textwrap
 
 import pytest
 
+import cafein.lca
 from cafein.lca import Scenario, TransportLCA, mode
 
 TOML = textwrap.dedent("""
@@ -88,3 +89,22 @@ def test_session_applies_scenario_before_keyword_overrides(toml_path):
     assert lca.calculate(mode("bus_ice")).parameters == mode("bus_ice")
     # an explicit power mix wins over the scenario's
     assert TransportLCA(power_mix="EU 28", scenario=scenario).power_mix == "EU 28"
+
+
+@pytest.mark.parametrize("name", ["india", "finland_2020"])
+def test_packaged_scenarios_load_and_order_cases(name):
+    results = {
+        case: TransportLCA(scenario=Scenario.load(name, case=case)).summary()["total"]
+        for case in ("best", "central", "worst")
+    }
+    # cases are named by their effect on emissions per pkm
+    assert (results["best"] <= results["central"] + 1e-9).all()
+    assert (results["central"] <= results["worst"] + 1e-9).all()
+
+
+def test_list_and_locate_packaged_scenarios():
+    assert set(cafein.lca.list_scenarios()) == {"india", "finland_2020"}
+    finland = Scenario.load("finland_2020")
+    assert finland.overrides == {} and finland.power_mix["nuclear"] > 0.3
+    with pytest.raises(FileNotFoundError):
+        Scenario.load("atlantis")

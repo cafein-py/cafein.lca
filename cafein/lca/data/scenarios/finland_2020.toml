@@ -1,0 +1,14 @@
+# Finland 2020 electricity generation mix; vehicle parameters unchanged.
+# The same mix reproduces the repository's Finland acceptance table
+# (tests/data/finland_2020_ghg_per_pkm.csv). The three cases are identical.
+
+name = "finland_2020"
+description = "Finland 2020 electricity generation mix, vehicle parameters unchanged"
+
+[power_mix]
+oil = 0.0038726960370381153
+natural_gas = 0.05389744635005678
+coal = 0.07991439303497073
+nuclear = 0.33909384736336373
+biomass = 0.16009084820778616
+other_renewables = 0.3631307690067845
