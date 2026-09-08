@@ -41,19 +41,19 @@ car = lca.calculate("private_car_bev")
 car
 ```
 
-The repr line already shows the two headline numbers: greenhouse-gas
-emissions in grams of CO₂-equivalent per passenger-kilometre, and energy
-use in megajoules per passenger-kilometre. Both are plain floats on the
+The repr line already shows both totals: greenhouse-gas emissions in
+grams of CO₂-equivalent per passenger-kilometre, and energy use in
+megajoules per passenger-kilometre. Both are plain floats on the
 result:
 
 ```{code-cell}
-headline = pd.Series(
+totals = pd.Series(
     {
         "g CO₂e per passenger-km": car.ghg_per_pkm,
         "MJ per passenger-km": car.energy_per_pkm_total,
     }
 )
-headline.round(2)
+totals.round(2)
 ```
 
 Every passenger-kilometre by this car costs about 125 g of CO₂e and
@@ -62,7 +62,7 @@ default assumptions.
 
 ## See what the result is made of
 
-The headline number is the sum of five life-cycle components. `per_pkm`
+The per-passenger-km total is the sum of five life-cycle components. `per_pkm`
 returns them as a pandas Series in g CO₂e per passenger-km:
 
 ```{code-cell}

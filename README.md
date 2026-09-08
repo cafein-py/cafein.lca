@@ -88,14 +88,10 @@ The documentation at https://cafein-lca.readthedocs.io covers:
 The Python code is MIT-licensed. The packaged datasets are extracted from the
 ITF workbook © OECD/ITF 2020, used and adapted with citation under the OECD
 terms and conditions; several coefficients within it derive from Argonne
-National Laboratory's [GREET](https://greet.anl.gov/) model. Cite the
+National Laboratory's [GREET](https://greet.anl.gov/) model. This is an
+adaptation of OECD/ITF work and is not endorsed by the OECD. Cite the
 original work when using the numbers:
 
 > Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
 > Performance of New Mobility*, International Transport Forum, Paris.
 > https://www.itf-oecd.org/good-go-assessing-environmental-performance-new-mobility
-
-This library is an adaptation of an original work by the OECD/ITF. The
-opinions expressed and arguments employed in this adaptation should not be
-reported as representing the official views of the OECD or of its Member
-countries.

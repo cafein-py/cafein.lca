@@ -113,7 +113,7 @@ higher than 1 / 0.73 because the empty kilometres carry nobody at all.
 
 Every view exists for energy use too, in megajoules. `energy_per_pkm` and
 `energy_per_vkm` mirror the emission properties, and
-`energy_per_pkm_total` is the headline energy figure:
+`energy_per_pkm_total` is the total energy figure:
 
 ```{code-cell}
 energy_and_ghg = pd.DataFrame(

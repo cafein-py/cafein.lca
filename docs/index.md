@@ -130,9 +130,6 @@ changelog
 ## Citation and data attribution
 
 The default coefficients originate in the International Transport Forum's
-*Good to Go?* study, which must be cited when its numbers are used; the
+*Good to Go?* study, which must be cited when its numbers are used. The
 [Citing](model/citing) page gives the citation, the software citation and
-the data licence. This library is an adaptation of an original work by
-the OECD/ITF; the opinions expressed and arguments employed in this
-adaptation should not be reported as representing the official views of
-the OECD or of its Member countries.
+the data licence.
