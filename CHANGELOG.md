@@ -12,6 +12,9 @@ NEW
 - Session-level electricity generation mix: packaged region presets from the
   workbook plus fully custom mixes; propagates to use phase, hydrogen
   electrolysis and shared-fleet servicing vehicles.
+- Scenario bundles: `Scenario.load()` reads a TOML file of per-mode
+  parameter overrides plus an electricity mix, with `best`/`central`/`worst`
+  cases, and `TransportLCA(scenario=...)` applies it to every mode.
 - Results per pkm/vkm/vehicle decomposed into the five life-cycle
   components, as pandas objects; `TransportLCA.summary()` for all modes.
 
