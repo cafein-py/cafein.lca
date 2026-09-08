@@ -10,7 +10,7 @@ dependencies:
   # documentation build
   - sphinx
   - myst-nb
-  - sphinx-book-theme
+  - sphinx-book-theme=1.2.0
   - sphinx-design
   - matplotlib
   - ipykernel
