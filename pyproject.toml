@@ -47,3 +47,6 @@ include = ["cafein_lca*"]
 
 [tool.setuptools.package-data]
 cafein_lca = ["data/*.csv"]
+
+[tool.black]
+target-version = ["py310"]

@@ -10,16 +10,31 @@ import pathlib
 
 DATA_DIR = pathlib.Path(__file__).parent / "data"
 
-POWER_SOURCES = ["oil", "natural_gas", "coal", "nuclear", "biomass",
-                 "other_renewables"]
+POWER_SOURCES = ["oil", "natural_gas", "coal", "nuclear", "biomass", "other_renewables"]
 MATERIALS = [
-    "steel", "stainless_steel", "cast_iron", "wrought_aluminum",
-    "cast_aluminum", "copper_brass", "glass", "plastics", "carbon_fiber",
-    "rubber", "others",
+    "steel",
+    "stainless_steel",
+    "cast_iron",
+    "wrought_aluminum",
+    "cast_aluminum",
+    "copper_brass",
+    "glass",
+    "plastics",
+    "carbon_fiber",
+    "rubber",
+    "others",
 ]
 DELIVERY_LEGS = [
-    "air", "ship", "train_a", "train_b", "heavy_truck_a", "heavy_truck_b",
-    "medium_truck_a", "medium_truck_b", "van_a", "van_b",
+    "air",
+    "ship",
+    "train_a",
+    "train_b",
+    "heavy_truck_a",
+    "heavy_truck_b",
+    "medium_truck_a",
+    "medium_truck_b",
+    "van_a",
+    "van_b",
 ]
 
 # 0_Total R12 / 1_Manufacturing helper row 37 region labels -> CSV suffix.
@@ -60,26 +75,28 @@ class _Conf:
 
     @functools.cached_property
     def fuel_wtt_energy(self):
-        return {r["fuel"]: _num(r["wtt_energy_factor"])
-                for r in _read("fuel_wtt_energy.csv")}
+        return {
+            r["fuel"]: _num(r["wtt_energy_factor"])
+            for r in _read("fuel_wtt_energy.csv")
+        }
 
     @functools.cached_property
     def fuel_ghg(self):
-        return {r["fuel"]: _num(r["ghg_wtw_g_per_l"])
-                for r in _read("fuel_ghg.csv")}
+        return {r["fuel"]: _num(r["ghg_wtw_g_per_l"]) for r in _read("fuel_ghg.csv")}
 
     @functools.cached_property
     def hydrogen_pathways(self):
         rows = _read("hydrogen_pathways.csv")
-        named = {r["pathway"]: (_num(r["wtt_energy_factor"]),
-                                _num(r["ghg_g_per_mj"])) for r in rows}
+        named = {
+            r["pathway"]: (_num(r["wtt_energy_factor"]), _num(r["ghg_g_per_mj"]))
+            for r in rows
+        }
         # Rows 2-7 of the workbook table are the per-power-source electrolysis
         # factors, in POWER_SOURCES order (3_Use R29/R33 SUMPRODUCT).
         per_source = rows[1:7]
         return {
             "named": named,
-            "electrolysis_energy": [_num(r["wtt_energy_factor"])
-                                    for r in per_source],
+            "electrolysis_energy": [_num(r["wtt_energy_factor"]) for r in per_source],
             "electrolysis_ghg": [_num(r["ghg_g_per_mj"]) for r in per_source],
         }
 
@@ -89,8 +106,7 @@ class _Conf:
 
     @functools.cached_property
     def assembly_disposal(self):
-        return {r["step"]: r for r in
-                _read("assembly_disposal_intensities.csv")}
+        return {r["step"]: r for r in _read("assembly_disposal_intensities.csv")}
 
     @functools.cached_property
     def battery_chemistries(self):
@@ -100,10 +116,10 @@ class _Conf:
     def delivery_legs(self):
         rows = {r["leg"]: r for r in _read("delivery_legs.csv")}
         return {
-            "energy_mj_per_tkm": [_num(rows[leg]["energy_mj_per_tkm"])
-                                  for leg in DELIVERY_LEGS],
-            "ghg_g_per_mj": [_num(rows[leg]["ghg_g_per_mj"])
-                             for leg in DELIVERY_LEGS],
+            "energy_mj_per_tkm": [
+                _num(rows[leg]["energy_mj_per_tkm"]) for leg in DELIVERY_LEGS
+            ],
+            "ghg_g_per_mj": [_num(rows[leg]["ghg_g_per_mj"]) for leg in DELIVERY_LEGS],
         }
 
     @functools.cached_property
@@ -123,13 +139,11 @@ class _Conf:
 
     @functools.cached_property
     def fuel_ghg_ttw(self):
-        return {r["fuel"]: _num(r["ghg_ttw_g_per_l"])
-                for r in _read("fuel_ghg.csv")}
+        return {r["fuel"]: _num(r["ghg_ttw_g_per_l"]) for r in _read("fuel_ghg.csv")}
 
     @functools.cached_property
     def infrastructure_types(self):
-        return {r["infrastructure"]: r
-                for r in _read("infrastructure_types.csv")}
+        return {r["infrastructure"]: r for r in _read("infrastructure_types.csv")}
 
     @functools.cached_property
     def constants(self):
@@ -143,15 +157,13 @@ class _Conf:
         R86-99)."""
         suffix = PRODUCTION_REGIONS[production_region]
         unit = "mj_per_kg" if metric == "energy" else "g_per_kg"
-        return _num(self.material_intensities[material]
-                    [f"{metric}_{unit}_{suffix}"])
+        return _num(self.material_intensities[material][f"{metric}_{unit}_{suffix}"])
 
     def assembly_disposal_intensity(self, step, production_region, metric):
         """Vehicle assembly/disposal intensity per kg (1_Mfg R55-56/R103-104)."""
         suffix = PRODUCTION_REGIONS[production_region]
         unit = "mj_per_kg" if metric == "energy" else "g_per_kg"
-        return _num(self.assembly_disposal[step]
-                    [f"{metric}_{unit}_{suffix}"])
+        return _num(self.assembly_disposal[step][f"{metric}_{unit}_{suffix}"])
 
 
 conf = _Conf()
