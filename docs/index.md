@@ -11,11 +11,14 @@ and infrastructure. Assumptions such as the electricity mix, vehicle
 lifetime, mileage and occupancy are explicit parameters, so a result can
 be recomputed for a city, a fleet or a policy case.
 
-The calculation model and its default coefficients are adapted from the
-life-cycle assessment model published by the International Transport Forum
-with Cazzola & Crist (2020). The library reproduces that model's own
-results to within a relative tolerance of 1e-9, and every coefficient it
-ships can be traced to the source.
+The calculation is a standard attributional life-cycle assessment: the
+burdens of producing, delivering, running, servicing and providing
+infrastructure for a vehicle, spread over its lifetime kilometres and the
+passengers it carries. The library ships a default coefficient set whose
+values are traceable to their source, and whose computed results the
+test suite holds to that source across 128 mode columns, with the
+documented exceptions listed in the workbook audit. Regional scenarios replace selected assumptions with sourced local
+values while the remaining defaults stay in force.
 
 ::::{grid} 1 2 2 2
 :gutter: 3
@@ -56,26 +59,28 @@ Every public class and function, generated from the package.
 ## How the pieces fit
 
 ```text
-ITF "Good to go?" workbook          the published model and its coefficients
-        │
-        ▼
-packaged coefficients  ◄──── golden tests: every packaged number is held
-(cafein/lca/data/)              to the workbook's own computed results
+default coefficient set             extracted from its source workbook
+(cafein/lca/data/)     ◄──── golden tests: computed results match the
+        │                       source's own, 128 columns, exceptions audited
         │
         ▼
 TransportLCA(...)                   session assumptions: electricity mix, scenario
         │
         ▼
-per vehicle → per vehicle-km → per passenger-km, in five components
+manufacturing, delivery, use, services per vehicle
+        │  ÷ lifetime km, + infrastructure per vehicle-km
+        ▼
+five components per vehicle-km  →  ÷ effective occupancy  →  per passenger-km
+                                   (occupancy reduced by empty kilometres)
         │
         ▼
 emission factors for cafein         journeys and matrices with CO₂e per leg
 ```
 
-The `cafein` routing library's shipped emission factors were derived
-from this model with the Finland 2020 electricity mix. A guide on
-exporting your own factors to `cafein`, and the regeneration of those
-defaults directly from this package, are planned for a later release.
+The `cafein` routing library's current Finland 2020 emission factors are
+based on results reported by the source study. A guide on exporting your
+own factors to `cafein`, and the regeneration of those defaults directly
+from this package, are planned for a later release.
 
 ```{toctree}
 :hidden:
@@ -124,15 +129,12 @@ reference
 changelog
 ```
 
-## Citation
+## Citation and data attribution
 
-Cite the underlying model when using the numbers:
-
-> Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
-> Performance of New Mobility*, International Transport Forum, Paris.
-
-This library is an adaptation of an original work by the OECD/ITF. The
-opinions expressed and arguments employed in this adaptation should not be
-reported as representing the official views of the OECD or of its Member
-countries. See [Citing](model/citing) for the software citation and the
-data licence.
+The default coefficients originate in the International Transport Forum's
+*Good to Go?* study, which must be cited when its numbers are used; the
+[Citing](model/citing) page gives the citation, the software citation and
+the data licence. This library is an adaptation of an original work by
+the OECD/ITF; the opinions expressed and arguments employed in this
+adaptation should not be reported as representing the official views of
+the OECD or of its Member countries.
