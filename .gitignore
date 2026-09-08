@@ -10,3 +10,7 @@ docs/generated/
 
 CLAUDE.md
 .DS_Store
+# local working files
+life-cycle-assessment-calculations-2020*.xlsx
+environmental-performance-new-mobility.pdf
+scripts/extract_workbook.py
