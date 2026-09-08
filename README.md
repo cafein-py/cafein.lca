@@ -2,122 +2,74 @@
 
 **Life-cycle assessment of urban passenger transport in Python.**
 
-`cafein.lca` computes life-cycle energy use and greenhouse-gas emissions of
-urban transport modes per passenger-km, vehicle-km and vehicle, decomposed
-into five components: vehicle and battery manufacturing, vehicle delivery,
-vehicle use (including fuel and electricity production), operational services
-of shared fleets, and infrastructure. Given a mode and optional overrides of
-any scenario input — electricity mix, vehicle lifetime, mileage, occupancy,
-battery size, servicing logistics — it returns the results as pandas objects.
+`cafein.lca` computes life-cycle energy use and greenhouse-gas emissions
+of urban transport modes per passenger-km, vehicle-km and vehicle,
+decomposed into vehicle and battery manufacturing, delivery, use, the
+servicing of shared fleets, and infrastructure. It covers 56 modes, from
+private e-scooters to metro trains. The main assumptions behind a result
+are named parameters (electricity mix, vehicle lifetime, mileage,
+occupancy, battery size, servicing logistics), while the per-mode
+technical data and the shared coefficient tables ship as packaged data.
 
 The calculation model and its default coefficients are adapted from the
 life-cycle assessment model published by the International Transport Forum
 with Cazzola & Crist (2020), *Good to Go? Assessing the Environmental
-Performance of New Mobility*. `cafein.lca` is an independent reimplementation
-of that model, not an ITF or OECD product; see the attribution note at the
-end.
+Performance of New Mobility*. `cafein.lca` is an independent
+reimplementation of that model, not an ITF or OECD product; its test suite
+holds every packaged coefficient to the source model's own results within
+a relative tolerance of 1e-9.
 
-`cafein.lca` is part of the [cafein](https://github.com/cafein-py) family of
-packages. It installs and runs on its own and does not require the `cafein`
-core package.
-
-> **Validation.** The engine is tested against the values computed by the
-> source workbook: for all 128 reproducible mode columns (56 modes plus their
-> sensitivity variants) every result agrees within a relative tolerance of
-> 1e-9. Quirks of the source model found during extraction are documented in
-> [docs/workbook-audit.md](docs/workbook-audit.md).
-
-## Modes covered
-
-Private and shared e-scooters (first and new generation), bikes and e-bikes,
-mopeds (ICE/BEV), private cars and large cars (ICE, HEV, PHEV, BEV, FCEV),
-taxis, ridesourcing cars, shared vans and minibuses, urban buses
-(ICE/HEV/BEV/FCEV) and metro/urban rail — 56 modes in total.
+`cafein.lca` is part of the [cafein](https://github.com/cafein-py) family
+of packages. It installs and runs on its own and does not require the
+`cafein` core package.
 
 ## Installation
 
+Until the first release is on PyPI, install from the repository:
+
 ```
-pip install cafein.lca
+pip install git+https://github.com/cafein-py/cafein.lca.git
 ```
 
-(Not yet on PyPI; install from source with `pip install .` until 0.1.0 is
-released.)
+Once 0.1.0 is released, `pip install cafein.lca` will do the same.
 
-## Quickstart
+## Example
+
+A session holds the electricity mix, and a calculation returns the
+result for one mode. This computes the life-cycle emissions of a
+battery-electric car on the EU 28 grid, in g CO₂e per passenger-km:
 
 ```python
-import cafein.lca
 from cafein.lca import TransportLCA
 
-lca = TransportLCA()                      # packaged global defaults
-result = lca.calculate("private_car_bev")
-
-result.ghg_per_pkm        # 125.4 g CO2-eq per passenger-km
-result.per_pkm            # GHG by life-cycle component (pandas Series)
-result.energy_per_vkm     # energy by component, per vehicle-km
-result.to_frame()         # everything: component x (metric, per)
-
-cafein.lca.list_modes()   # all 56 mode slugs with full names
+lca = TransportLCA(power_mix="EU 28")
+car = lca.calculate("private_car_bev")
+round(car.ghg_per_pkm, 1)
 ```
 
-Scenario analysis works through typed, immutable parameter objects (every
-field mirrors a user input of the source model), or directly as keyword
-overrides:
+The result splits into five life-cycle components, every assumption can
+be overridden per calculation, and `summary()` gives one row per mode;
+the guides below show each of these.
 
-```python
-scooter = cafein.lca.mode("shared_escooter_first_gen")
-scooter = scooter.replace(lifetime_years=2.0, battery_capacity_kwh=0.25)
-lca.calculate(scooter)
+Regional operating conditions come as scenario files with best, central
+and worst cases, each value tagged with its evidence and source; an
+Indian metropolitan scenario is packaged.
 
-# equivalent sugar:
-lca.calculate("shared_escooter_first_gen", lifetime_years=2.0,
-              battery_capacity_kwh=0.25)
+## Documentation
 
-# sensitivity sweeps fall out naturally:
-[lca.calculate(scooter.replace(lifetime_years=y)).ghg_per_pkm
- for y in (0.5, 1.0, 2.0, 3.0)]
-```
+The documentation at https://cafein-lca.readthedocs.io covers:
 
-The electricity generation mix is a session-level assumption: pass a packaged
-region preset or a fully custom mix. Modes that pin an explicit region keep
-it; everything else follows the session mix — including the servicing
-vehicles of shared fleets.
-
-```python
-lca = TransportLCA(power_mix="EU 28")     # packaged preset
-
-lca = TransportLCA(power_mix={            # custom: Finland 2020
-    "oil": 0.004, "natural_gas": 0.054, "coal": 0.080,
-    "nuclear": 0.339, "biomass": 0.160, "other_renewables": 0.363,
-})
-lca.calculate("private_car_bev").ghg_per_pkm   # 70.3 g CO2-eq/pkm
-
-lca.summary()                             # all modes x components, one frame
-```
-
-Regional operating conditions come as *scenarios*: per-mode parameter
-overrides plus an electricity mix in a TOML file, each with `best`,
-`central` and `worst` cases named by their effect on emissions per pkm,
-and every value carries its evidence type, geography and source. Two are
-packaged.
-
-```python
-from cafein.lca import Scenario
-
-lca = TransportLCA(scenario=Scenario.load("india_metropolitan", case="central"))
-lca.calculate("bus_ice").ghg_per_pkm
-lca.scenario.provenance()             # value, evidence, geography, source
-cafein.lca.list_scenarios()
-```
-
-## Provenance of the coefficients
-
-The packaged datasets under `cafein/lca/data/` and the golden fixtures under
-`tests/data/` were extracted from the source workbook and are the library's
-source of truth. The golden-master suite pins every packaged number to the
-workbook's own computed results, and an acceptance test reproduces a
-GHG-per-pkm table produced from the workbook with the Finland 2020
-electricity mix.
+- [Getting started](https://cafein-lca.readthedocs.io/en/latest/getting_started/installation.html):
+  installation and a ten-minute quickstart.
+- [User guide](https://cafein-lca.readthedocs.io/en/latest/user_guide/reading_results.html):
+  reading results, modes and parameters, the electricity mix, sensitivity
+  analysis.
+- [Scenarios](https://cafein-lca.readthedocs.io/en/latest/scenarios/scenarios.html):
+  reusable, evidence-tagged assumption bundles.
+- [The model](https://cafein-lca.readthedocs.io/en/latest/model/model.html):
+  scope, stages, normalisation, provenance of the coefficients, and the
+  [audit](docs/model/workbook_audit.md) of the source model.
+- [API reference](https://cafein-lca.readthedocs.io/en/latest/reference.html).
 
 ## Related tools
 

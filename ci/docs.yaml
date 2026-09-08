@@ -12,5 +12,6 @@ dependencies:
   - myst-nb
   - sphinx-book-theme
   - sphinx-design
+  - matplotlib
   - ipykernel
   - pip

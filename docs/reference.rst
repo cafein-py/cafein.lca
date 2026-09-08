@@ -1,34 +1,45 @@
 API reference
 =============
 
-Calculating a mode
-------------------
+Session
+-------
+
+A ``TransportLCA`` holds the session assumptions and runs calculations.
 
 .. autosummary::
    :toctree: generated/
 
    cafein.lca.TransportLCA
    cafein.lca.TransportLCA.calculate
-   cafein.lca.results.Result
+   cafein.lca.TransportLCA.summary
+   cafein.lca.TransportLCA.parameters
 
-Customizing assumptions
------------------------
-
-.. autosummary::
-   :toctree: generated/
-
-   cafein.lca.mode
-   cafein.lca.parameters.ModeParameters
-   cafein.lca.parameters.ModeParameters.replace
-
-Batch summaries and discovery
------------------------------
+Modes and parameters
+--------------------
 
 .. autosummary::
    :toctree: generated/
 
    cafein.lca.list_modes
-   cafein.lca.TransportLCA.summary
+   cafein.lca.mode
+   cafein.lca.parameters.ModeParameters
+   cafein.lca.parameters.ModeParameters.replace
+   cafein.lca.parameters.ModeParameters.lifetime_km
+
+Results
+-------
+
+.. autosummary::
+   :toctree: generated/
+
+   cafein.lca.results.Result
+   cafein.lca.results.Result.per_pkm
+   cafein.lca.results.Result.per_vkm
+   cafein.lca.results.Result.energy_per_pkm
+   cafein.lca.results.Result.energy_per_vkm
+   cafein.lca.results.Result.ghg_per_pkm
+   cafein.lca.results.Result.energy_per_pkm_total
+   cafein.lca.results.Result.to_frame
 
 Scenarios
 ---------
@@ -36,8 +47,8 @@ Scenarios
 .. autosummary::
    :toctree: generated/
 
+   cafein.lca.list_scenarios
    cafein.lca.Scenario
    cafein.lca.Scenario.load
    cafein.lca.Scenario.parameters
-   cafein.lca.list_scenarios
-   cafein.lca.TransportLCA.parameters
+   cafein.lca.Scenario.provenance

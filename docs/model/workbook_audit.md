@@ -45,7 +45,7 @@ the workbook's own cached values.
    (relative difference ≈ 9e-4 on the infrastructure component only).
    Canonical modes are unaffected.
 
-## Variant-fixture subtleties (handled at M3, not engine issues)
+## Variant-fixture subtleties (handled in the golden fixtures, not engine issues)
 
 5. **Ridesourcing BEV occupancy variants BL, BM, BN.** Their
    `4_Operational_Services` rows reference the *ICE* central-case column
