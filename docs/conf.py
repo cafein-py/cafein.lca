@@ -25,6 +25,9 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/docs", None),
 }
 
+myst_enable_extensions = ["colon_fence"]
+myst_heading_anchors = 3
+
 nb_execution_mode = "auto"
 nb_execution_timeout = 120
 
@@ -35,4 +38,4 @@ html_theme_options = {
     "use_repository_button": True,
 }
 
-exclude_patterns = ["_build", "workbook-audit.md"]
+exclude_patterns = ["_build"]
