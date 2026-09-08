@@ -1,6 +1,6 @@
 """Packaged assumption datasets (the environment layer of the model).
 
-Loads the CSVs under ``cafein_lca/data/`` (extracted from the ITF workbook by
+Loads the CSVs under ``cafein/lca/data/`` (extracted from the ITF workbook by
 ``scripts/extract_workbook.py``) into plain dictionaries, lazily and once.
 """
 

@@ -203,7 +203,7 @@ def mode(slug):
     """Return the default :class:`ModeParameters` for a canonical mode."""
     if slug not in CANONICAL_MODES:
         raise KeyError(
-            f"unknown mode '{slug}'. See cafein_lca.list_modes() for the "
+            f"unknown mode '{slug}'. See cafein.lca.list_modes() for the "
             "available modes."
         )
     return _registry()[CANONICAL_MODES[slug]][0]

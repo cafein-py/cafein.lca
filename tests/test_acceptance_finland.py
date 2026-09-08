@@ -11,7 +11,7 @@ import pathlib
 
 import pytest
 
-from cafein_lca import TransportLCA
+from cafein.lca import TransportLCA
 
 CSV = pathlib.Path(__file__).parent / "data" / "finland_2020_ghg_per_pkm.csv"
 

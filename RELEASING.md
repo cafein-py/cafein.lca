@@ -2,7 +2,7 @@
 
 1. Update `CHANGELOG.md`: move the unreleased items under the new version
    heading with the release date.
-2. Set the version in `pyproject.toml` and `cafein_lca/__init__.py`
+2. Set the version in `pyproject.toml` and `cafein/lca/__init__.py`
    (`__version__`) — they must match the tag.
 3. Commit, push, and wait for CI to go green on the full matrix.
 4. Dry run: trigger the *Release* workflow manually (`workflow_dispatch`) —

@@ -64,8 +64,8 @@ class TransportLCA:
     def calculate(self, mode, **overrides):
         """Calculate life-cycle energy and GHG for a mode.
 
-        ``mode`` is a mode slug (see :func:`cafein_lca.list_modes`) or a
-        :class:`~cafein_lca.parameters.ModeParameters` object; keyword
+        ``mode`` is a mode slug (see :func:`cafein.lca.list_modes`) or a
+        :class:`~cafein.lca.parameters.ModeParameters` object; keyword
         overrides are applied with ``.replace()``.
         """
         if isinstance(mode, str):

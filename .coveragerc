@@ -1,6 +1,6 @@
 [run]
 branch = true
-source = cafein_lca
+source = cafein.lca
 
 [report]
 show_missing = true

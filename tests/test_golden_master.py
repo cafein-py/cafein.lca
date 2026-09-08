@@ -15,9 +15,9 @@ import pathlib
 
 import pytest
 
-import cafein_lca
-from cafein_lca.modes import CANONICAL_MODES, _mode_by_column, mode
-from cafein_lca.results import COMPONENTS
+import cafein.lca
+from cafein.lca.modes import CANONICAL_MODES, _mode_by_column, mode
+from cafein.lca.results import COMPONENTS
 
 DATA = pathlib.Path(__file__).parent / "data"
 RTOL = 1e-9
@@ -62,7 +62,7 @@ VARIANTS = _variants()
 
 @pytest.fixture(scope="module")
 def lca():
-    return cafein_lca.TransportLCA()
+    return cafein.lca.TransportLCA()
 
 
 def _params_for_variant(variant):

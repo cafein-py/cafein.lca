@@ -21,7 +21,7 @@ jobs:
         if: github.event_name == 'push'
         run: |
           pip install .
-          PKG=$(python -c "import cafein_lca; print(cafein_lca.__version__)")
+          PKG=$(python -c "import cafein.lca; print(cafein.lca.__version__)")
           TAG=${GITHUB_REF_NAME#v}
           test "$PKG" = "$TAG" || { echo "version $PKG != tag $TAG"; exit 1; }
       - run: pip install build && python -m build

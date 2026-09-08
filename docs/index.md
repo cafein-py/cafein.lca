@@ -1,16 +1,17 @@
-# cafein-lca
+# cafein.lca
 
-The ITF "Good to go?" urban transport life-cycle assessment model
-(Cazzola & Crist 2020) as a Python library: life-cycle energy use and
-greenhouse-gas emissions per passenger-km, vehicle-km and vehicle for 56
-urban transport modes, decomposed into manufacturing, delivery, use,
-operational services and infrastructure.
+Life-cycle assessment of urban passenger transport in Python: life-cycle
+energy use and greenhouse-gas emissions per passenger-km, vehicle-km and
+vehicle for 56 urban transport modes, decomposed into manufacturing,
+delivery, use, operational services and infrastructure.
 
-The engine reproduces the published ITF workbook exactly — every value of
-all reproducible workbook columns matches within a relative tolerance of
-1e-9, enforced by the golden-master test suite. Workbook quirks found during
+The calculation model and its default coefficients are adapted from the
+life-cycle assessment model published by the International Transport Forum
+with Cazzola & Crist (2020). The engine is tested against the values computed
+by the source workbook: every result of all reproducible mode columns agrees
+within a relative tolerance of 1e-9. Quirks of the source model found during
 extraction are documented in the
-[workbook audit](https://github.com/htenkanen/cafein-lca/blob/main/docs/workbook-audit.md).
+[workbook audit](https://github.com/cafein-py/cafein.lca/blob/main/docs/workbook-audit.md).
 
 ```{toctree}
 :maxdepth: 1
@@ -33,3 +34,8 @@ Cite the underlying model when using the numbers:
 
 > Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
 > Performance of New Mobility*, International Transport Forum, Paris.
+
+This library is an adaptation of an original work by the OECD/ITF. The
+opinions expressed and arguments employed in this adaptation should not be
+reported as representing the official views of the OECD or of its Member
+countries.

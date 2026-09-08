@@ -1,5 +1,0 @@
-graft cafein_lca/data
-include LICENSE CITATION.cff CHANGELOG.md
-prune docs
-prune tests
-prune ci

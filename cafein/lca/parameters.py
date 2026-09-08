@@ -1,7 +1,7 @@
 """Typed mode-parameter objects (the scenario-input layer of the model).
 
 Every field mirrors a shaded user-input cell of the workbook's ``0_Total``
-sheet; defaults come from the mode registry (``cafein_lca.modes``). Instances
+sheet; defaults come from the mode registry (``cafein.lca.modes``). Instances
 are immutable — derive scenario variants with :meth:`ModeParameters.replace`.
 """
 

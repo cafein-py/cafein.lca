@@ -1,15 +1,15 @@
 cff-version: 1.2.0
 message: >-
   If you use this software, please cite both the software and the underlying
-  ITF model (Cazzola & Crist 2020).
+  model (Cazzola & Crist 2020).
 type: software
-title: "cafein-lca: the ITF 'Good to go?' urban transport LCA model in Python"
+title: "cafein.lca: Life-cycle assessment of urban passenger transport in Python"
 authors:
   - family-names: Tenkanen
     given-names: Henrikki
     affiliation: Aalto University
 license: MIT
-repository-code: "https://github.com/htenkanen/cafein-lca"
+repository-code: "https://github.com/cafein-py/cafein.lca"
 keywords:
   - life-cycle assessment
   - transport

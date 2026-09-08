@@ -7,7 +7,7 @@ NEW
 - Initial release: the ITF "Good to go?" (Cazzola & Crist 2020) urban
   transport LCA model as a Python library.
 - 56 transport modes with typed, immutable scenario parameters
-  (`cafein_lca.mode()` + `.replace()`, or keyword overrides on
+  (`cafein.lca.mode()` + `.replace()`, or keyword overrides on
   `TransportLCA.calculate()`).
 - Session-level electricity generation mix: packaged region presets from the
   workbook plus fully custom mixes; propagates to use phase, hydrogen

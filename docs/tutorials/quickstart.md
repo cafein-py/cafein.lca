@@ -10,13 +10,14 @@ kernelspec:
 
 # Quickstart
 
-`cafein-lca` computes life-cycle energy use and greenhouse-gas emissions for
-urban transport modes, using the ITF "Good to go?" model. A calculation
-session is a {class}`~cafein_lca.TransportLCA` object; with no arguments it
-uses the ITF 2020 global defaults.
+`cafein.lca` computes life-cycle energy use and greenhouse-gas emissions for
+urban transport modes, using a model adapted from the ITF "Good to go?"
+report (Cazzola & Crist 2020). A calculation session is a
+{class}`~cafein.lca.TransportLCA` object; with no arguments it uses the
+packaged global defaults.
 
 ```{code-cell}
-from cafein_lca import TransportLCA
+from cafein.lca import TransportLCA
 
 lca = TransportLCA()
 result = lca.calculate("private_car_bev")
@@ -37,9 +38,9 @@ result.to_frame()
 ## Discovering modes
 
 ```{code-cell}
-import cafein_lca
+import cafein.lca
 
-list(cafein_lca.list_modes())[:10]
+list(cafein.lca.list_modes())[:10]
 ```
 
 ## Changing scenario inputs
@@ -49,7 +50,7 @@ mode's defaults, derive variants with `.replace()` — or pass keyword
 overrides directly to `calculate()`:
 
 ```{code-cell}
-scooter = cafein_lca.mode("shared_escooter_first_gen")
+scooter = cafein.lca.mode("shared_escooter_first_gen")
 scooter
 ```
 

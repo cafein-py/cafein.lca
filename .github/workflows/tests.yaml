@@ -18,16 +18,21 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install black flake8
-      - run: black --check cafein_lca tests
-      - run: flake8 cafein_lca tests
+      - run: black --check cafein tests
+      - run: flake8 cafein tests
 
   tests:
     needs: lint
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: macos-latest
+            python-version: "3.10"
+          - os: macos-latest
+            python-version: "3.14"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +45,7 @@ jobs:
         run: pip install --no-deps -e .
       - name: Run tests
         shell: bash -el {0}
-        run: pytest tests/ -v --cov=cafein_lca --cov-report=xml
+        run: pytest tests/ -v --cov=cafein.lca --cov-report=xml
       - uses: codecov/codecov-action@v4
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         with:
