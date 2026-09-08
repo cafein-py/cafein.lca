@@ -1,6 +1,6 @@
 """Consolidated regression tests. One test per fixed bug; add new ones here."""
 
-from cafein_lca.config import conf
+from cafein.lca.config import conf
 
 
 def test_battery_reference_scalar_extracted():

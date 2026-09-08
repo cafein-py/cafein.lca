@@ -1,11 +1,11 @@
-"""Sphinx configuration for cafein-lca."""
+"""Sphinx configuration for cafein.lca."""
 
-import cafein_lca
+import cafein.lca
 
-project = "cafein-lca"
+project = "cafein.lca"
 author = "Henrikki Tenkanen"
 copyright = "2026, Henrikki Tenkanen"
-version = release = cafein_lca.__version__
+version = release = cafein.lca.__version__
 
 extensions = [
     "myst_nb",
@@ -29,9 +29,9 @@ nb_execution_mode = "auto"
 nb_execution_timeout = 120
 
 html_theme = "sphinx_book_theme"
-html_title = "cafein-lca"
+html_title = "cafein.lca"
 html_theme_options = {
-    "repository_url": "https://github.com/htenkanen/cafein-lca",
+    "repository_url": "https://github.com/cafein-py/cafein.lca",
     "use_repository_button": True,
 }
 

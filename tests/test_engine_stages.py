@@ -6,9 +6,9 @@ the corresponding stage-sheet output cells in the pristine workbook.
 
 import pytest
 
-from cafein_lca.engine import delivery, infrastructure, manufacturing, services, use
-from cafein_lca.lca import TransportLCA
-from cafein_lca.modes import mode, _data_for
+from cafein.lca.engine import delivery, infrastructure, manufacturing, services, use
+from cafein.lca.lca import TransportLCA
+from cafein.lca.modes import mode, _data_for
 
 
 def _approx(value):
@@ -65,7 +65,7 @@ def test_services_shared_escooter():
 def test_service_vehicle_intensities_match_workbook():
     # Dynamic computation with the World mix must reproduce the workbook's
     # cached helper-table intensities (4_Op rows 12/15) for every type.
-    from cafein_lca.config import conf
+    from cafein.lca.config import conf
 
     world = conf.power_mix_catalog["World"]
     for vehicle, row in conf.service_vehicles.items():

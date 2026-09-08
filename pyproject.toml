@@ -1,18 +1,18 @@
 [build-system]
-requires = ["setuptools>=64"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "cafein-lca"
+name = "cafein.lca"
 version = "0.1.0.dev0"
-description = "The ITF 'Good to go?' urban transport life-cycle assessment model in Python"
+description = "Life-cycle assessment of urban passenger transport in Python"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Henrikki Tenkanen", email = "henrikki.tenkanen@aalto.fi" }]
 keywords = [
-    "life-cycle assessment", "LCA", "transport", "mobility", "micromobility",
-    "ridesourcing", "shared mobility", "GHG emissions", "ITF",
+    "cafein", "life-cycle assessment", "LCA", "transport", "mobility",
+    "micromobility", "ridesourcing", "shared mobility", "GHG emissions",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -33,20 +33,23 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/htenkanen/cafein-lca"
+Homepage = "https://github.com/cafein-py/cafein.lca"
 Documentation = "https://cafein-lca.readthedocs.io"
-Repository = "https://github.com/htenkanen/cafein-lca"
-Changelog = "https://github.com/htenkanen/cafein-lca/blob/main/CHANGELOG.md"
+Repository = "https://github.com/cafein-py/cafein.lca"
+"Issue Tracker" = "https://github.com/cafein-py/cafein.lca/issues"
+Changelog = "https://github.com/cafein-py/cafein.lca/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "black", "flake8"]
 docs = ["sphinx", "myst-nb", "sphinx-book-theme", "sphinx-design"]
 
-[tool.setuptools.packages.find]
-include = ["cafein_lca*"]
+[tool.hatch.build.targets.wheel]
+# The wheel ships the cafein/lca/ subtree only; cafein/__init__.py belongs to
+# the cafein wheel, so the two never collide in site-packages.
+packages = ["cafein"]
 
-[tool.setuptools.package-data]
-cafein_lca = ["data/*.csv"]
+[tool.hatch.build.targets.sdist]
+exclude = ["docs", "tests", "ci", ".github", ".pre-commit-config.yaml", ".readthedocs.yml"]
 
 [tool.black]
 target-version = ["py310"]

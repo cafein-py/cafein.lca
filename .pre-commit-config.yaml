@@ -3,12 +3,12 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        files: ^(cafein_lca|tests)/
+        files: ^(cafein|tests)/
   - repo: https://github.com/pycqa/flake8
     rev: 7.1.1
     hooks:
       - id: flake8
-        files: ^(cafein_lca|tests)/
+        files: ^(cafein|tests)/
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.21.2
     hooks:

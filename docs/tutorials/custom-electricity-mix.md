@@ -15,7 +15,7 @@ presets are the regions of the workbook's `Power_Gen_Mix` sheet; any custom
 mix is a mapping of the six generation sources to shares summing to 1.
 
 ```{code-cell}
-from cafein_lca import TransportLCA
+from cafein.lca import TransportLCA
 
 finland_2020 = {
     "oil": 0.004, "natural_gas": 0.054, "coal": 0.080,

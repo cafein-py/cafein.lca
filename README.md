@@ -1,24 +1,30 @@
-# cafein-lca
+# cafein.lca
 
-**The ITF "Good to go?" urban transport life-cycle assessment model, as a
-Python library.**
+**Life-cycle assessment of urban passenger transport in Python.**
 
-`cafein-lca` is a programmatic, tested reimplementation of the life-cycle
-assessment workbook published by the International Transport Forum with
-Cazzola & Crist (2020), *"Good to Go? Assessing the Environmental Performance
-of New Mobility"*. Given a transport mode and optional overrides of any
-scenario input — electricity mix, vehicle lifetime, mileage, occupancy,
-battery size, servicing logistics — it returns life-cycle energy use and
-greenhouse-gas emissions per passenger-km, vehicle-km and vehicle, decomposed
+`cafein.lca` computes life-cycle energy use and greenhouse-gas emissions of
+urban transport modes per passenger-km, vehicle-km and vehicle, decomposed
 into five components: vehicle and battery manufacturing, vehicle delivery,
-vehicle use (including fuel/electricity production), operational services of
-shared fleets, and infrastructure.
+vehicle use (including fuel and electricity production), operational services
+of shared fleets, and infrastructure. Given a mode and optional overrides of
+any scenario input — electricity mix, vehicle lifetime, mileage, occupancy,
+battery size, servicing logistics — it returns the results as pandas objects.
 
-> **Validation.** The engine reproduces the published ITF workbook exactly:
-> every result of all 128 reproducible workbook columns (56 modes plus their
-> sensitivity variants) matches the workbook's own computed values within a
-> relative tolerance of 1e-9, enforced by the golden-master test suite. The
-> few workbook quirks found during extraction are documented in
+The calculation model and its default coefficients are adapted from the
+life-cycle assessment model published by the International Transport Forum
+with Cazzola & Crist (2020), *Good to Go? Assessing the Environmental
+Performance of New Mobility*. `cafein.lca` is an independent reimplementation
+of that model, not an ITF or OECD product; see the attribution note at the
+end.
+
+`cafein.lca` is part of the [cafein](https://github.com/cafein-py) family of
+packages. It installs and runs on its own and does not require the `cafein`
+core package.
+
+> **Validation.** The engine is tested against the values computed by the
+> source workbook: for all 128 reproducible mode columns (56 modes plus their
+> sensitivity variants) every result agrees within a relative tolerance of
+> 1e-9. Quirks of the source model found during extraction are documented in
 > [docs/workbook-audit.md](docs/workbook-audit.md).
 
 ## Modes covered
@@ -31,7 +37,7 @@ taxis, ridesourcing cars, shared vans and minibuses, urban buses
 ## Installation
 
 ```
-pip install cafein-lca
+pip install cafein.lca
 ```
 
 (Not yet on PyPI; install from source with `pip install .` until 0.1.0 is
@@ -40,10 +46,10 @@ released.)
 ## Quickstart
 
 ```python
-import cafein_lca
-from cafein_lca import TransportLCA
+import cafein.lca
+from cafein.lca import TransportLCA
 
-lca = TransportLCA()                      # ITF 2020 global defaults
+lca = TransportLCA()                      # packaged global defaults
 result = lca.calculate("private_car_bev")
 
 result.ghg_per_pkm        # 125.4 g CO2-eq per passenger-km
@@ -51,15 +57,15 @@ result.per_pkm            # GHG by life-cycle component (pandas Series)
 result.energy_per_vkm     # energy by component, per vehicle-km
 result.to_frame()         # everything: component x (metric, per)
 
-cafein_lca.list_modes()   # all 56 mode slugs with full names
+cafein.lca.list_modes()   # all 56 mode slugs with full names
 ```
 
 Scenario analysis works through typed, immutable parameter objects (every
-field mirrors a user-input cell of the workbook), or directly as keyword
+field mirrors a user input of the source model), or directly as keyword
 overrides:
 
 ```python
-scooter = cafein_lca.mode("shared_escooter_first_gen")
+scooter = cafein.lca.mode("shared_escooter_first_gen")
 scooter = scooter.replace(lifetime_years=2.0, battery_capacity_kwh=0.25)
 lca.calculate(scooter)
 
@@ -73,9 +79,9 @@ lca.calculate("shared_escooter_first_gen", lifetime_years=2.0,
 ```
 
 The electricity generation mix is a session-level assumption: pass a packaged
-region preset or a fully custom mix. Modes that pin an explicit region (as
-some workbook sensitivity cases do) keep it; everything else follows the
-session mix — including the servicing vehicles of shared fleets.
+region preset or a fully custom mix. Modes that pin an explicit region keep
+it; everything else follows the session mix — including the servicing
+vehicles of shared fleets.
 
 ```python
 lca = TransportLCA(power_mix="EU 28")     # packaged preset
@@ -89,12 +95,12 @@ lca.calculate("private_car_bev").ghg_per_pkm   # 70.3 g CO2-eq/pkm
 lca.summary()                             # all modes x components, one frame
 ```
 
-## Relation to the Excel workbook
+## Provenance of the coefficients
 
-The packaged datasets under `cafein_lca/data/` and the golden fixtures under
-`tests/data/` were extracted from the pristine ITF workbook and are the
-library's source of truth. The golden-master suite pins every packaged number
-to the workbook's own computed results, and an acceptance test reproduces a
+The packaged datasets under `cafein/lca/data/` and the golden fixtures under
+`tests/data/` were extracted from the source workbook and are the library's
+source of truth. The golden-master suite pins every packaged number to the
+workbook's own computed results, and an acceptance test reproduces a
 GHG-per-pkm table produced from the workbook with the Finland 2020
 electricity mix.
 
@@ -104,11 +110,11 @@ electricity mix.
   Institut) and its siblings — fully parameterized vehicle LCA with
   ecoinvent-style background databases, many midpoint indicators, prospective
   scenarios and Monte Carlo. Use carculator for multi-indicator prospective
-  vehicle LCA; use `cafein-lca` for the ITF urban-mobility model — a
-  self-contained factor model (GHG + energy, all coefficients packaged, no
-  background database) whose distinguishing coverage is the mobility-services
-  layer: servicing-van logistics of shared fleets, deadheading of
-  ridesourcing and taxis, and infrastructure amortization for all modes.
+  vehicle LCA; use `cafein.lca` for a self-contained factor model (GHG and
+  energy, all coefficients packaged, no background database) whose
+  distinguishing coverage is the mobility-services layer: servicing-van
+  logistics of shared fleets, deadheading of ridesourcing and taxis, and
+  infrastructure amortization for all modes.
 - **Brightway2 / lca_algebraic** — general LCA frameworks; this library
   deliberately stays a lightweight domain model on plain pandas.
 

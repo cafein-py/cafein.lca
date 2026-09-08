@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  # runtime dependencies of cafein-lca (the package itself is installed
+  # runtime dependencies of cafein.lca (the package itself is installed
   # from source with pip: pip install --no-deps -e .)
   - numpy
   - pandas
