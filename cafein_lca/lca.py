@@ -91,13 +91,12 @@ class TransportLCA:
         # derives their intensities from its default-region column).
         ref_use_energy = ref_annual_km = None
         if data.services_ref_column:
-            ref_params, _ = modes_registry._mode_by_column(
-                data.services_ref_column)
+            ref_params, _ = modes_registry._mode_by_column(data.services_ref_column)
             ref_use_energy, _ = use.run(ref_params, self._mix_for(ref_params))
             ref_annual_km = ref_params.annual_km
-        srv_e, srv_g = services.run(params, data, use_e, use_g,
-                                    self._default_mix,
-                                    ref_use_energy, ref_annual_km)
+        srv_e, srv_g = services.run(
+            params, data, use_e, use_g, self._default_mix, ref_use_energy, ref_annual_km
+        )
         inf_e_vkm, inf_g_vkm = infrastructure.run(params, data)
 
         # 0_Total R17/R22: deadheading of self-serviced fleets stretches the
@@ -105,20 +104,19 @@ class TransportLCA:
         lifetime_km = params.lifetime_km  # R7
         deadhead_km = 0.0
         if params.service_vehicle == params.name:  # R19 == R2
-            deadhead_km = (params.service_km_per_vehicle_day * 365
-                           * params.lifetime_years)
-        lifetime_km_total = lifetime_km + deadhead_km          # R22
-        occupancy_effective = (params.occupancy * lifetime_km
-                               / lifetime_km_total)            # R17
+            deadhead_km = (
+                params.service_km_per_vehicle_day * 365 * params.lifetime_years
+            )
+        lifetime_km_total = lifetime_km + deadhead_km  # R22
+        occupancy_effective = params.occupancy * lifetime_km / lifetime_km_total  # R17
 
-        per_vehicle = np.array([mfg_e, del_e, use_e, srv_e, math.nan]), \
-            np.array([mfg_g, del_g, use_g, srv_g, math.nan])
+        per_vehicle = np.array([mfg_e, del_e, use_e, srv_e, math.nan]), np.array(
+            [mfg_g, del_g, use_g, srv_g, math.nan]
+        )
         energy, ghg = {}, {}
         energy["vehicle"], ghg["vehicle"] = per_vehicle
-        energy["vkm"] = np.append(
-            energy["vehicle"][:4] / lifetime_km_total, inf_e_vkm)
-        ghg["vkm"] = np.append(
-            ghg["vehicle"][:4] / lifetime_km_total, inf_g_vkm)
+        energy["vkm"] = np.append(energy["vehicle"][:4] / lifetime_km_total, inf_e_vkm)
+        ghg["vkm"] = np.append(ghg["vehicle"][:4] / lifetime_km_total, inf_g_vkm)
         energy["pkm"] = energy["vkm"] / occupancy_effective
         ghg["pkm"] = ghg["vkm"] / occupancy_effective
         return Result(params, energy, ghg)

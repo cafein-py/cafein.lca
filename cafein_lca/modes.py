@@ -88,27 +88,27 @@ class ModeData:
     column: str
     name: str
     default_weight_kg: float
-    material_shares: tuple            # 1_Manufacturing R8-R18
-    battery_replacements: float       # 1_Manufacturing R34
-    fluids_energy_mj: float           # 1_Manufacturing R135
-    fluids_ghg_g: float               # 1_Manufacturing R137
+    material_shares: tuple  # 1_Manufacturing R8-R18
+    battery_replacements: float  # 1_Manufacturing R34
+    fluids_energy_mj: float  # 1_Manufacturing R135
+    fluids_ghg_g: float  # 1_Manufacturing R137
     fluids_weight_scaled: bool
-    delivery_weight_computed: bool    # 2_Transport R3 canonical formula?
+    delivery_weight_computed: bool  # 2_Transport R3 canonical formula?
     delivery_weight_kg: float
-    delivery_km: tuple                # 2_Transport R7-R16 (10 legs)
+    delivery_km: tuple  # 2_Transport R7-R16 (10 legs)
     services_uses_intensity_table: bool  # 4_Op R15 branch
-    services_ref_column: str          # 4_Op R15 use-phase source (audit #5)
-    infra_category: str               # 5_Infrastructure R3
+    services_ref_column: str  # 4_Op R15 use-phase source (audit #5)
+    infra_category: str  # 5_Infrastructure R3
     infra1_type: str
     infra2_type: str
-    infra1_materials: tuple           # (asphalt, cement, steel) t/km
+    infra1_materials: tuple  # (asphalt, cement, steel) t/km
     infra2_materials: tuple
     infra1_lifetime_years: float
     infra2_lifetime_years: float
     infra1_annual_use_mvkm: float
     infra2_annual_use_mvkm: float
-    infra_share_1: float              # 5_Infrastructure R7
-    infra_rail_allocation: bool       # rail block: plain VLOOKUP share
+    infra_share_1: float  # 5_Infrastructure R7
+    infra_rail_allocation: bool  # rail block: plain VLOOKUP share
 
 
 def _num(value):
@@ -145,25 +145,23 @@ def _registry():
                 battery_chemistry=r["battery_chemistry"],
                 hydrogen_pathway=r["hydrogen_pathway"],
                 fuel_type=r["fuel_type"],
-                fuel_consumption_per_100km=_num(
-                    r["fuel_consumption_per_100km"]),
+                fuel_consumption_per_100km=_num(r["fuel_consumption_per_100km"]),
                 electricity_consumption_kwh_per_km=_num(
-                    r["electricity_consumption_kwh_per_km"]),
+                    r["electricity_consumption_kwh_per_km"]
+                ),
                 hydrogen_consumption_per_100km=_num(
-                    r["hydrogen_consumption_per_100km"]),
+                    r["hydrogen_consumption_per_100km"]
+                ),
                 electric_driving_share=_num(r["electric_driving_share"]),
                 service_vehicle=r["service_vehicle"] or "None",
-                service_km_per_vehicle_day=_num(
-                    r["service_km_per_vehicle_day"]),
-                vehicles_per_service_trip=_num(
-                    r["vehicles_per_service_trip"]),
+                service_km_per_vehicle_day=_num(r["service_km_per_vehicle_day"]),
+                vehicles_per_service_trip=_num(r["vehicles_per_service_trip"]),
             )
             data = ModeData(
                 column=column,
                 name=name,
                 default_weight_kg=_num(r["vehicle_weight_kg"]),
-                material_shares=tuple(
-                    _num(r[f"share_{m}"]) for m in MATERIALS),
+                material_shares=tuple(_num(r[f"share_{m}"]) for m in MATERIALS),
                 battery_replacements=_num(r["battery_replacements"]),
                 fluids_energy_mj=_num(r["fluids_energy_mj"]),
                 fluids_ghg_g=_num(r["fluids_ghg_g"]),
@@ -171,9 +169,11 @@ def _registry():
                 delivery_weight_computed=r["delivery_weight_computed"] == "1",
                 delivery_weight_kg=_num(r["delivery_weight_kg"]),
                 delivery_km=tuple(
-                    _num(r[f"delivery_km_{leg}"]) for leg in DELIVERY_LEGS),
+                    _num(r[f"delivery_km_{leg}"]) for leg in DELIVERY_LEGS
+                ),
                 services_uses_intensity_table=(
-                    r["services_uses_intensity_table"] == "1"),
+                    r["services_uses_intensity_table"] == "1"
+                ),
                 services_ref_column=r["services_ref_column"],
                 infra_category=r["infra_category"],
                 infra1_type=r["infra1_type"],
@@ -181,11 +181,13 @@ def _registry():
                 infra1_materials=(
                     _num(r["infra1_asphalt_t_per_km"]),
                     _num(r["infra1_cement_t_per_km"]),
-                    _num(r["infra1_steel_t_per_km"])),
+                    _num(r["infra1_steel_t_per_km"]),
+                ),
                 infra2_materials=(
                     _num(r["infra2_asphalt_t_per_km"]),
                     _num(r["infra2_cement_t_per_km"]),
-                    _num(r["infra2_steel_t_per_km"])),
+                    _num(r["infra2_steel_t_per_km"]),
+                ),
                 infra1_lifetime_years=_num(r["infra1_lifetime_years"]),
                 infra2_lifetime_years=_num(r["infra2_lifetime_years"]),
                 infra1_annual_use_mvkm=_num(r["infra1_annual_use_mvkm"]),

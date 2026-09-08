@@ -10,3 +10,6 @@ docs/generated/
 
 CLAUDE.md
 .DS_Store
+# local working files
+resource-docs/
+scripts/extract_workbook.py

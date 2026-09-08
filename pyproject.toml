@@ -39,7 +39,7 @@ Repository = "https://github.com/htenkanen/cafein-lca"
 Changelog = "https://github.com/htenkanen/cafein-lca/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "openpyxl", "black", "flake8"]
+dev = ["pytest", "pytest-cov", "black", "flake8"]
 docs = ["sphinx", "myst-nb", "sphinx-book-theme", "sphinx-design"]
 
 [tool.setuptools.packages.find]
@@ -47,3 +47,6 @@ include = ["cafein_lca*"]
 
 [tool.setuptools.package-data]
 cafein_lca = ["data/*.csv"]
+
+[tool.black]
+target-version = ["py310"]

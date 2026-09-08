@@ -14,30 +14,35 @@ class ModeParameters:
 
     slug: str
     name: str
-    lifetime_years: float          # 0_Total R4
-    annual_km: float               # 0_Total R5 (incl. cruising/overheading)
-    vehicle_weight_kg: float       # 0_Total R10 (excl. battery)
-    occupancy: float               # 0_Total R16 [pkm/vkm]
+    lifetime_years: float  # 0_Total R4
+    annual_km: float  # 0_Total R5 (incl. cruising/overheading)
+    vehicle_weight_kg: float  # 0_Total R10 (excl. battery)
+    occupancy: float  # 0_Total R16 [pkm/vkm]
     electricity_region: str = None  # 0_Total R8; None = inherit session mix
-    production_region: str = "Default"          # 0_Total R12
-    battery_capacity_kwh: float = 0.0           # 0_Total R11
-    battery_chemistry: str = ""                 # 0_Total R13
-    hydrogen_pathway: str = ""                  # 0_Total R14
-    fuel_type: str = ""                         # 3_Use R14
-    fuel_consumption_per_100km: float = 0.0     # 3_Use R3 [Lge/100km]
+    production_region: str = "Default"  # 0_Total R12
+    battery_capacity_kwh: float = 0.0  # 0_Total R11
+    battery_chemistry: str = ""  # 0_Total R13
+    hydrogen_pathway: str = ""  # 0_Total R14
+    fuel_type: str = ""  # 3_Use R14
+    fuel_consumption_per_100km: float = 0.0  # 3_Use R3 [Lge/100km]
     electricity_consumption_kwh_per_km: float = 0.0  # 3_Use R4
-    hydrogen_consumption_per_100km: float = 0.0      # 3_Use R5 [Lge/100km]
-    electric_driving_share: float = 0.0         # 3_Use R6
-    service_vehicle: str = "None"               # 0_Total R19
-    service_km_per_vehicle_day: float = 0.0     # 0_Total R20
-    vehicles_per_service_trip: float = 0.0      # 0_Total R21
+    hydrogen_consumption_per_100km: float = 0.0  # 3_Use R5 [Lge/100km]
+    electric_driving_share: float = 0.0  # 3_Use R6
+    service_vehicle: str = "None"  # 0_Total R19
+    service_km_per_vehicle_day: float = 0.0  # 0_Total R20
+    vehicles_per_service_trip: float = 0.0  # 0_Total R21
 
     def __post_init__(self):
         for field in (
-            "lifetime_years", "annual_km", "vehicle_weight_kg", "occupancy",
-            "battery_capacity_kwh", "fuel_consumption_per_100km",
+            "lifetime_years",
+            "annual_km",
+            "vehicle_weight_kg",
+            "occupancy",
+            "battery_capacity_kwh",
+            "fuel_consumption_per_100km",
             "electricity_consumption_kwh_per_km",
-            "hydrogen_consumption_per_100km", "service_km_per_vehicle_day",
+            "hydrogen_consumption_per_100km",
+            "service_km_per_vehicle_day",
             "vehicles_per_service_trip",
         ):
             value = getattr(self, field)

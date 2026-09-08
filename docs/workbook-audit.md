@@ -1,8 +1,8 @@
 # Formula audit of the ITF "Good to go?" workbook
 
 Findings from the column-by-column formula audit performed while extracting
-`life-cycle-assessment-calculations-2020_original.xlsx` (the pristine ITF
-download) for this library. Method: every mode column's formulas were
+the pristine ITF workbook download for this library. Method: every mode
+column's formulas were
 normalized to a column-relative form and diffed against the canonical pattern
 of its row, for all ~130 columns of the six calculation sheets.
 
