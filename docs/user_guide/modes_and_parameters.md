@@ -10,9 +10,10 @@ kernelspec:
 
 # Modes and parameters
 
-The model covers 56 urban transport modes, each defined by a set of named
-parameters with default values. This guide lists the modes, explains what
-every parameter controls, and shows the three ways to change one.
+The model covers 56 urban transport modes, each with its own default
+parameters. A mode is chosen by its slug and its defaults come back as a
+`ModeParameters` object, which is where every changeable assumption
+lives.
 
 **How to?**
 
@@ -23,9 +24,6 @@ every parameter controls, and shows the three ways to change one.
 - [Read validation errors](#read-validation-errors)
 - [Know what is not a parameter](#know-what-is-not-a-parameter)
 - [Where to next](#where-to-next)
-
-The first cell loads pandas for tables and the library's session class
-and mode registry.
 
 ```{code-cell}
 import dataclasses
@@ -136,10 +134,9 @@ annual kilometres and is available as a property of the parameter object.
 
 ## Change parameters
 
-There are three ways to change a parameter, and they compose. For a
-single calculation, pass keyword overrides to `calculate()`. The default
-bus carries 17 passengers and emits 91.4 g CO₂e per passenger-km; here
-it carries 40:
+For a single calculation, pass keyword overrides to `calculate()`. The
+default bus carries 17 passengers and emits 91.4 g CO₂e per
+passenger-km; here it carries 40:
 
 ```{code-cell}
 lca = TransportLCA()

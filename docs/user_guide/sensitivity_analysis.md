@@ -10,10 +10,10 @@ kernelspec:
 
 # Sensitivity analysis
 
-Because every assumption is a parameter and a calculation is cheap, the
-model lends itself to sweeps: change one input over a range and watch the
-result. This guide sweeps a lifetime and an occupancy, finds a
-break-even, and ranks the influence of a mode's parameters.
+Every assumption is a parameter, so a result can be probed by sweeping
+one input across a range while the others stay fixed. Repeating that
+sweep across a mode's parameters ranks them by how much each moves the
+result.
 
 **How to?**
 
@@ -23,9 +23,8 @@ break-even, and ranks the influence of a mode's parameters.
 - [Know which parameters matter for which modes](#know-which-parameters-matter-for-which-modes)
 - [Where to next](#where-to-next)
 
-The first cell loads matplotlib for charts, numpy for interpolation,
-pandas for tables and the library, and opens a session with the global
-defaults.
+One default session runs every sweep below, so only the swept input
+changes from cell to cell:
 
 ```{code-cell}
 import matplotlib.pyplot as plt
@@ -79,8 +78,8 @@ car_per_pkm = lca.calculate("private_car_ice").ghg_per_pkm
 round(car_per_pkm, 1)
 ```
 
-Sweeping the bus occupancy from 1 to 30 passengers gives the bus's
-result at each occupancy:
+Integer occupancies from 1 to 30 bracket the crossing with the car
+baseline:
 
 ```{code-cell}
 occupancies = np.arange(1, 31)
@@ -94,11 +93,10 @@ bus_curve = pd.Series(bus_per_pkm, index=occupancies, name="bus g CO₂e per pas
 bus_curve.round(1).head(12)
 ```
 
-The bus starts far above the car with one passenger and drops below it
-somewhere between 9 and 10. Linear interpolation between the two nearest
-samples gives an estimate of the crossing, accurate to a fraction of a
-passenger. `np.interp` needs its x values in increasing order, and the
-bus curve decreases with occupancy, so both arrays are reversed first:
+The bus starts far above the car at one passenger and crosses below it
+between 9 and 10. Interpolating between the two nearest samples pins the
+crossing down; `np.interp` needs increasing x values and the bus curve
+decreases with occupancy, so both arrays are reversed first:
 
 ```{code-cell}
 emissions_ascending = bus_curve.values[::-1]
@@ -107,10 +105,9 @@ break_even = float(np.interp(car_per_pkm, emissions_ascending, occupancies_desce
 round(break_even, 1)
 ```
 
-The bus needs this many passengers on board, on average, for its
-emissions per passenger-km to equal those of the car with 1.5 people.
-Plotting the whole curve shows how steeply the result falls with the
-first passengers:
+The break-even is about 9.6 passengers: below that the bus emits more per
+passenger than a car carrying 1.5. Plotting the full curve against the
+car baseline puts the crossing in context:
 
 ```{code-cell}
 figure, axis = plt.subplots(figsize=(8, 5))
@@ -125,19 +122,18 @@ axis.legend(title="Mode", frameon=False)
 figure.tight_layout()
 ```
 
-Under the global defaults a diesel bus needs roughly ten passengers to
-match a car carrying 1.5 people. The curve is a hyperbola, so the first
-few passengers matter far more than the last few.
+The curve is a hyperbola, so the first few passengers cut the bus's
+per-passenger emissions far more than the last: the improvement from 1 to
+5 passengers dwarfs the improvement from 25 to 30.
 
 ## Rank parameters with a tornado chart
 
 To see which inputs a result is most sensitive to, change each parameter
 by the same relative amount, one at a time, and record the change in the
-result. Here six selected parameters of a battery-electric car move by
-20% in each direction. The fuel and hydrogen fields are zero for this
-mode and the servicing fields do not apply to a private car, so they are
-left out; `electric_driving_share` is 1 for a BEV and cannot rise by 20%,
-so it is left out too:
+result. The sweep covers the six parameters of a battery-electric car
+that carry a non-zero value and admit a ±20% change; the zero fuel,
+hydrogen and servicing fields and the upper-bounded electric-driving
+share are left out:
 
 ```{code-cell}
 car = mode("private_car_bev")
@@ -152,11 +148,8 @@ parameters = [
 ]
 ```
 
-The loop below sets one parameter at a time. Because the parameter's
-name is held in a variable, the override is passed as a dictionary,
-`{name: value}`, unpacked with `**` into the keyword argument that
-`replace()` expects; it is the same call as `car.replace(occupancy=1.2)`
-written for a name chosen at run time:
+Perturbing each parameter against the same baseline isolates its local
+effect:
 
 ```{code-cell}
 rows = []
@@ -189,8 +182,7 @@ tornado.columns.name = "g CO₂e per passenger-km"
 tornado.round(1)
 ```
 
-The span is the width of the bar each parameter will get. Drawn as a
-tornado chart, the widest bars are at the top:
+Plotting the two signed changes around zero, sorted by span:
 
 ```{code-cell}
 figure, axis = plt.subplots(figsize=(8, 5))
@@ -228,7 +220,7 @@ The pattern above generalises:
 
 ## Where to next
 
-- [Scenarios](../scenarios/scenarios): turn a set of assumptions into a
-  named, reusable file with best, central and worst cases, so that
-  sensitivity becomes part of the result rather than an afterthought.
+- [Scenarios](../scenarios/scenarios): store a set of assumptions, with
+  best, central and worst cases and their provenance, in one reusable
+  file.
 - [The model](../model/model): the formulas behind each component.

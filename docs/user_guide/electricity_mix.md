@@ -15,8 +15,7 @@ for a whole session. It determines the emissions of every kilowatt-hour
 the model consumes, charging electric vehicles, producing hydrogen by
 electrolysis, and running the electric servicing vehicles of shared
 fleets, except where a mode pins its own electricity region for its own
-charging. This guide shows the packaged presets, how to supply your own
-mix, which results respond, and that precedence rule.
+charging.
 
 **How to?**
 
@@ -27,9 +26,7 @@ mix, which results respond, and that precedence rule.
 - [Compare regions](#compare-regions)
 - [Where to next](#where-to-next)
 
-The first cell loads matplotlib for charts, pandas for tables, the
-session class, and the configuration object that holds the packaged
-presets.
+The packaged presets are read from `conf.power_mix_catalog`:
 
 ```{code-cell}
 import matplotlib.pyplot as plt
@@ -72,9 +69,9 @@ eu_car = eu.calculate("private_car_bev")
 round(eu_car.ghg_per_pkm, 1)
 ```
 
-The value is in g CO₂e per passenger-km. On the EU 28 mix a
-battery-electric car emits about a fifth less than on the world average,
-which is 125.4 under the same defaults.
+On the EU 28 mix a battery-electric car emits about 100 g CO₂e per
+passenger-km, a fifth less than the 125 it emits on the world average
+under the same defaults.
 
 ## Supply a custom mix
 
@@ -212,10 +209,8 @@ axis.legend(title="Component", frameon=False)
 figure.tight_layout()
 ```
 
-The spread between the cleanest and the most carbon-intensive grid is a
-factor of about three and a half in the total, and all of it is in the
-use segment; manufacturing, delivery and infrastructure are the same
-width in every bar.
+Across the packaged presets the total varies by a factor of about three
+and a half, from the cleanest grid to the most carbon-intensive.
 
 ## Where to next
 

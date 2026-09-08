@@ -2,22 +2,20 @@
 
 **Life-cycle assessment of urban passenger transport in Python.**
 
-`cafein.lca` answers one question: how much energy and greenhouse gas does
-one passenger-kilometre by a given urban transport mode cost over the
-vehicle's whole life? It covers 56 modes, from private e-scooters to metro
-trains, and splits every result into five life-cycle components: vehicle
-and battery manufacturing, delivery, use, the servicing of shared fleets,
-and infrastructure. Assumptions such as the electricity mix, vehicle
-lifetime, mileage and occupancy are explicit parameters, so a result can
-be recomputed for a city, a fleet or a policy case.
+`cafein.lca` estimates the energy use and greenhouse-gas emissions of one
+passenger-kilometre by an urban transport mode, counting the vehicle's
+whole life from manufacturing to the road it runs on. It covers 56 modes,
+from private e-scooters to metro trains, and reports every result in five
+life-cycle components: vehicle and battery manufacturing, delivery, use,
+the servicing of shared fleets, and infrastructure. The electricity mix,
+vehicle lifetime, mileage, occupancy and the rest are explicit parameters,
+so you can recompute a result for a particular city, fleet or policy case
+rather than take a global average.
 
-The calculation is a standard attributional life-cycle assessment: the
-burdens of producing, delivering, running, servicing and providing
-infrastructure for a vehicle, spread over its lifetime kilometres and the
-passengers it carries. The library ships a default coefficient set whose
-values are traceable to their source, and whose computed results the
-test suite holds to that source across 128 mode columns, with the
-documented exceptions listed in the workbook audit. Regional scenarios replace selected assumptions with sourced local
+The default coefficients are extracted from a published source workbook,
+and the test suite holds the computed results to that workbook across 128
+mode columns, with the exceptions listed in the workbook audit. Regional
+scenarios replace selected assumptions with sourced local
 values while the remaining defaults stay in force.
 
 ::::{grid} 1 2 2 2
@@ -27,8 +25,8 @@ values while the remaining defaults stay in force.
 :link: getting_started/installation
 :link-type: doc
 
-Install the package and compute your first emissions per passenger-km
-in ten minutes.
+Install the package and compute your first emissions per
+passenger-km.
 :::
 
 :::{grid-item-card} User guide

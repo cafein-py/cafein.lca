@@ -11,11 +11,10 @@ kernelspec:
 # Scenarios
 
 The library's defaults are the source model's global central case. A
-*scenario* replaces them with a coherent set of per-mode overrides and an
-electricity mix, defined once in a file, and carries three cases so that
-the uncertainty of the assumptions is part of the result. This guide
-loads a packaged scenario, compares its cases, reads the evidence behind
-every value, and shows how to write your own.
+*scenario* is a file that overrides them: an electricity mix and a set of
+per-mode parameter values, each given as three cases, best, central and
+worst. A session built from a scenario therefore reports a range across
+the cases instead of one figure.
 
 **How to?**
 
@@ -26,9 +25,6 @@ every value, and shows how to write your own.
 - [Write your own scenario](#write-your-own-scenario)
 - [Know what the cases mean](#know-what-the-cases-mean)
 - [Where to next](#where-to-next)
-
-The first cell loads pandas for tables and the library's scenario and
-session classes.
 
 ```{code-cell}
 import pandas as pd
@@ -137,8 +133,7 @@ case_results = pd.DataFrame(rows)
 case_results.head(6).round(1)
 ```
 
-Each row is one mode under one case. Pivoting the cases into columns
-puts the three values of a mode side by side:
+A wide table puts each mode's best-to-worst range on one row:
 
 ```{code-cell}
 case_comparison = case_results.pivot(
@@ -193,13 +188,13 @@ bus_provenance = pd.DataFrame(rows).set_index("parameter")
 bus_provenance
 ```
 
-The bus occupancy is a
-model input from a Mumbai life-cycle study rather than a national
-observation, and the servicing distance is a derived value of low
-confidence; both are things to know before quoting the result. The
-`source` and `note` columns name the study and table behind each value
-and any caveat. They are long, so one record is easier to read as a
-column; this is the full provenance of the bus occupancy:
+The bus occupancy is a model input from a Mumbai life-cycle study rather
+than a national observation, and the servicing distance is a derived
+value of low confidence; report both as assumptions alongside any figure
+that rests on them. The `source` and `note` columns name the study and
+table behind each value and any caveat. The full occupancy record,
+including the `source` and `note` fields left out of the table above,
+reads best as a single column:
 
 ```{code-cell}
 occupancy_record = bus_records[bus_records["parameter"] == "occupancy"]
@@ -287,12 +282,11 @@ allocation only; it does not make the vehicle better. The packaged
 scenarios are tested so that emissions per passenger-km come out ordered
 best ≤ central ≤ worst for every mode.
 
-Two limits of the packaged Indian scenario are worth knowing now. Its
-metro rows describe a six-coach Mumbai train and must be changed
-together, and its ridership is planned rather than measured. And CNG,
-which fuels most Delhi and Mumbai buses, taxis and auto-rickshaws, is not
-yet a fuel type in the model, so the combustion modes run on diesel or
-petrol.
+Two caveats apply to the packaged Indian scenario. Its metro rows
+describe one six-coach Mumbai train, so they must be changed together,
+and their ridership is planned rather than measured. The model also has
+no CNG fuel type, though CNG powers most Delhi and Mumbai buses, taxis
+and auto-rickshaws; those modes run here on diesel or petrol instead.
 
 ## Where to next
 

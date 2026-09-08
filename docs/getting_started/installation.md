@@ -10,9 +10,8 @@ kernelspec:
 
 # Installation
 
-`cafein.lca` is a pure-Python package that depends only on numpy and
-pandas. This page installs it, checks that it works, and sets up a
-development environment for contributors.
+`cafein.lca` is pure Python and depends only on numpy and pandas, so
+installing it is a one-liner and needs no compiler or Java runtime.
 
 **How to?**
 
@@ -50,11 +49,10 @@ import cafein.lca
 cafein.lca.__version__
 ```
 
-The version string is the one you installed; a development install shows
-a `.dev` suffix. A first calculation confirms that the packaged data
-loads. This is the life-cycle greenhouse-gas result for a battery-electric
-private car under the global default assumptions, in grams of
-CO₂-equivalent per passenger-kilometre:
+A development install shows a `.dev` suffix. A first calculation confirms
+that the packaged coefficient tables load: the life-cycle greenhouse-gas
+result for a battery-electric private car under the global defaults, in
+grams of CO₂-equivalent per passenger-kilometre:
 
 ```{code-cell}
 from cafein.lca import TransportLCA
