@@ -1,0 +1,7 @@
+name = "itf-2020"
+description = "Default coefficient set: the environment tables and per-mode specifications extracted from the ITF Good to Go? (2020) calculation workbook."
+version = "2020"
+extracted = "2026-09-08"
+source = "Cazzola, P. and Crist, P. (2020). Good to Go? Assessing the Environmental Performance of New Mobility. International Transport Forum Policy Papers, Paris."
+source_doi = "10.1787/f5cd236b-en"
+licence = "Data © OECD/ITF 2020, adapted with citation under the OECD terms and conditions (https://www.oecd.org/termsandconditions/); some coefficients originate in Argonne National Laboratory's GREET model. The library code is MIT-licensed."
