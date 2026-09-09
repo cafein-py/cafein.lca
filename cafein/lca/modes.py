@@ -9,12 +9,11 @@ snake_case slugs to the canonical columns; variants stay reachable through
 import csv
 import dataclasses
 import functools
-import pathlib
 
-from .config import DELIVERY_LEGS, MATERIALS
+from .config import COEFFICIENTS_DIR, DELIVERY_LEGS, MATERIALS
 from .parameters import ModeParameters
 
-_MODES_CSV = pathlib.Path(__file__).parent / "data" / "modes.csv"
+_MODES_CSV = COEFFICIENTS_DIR / "modes.csv"
 
 #: slug -> workbook column of the canonical central case.
 CANONICAL_MODES = {

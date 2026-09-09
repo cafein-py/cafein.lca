@@ -1,7 +1,8 @@
 """Packaged assumption datasets (the environment layer of the model).
 
-Loads the CSVs under ``cafein/lca/data/`` (extracted from the ITF workbook by
-``scripts/extract_workbook.py``) into plain dictionaries, lazily and once.
+Loads the CSVs of a named coefficient set under ``cafein/lca/data/<set>/``
+(extracted from the ITF workbook by ``scripts/extract_workbook.py``) into
+plain dictionaries, lazily and once. The default set is ``itf-2020``.
 """
 
 import csv
@@ -9,6 +10,23 @@ import functools
 import pathlib
 
 DATA_DIR = pathlib.Path(__file__).parent / "data"
+
+#: The default coefficient set; its directory under ``DATA_DIR`` holds the
+#: environment tables and ``modes.csv`` plus a ``manifest.toml``.
+DEFAULT_COEFFICIENTS = "itf-2020"
+
+#: Directory of the coefficient set the module-level ``conf`` reads from.
+COEFFICIENTS_DIR = DATA_DIR / DEFAULT_COEFFICIENTS
+
+
+def available_coefficient_sets():
+    """Names of the coefficient sets packaged under ``DATA_DIR``.
+
+    A set is a directory holding a ``manifest.toml`` (so ``scenarios/`` is not
+    one).
+    """
+    return sorted(d.name for d in DATA_DIR.iterdir() if (d / "manifest.toml").is_file())
+
 
 POWER_SOURCES = ["oil", "natural_gas", "coal", "nuclear", "biomass", "other_renewables"]
 MATERIALS = [
@@ -45,7 +63,7 @@ PRODUCTION_REGIONS = {
 
 
 def _read(name):
-    with open(DATA_DIR / name, newline="") as f:
+    with open(COEFFICIENTS_DIR / name, newline="") as f:
         return list(csv.DictReader(f))
 
 
