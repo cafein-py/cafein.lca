@@ -25,9 +25,11 @@ class Result:
     like the ``#N/A`` in ``0_Total``.
     """
 
-    def __init__(self, params, energy, ghg):
+    def __init__(self, params, energy, ghg, coefficient_set=None):
         #: The parameter object used for the calculation.
         self.parameters = params
+        #: Name of the coefficient set the session used (e.g. ``itf-2020``).
+        self.coefficient_set = coefficient_set
         self._frames = {"energy": energy, "ghg": ghg}
 
     def _series(self, metric, per):

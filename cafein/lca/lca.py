@@ -5,7 +5,12 @@ import math
 import numpy as np
 
 from . import modes as modes_registry
-from .config import POWER_SOURCES, conf
+from .config import (
+    DEFAULT_COEFFICIENTS,
+    POWER_SOURCES,
+    available_coefficient_sets,
+    conf,
+)
 from .engine import delivery, infrastructure, manufacturing, services, use
 from .parameters import ModeParameters
 from .results import Result
@@ -29,10 +34,30 @@ class TransportLCA:
         Parameter overrides applied to every mode given by slug (see
         :class:`~cafein.lca.Scenario`); keyword overrides on
         :meth:`calculate` still win.
+    coefficients : str, optional
+        Name of the packaged coefficient set (see
+        ``cafein.lca.available_coefficient_sets``). Resolved as this argument,
+        else the scenario's ``coefficients`` key, else the default
+        ``"itf-2020"``; an unknown name raises ``KeyError``. 0.1.0 ships one
+        set, so this selects the default and records provenance.
     """
 
-    def __init__(self, power_mix=None, scenario=None):
+    def __init__(self, power_mix=None, scenario=None, coefficients=None):
         self.scenario = scenario
+        if coefficients is None:
+            coefficients = (
+                getattr(scenario, "coefficients", None) or DEFAULT_COEFFICIENTS
+            )
+        available = available_coefficient_sets()
+        if coefficients not in available:
+            raise KeyError(
+                f"unknown coefficient set '{coefficients}'. Available: "
+                f"{', '.join(available)}"
+            )
+        #: The coefficient set backing this session. 0.1.0 ships one set
+        #: (``itf-2020``); the module-level ``conf`` reads from it, so a
+        #: process uses a single set at a time.
+        self.coefficients = coefficients
         if power_mix is None:
             power_mix = getattr(scenario, "power_mix", None) or "World"
         if isinstance(power_mix, dict):
@@ -133,7 +158,7 @@ class TransportLCA:
         ghg["vkm"] = np.append(ghg["vehicle"][:4] / lifetime_km_total, inf_g_vkm)
         energy["pkm"] = energy["vkm"] / occupancy_effective
         ghg["pkm"] = ghg["vkm"] / occupancy_effective
-        return Result(params, energy, ghg)
+        return Result(params, energy, ghg, coefficient_set=self.coefficients)
 
     def summary(self, per="pkm", metric="ghg"):
         """DataFrame of all canonical modes x components (like the report

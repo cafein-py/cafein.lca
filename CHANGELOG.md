@@ -32,6 +32,12 @@ NEW
   or per-vehicle-km `basis`, and scenario provenance, for use with the
   `cafein` routing package through `factors=`. `Scenario` records its
   `name` and file `sha256` for that provenance.
+- Named coefficient sets: the packaged tables are the set `itf-2020` under
+  `cafein/lca/data/itf-2020/` with a `manifest.toml`.
+  `TransportLCA(coefficients=...)` selects a set (default `itf-2020`, else a
+  scenario file's `coefficients` key), `available_coefficient_sets()` lists
+  the packaged sets, and `Result.coefficient_set` records which set produced
+  a result. 0.1.0 ships one set.
 
 TESTS
 

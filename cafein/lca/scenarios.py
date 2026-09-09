@@ -126,6 +126,7 @@ class Scenario:
     description: str = ""
     provenance_records: dict = dataclasses.field(default_factory=dict, repr=False)
     sha256: str = ""
+    coefficients: object = None
 
     @classmethod
     def load(cls, path, case="central"):
@@ -140,7 +141,13 @@ class Scenario:
         data = path.read_bytes()
         sha256 = hashlib.sha256(data).hexdigest()
         doc = tomllib.loads(data.decode("utf-8"))
-        unknown = set(doc) - {"name", "description", "power_mix", "modes"}
+        unknown = set(doc) - {
+            "name",
+            "description",
+            "power_mix",
+            "modes",
+            "coefficients",
+        }
         if unknown:
             raise ValueError(f"unknown top-level keys: {', '.join(sorted(unknown))}")
         power_mix = doc.get("power_mix")
@@ -155,6 +162,7 @@ class Scenario:
             description=doc.get("description", ""),
             provenance_records=provenance,
             sha256=sha256,
+            coefficients=doc.get("coefficients"),
         )
 
     def parameters(self, slug):
