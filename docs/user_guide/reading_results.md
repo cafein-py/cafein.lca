@@ -65,8 +65,8 @@ The components, in the order the model computes them:
   charge, rebalance or refuel the fleet. For a self-serviced fleet such as
   taxis and ridesourcing, this is the empty driving between rides.
 - **infrastructure**: the construction and maintenance materials of the
-  network the mode runs on (bike lane, road, bus lane, track), amortised
-  over the network's lifetime and yearly use and allocated to the vehicle
+  network the mode runs on (bike lane, road, bus lane, track), spread
+  over the network's lifetime and yearly use and assigned to the vehicle
   class.
 
 For this scooter, manufacturing is the largest component because a short
