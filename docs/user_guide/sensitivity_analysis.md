@@ -215,8 +215,10 @@ The pattern above generalises:
 - **Servicing distance** matters for shared fleets and self-serviced
   services, where empty kilometres add both use-phase emissions and
   dilute occupancy.
-- **Infrastructure** is fixed per vehicle class and moves only with
-  vehicle weight, through the allocation rule.
+- **Infrastructure** has a fixed type and material quantities per vehicle
+  class; the resulting emissions scale with vehicle weight against a
+  reference car for road vehicles, while for rail they are set directly,
+  so weight does not move them.
 
 ## Where to next
 

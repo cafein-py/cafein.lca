@@ -111,9 +111,9 @@ want to trace a value back.
 
 | Parameter | Unit | Controls | Meaning | Source row |
 |---|---|---|---|---|
-| `lifetime_years` | years | manufacturing, delivery | Years the vehicle stays in service. Per-vehicle burdens are spread over more kilometres; use and services per kilometre are unchanged. | 0_Total row 4 |
+| `lifetime_years` | years | manufacturing, delivery | Years the vehicle stays in service. Per-vehicle footprints are spread over more kilometres; use and services per kilometre are unchanged. | 0_Total row 4 |
 | `annual_km` | km per year | manufacturing, delivery, services | Kilometres driven per year, excluding the empty servicing kilometres that `service_km_per_vehicle_day` adds for self-serviced modes. Also sets the ratio of servicing to driving kilometres. | 0_Total row 5 |
-| `vehicle_weight_kg` | kg | manufacturing, delivery, infrastructure | Vehicle mass without the battery; materials scale with it, and the infrastructure allocation compares it with a reference car. | 0_Total row 10 |
+| `vehicle_weight_kg` | kg | manufacturing, delivery, infrastructure | Vehicle mass without the battery; materials scale with it, and for road vehicles the infrastructure calculation compares it with a reference car (rail infrastructure is set directly). | 0_Total row 10 |
 | `occupancy` | passengers per vehicle | all, per passenger-km only | Average number of passengers on board; divides every per-vehicle-km value. | 0_Total row 16 |
 | `electricity_region` | preset name or `None` | use | A pinned electricity mix for this mode's own electricity; `None` inherits the session mix. Servicing vehicles always use the session mix. | 0_Total row 8 |
 | `production_region` | name | manufacturing | Which set of material and battery production intensities applies. | 0_Total row 12 |

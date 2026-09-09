@@ -1,10 +1,10 @@
 # The model
 
 `cafein.lca` is an attributional life-cycle assessment model for urban
-passenger transport: it accounts for the energy and greenhouse-gas
-burdens of a vehicle over its whole life and expresses them per
-passenger-kilometre. Its system boundary has five stages: manufacturing,
-delivery, use, operational services, and infrastructure.
+passenger transport: it accounts for the energy use and greenhouse-gas
+emissions of a vehicle over its whole life and expresses them per
+passenger-kilometre. It covers five stages:
+manufacturing, delivery, use, operational services, and infrastructure.
 
 **How to?**
 
@@ -24,8 +24,8 @@ emissions, in grams of CO₂-equivalent, for one passenger-kilometre of
 urban travel by a given mode. It is a factor model: every stage is a
 product of an activity quantity (a kilometre, a kilogram, a kilowatt-hour)
 and a coefficient. It has no background database; all coefficients are
-packaged as data. Besides the vehicle and its energy, the system boundary
-includes the servicing logistics of shared fleets, the empty driving of
+packaged as data. Besides the vehicle and its energy, the model also
+counts the servicing logistics of shared fleets, the empty driving of
 taxis and ridesourcing, and the infrastructure of every mode, items that
 narrower vehicle assessments often omit, following the argument of
 Chester and Horvath (2009) that passenger-transport assessments should
@@ -45,8 +45,8 @@ shares, and a choice between two production regions that differ in
 aluminium smelting. Assembly and disposal add a per-kilogram intensity
 each. The battery is sized by capacity and chemistry: chemistry gives the
 specific energy, hence the battery mass, and production intensities per
-kilowatt-hour; replacements over the vehicle's life multiply the battery
-burden. Fluids are a fixed per-vehicle quantity, scaled with vehicle mass
+kilowatt-hour; replacements over the vehicle's life multiply the battery's
+footprint. Fluids are a fixed per-vehicle quantity, scaled with vehicle mass
 for some modes.
 
 **Delivery.** The finished vehicle, body plus battery, travels from
@@ -66,29 +66,32 @@ kilometres.
 
 **Operational services.** Shared micromobility is serviced by a van or
 car of a given type, whose well-to-wheel intensity per kilometre is
-computed from the session electricity mix; the burden is the servicing
+computed from the session electricity mix; its footprint is the servicing
 distance per fleet vehicle divided by the vehicles covered per trip and
 scaled to the fleet vehicle's lifetime kilometres. For self-serviced
 modes, where the servicing vehicle is the mode itself (taxis,
 ridesourcing, buses), the services component is the mode's own use-phase
-burden scaled by the ratio of empty to revenue kilometres: the fuel or
+footprint scaled by the ratio of empty to revenue kilometres: the fuel or
 electricity of the empty driving. The empty kilometres also enter the
 normalisation below.
 
 **Infrastructure.** Each vehicle class runs on one or two infrastructure
 types (bike lane, urban road with or without parking, bus lane, light
 rail or metro track), with material quantities per kilometre of network,
-a lifetime and a yearly use. The material burden per network-kilometre is
-scaled up by the share of network energy that materials represent, spread
-over the lifetime use, and allocated to the vehicle class by a
-weight-based rule against a reference car; rail classes take their
-allocation share directly. Infrastructure is defined per vehicle-kilometre
-and has no per-vehicle value.
+a lifetime and a yearly use. The materials' energy and emissions per
+network-kilometre are scaled up by the share of network energy that
+materials represent, spread over the lifetime use, and allocated to each
+vehicle class — that is, charged to the class according to its weight
+relative to a reference car; rail classes take their allocation share
+directly. Infrastructure is defined per
+vehicle-kilometre and has no per-vehicle value.
 
 ## Normalisation
 
-The first four stages are computed per vehicle over its life. Per
-vehicle-kilometre values divide by the lifetime kilometres, which are
+Normalisation puts the stages on a common per-passenger-kilometre basis by
+dividing through the activity they are spread over. The first four stages
+are computed per vehicle over its life. Per vehicle-kilometre values divide
+by the lifetime kilometres, which are
 lifetime years times annual kilometres plus the empty kilometres of a
 self-serviced fleet. Per passenger-kilometre values divide by an
 effective occupancy, the mode's occupancy reduced by the share of empty
@@ -151,7 +154,7 @@ default set's central cases exactly.
 
 ## Background reading
 
-The wide system boundary follows Chester and Horvath (2009), who argued
+The wide scope follows Chester and Horvath (2009), who argued
 that passenger-transport assessments should count infrastructure and
 supply chains, not the vehicle alone. For the road vehicles themselves,
 Hawkins et al. (2012) is the reference comparison of combustion and

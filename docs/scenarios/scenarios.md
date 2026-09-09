@@ -277,8 +277,8 @@ magnitude:
 | service_km_per_vehicle_day | low | high |
 | power_mix | clean | carbon-intensive |
 
-A long lifetime lowers manufacturing emissions per kilometre by
-allocation only; it does not make the vehicle better. The packaged
+A long lifetime lowers manufacturing emissions per kilometre only by
+spreading them over more kilometres; it does not make the vehicle better. The packaged
 scenarios are tested so that emissions per passenger-km come out ordered
 best ≤ central ≤ worst for every mode.
 
