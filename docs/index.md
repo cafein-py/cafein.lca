@@ -76,9 +76,10 @@ emission factors for cafein         journeys and matrices with CO₂e per leg
 ```
 
 The `cafein` routing library's current Finland 2020 emission factors are
-based on results reported by the source study. A guide on exporting your
-own factors to `cafein`, and the regeneration of those defaults directly
-from this package, are planned for a later release.
+based on results reported by the source study.
+[Exporting factors to cafein](user_guide/exporting_to_cafein) shows how to
+produce your own; regenerating those shipped Finland defaults from this
+package is a step on the cafein side, planned for a later release.
 
 ```{toctree}
 :hidden:
@@ -98,6 +99,7 @@ user_guide/reading_results
 user_guide/modes_and_parameters
 user_guide/electricity_mix
 user_guide/sensitivity_analysis
+user_guide/exporting_to_cafein
 ```
 
 ```{toctree}
