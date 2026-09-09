@@ -217,4 +217,4 @@ and a half, from the cleanest grid to the most carbon-intensive.
 - [Sensitivity analysis](sensitivity_analysis): the other parameters
   that matter, and by how much.
 - [Scenarios](../scenarios/scenarios): a mix together with per-mode
-  assumptions in one reusable file, with best, central and worst cases.
+  assumptions in one reusable file, with best, middle and worst cases.

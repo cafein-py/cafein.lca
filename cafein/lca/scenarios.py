@@ -11,18 +11,19 @@ A scenario is a TOML document::
 
     [modes."bus_*".occupancy]           # glob pattern over mode slugs
     best = 92
-    central = 53
+    middle = 53
     worst = 25
     evidence = "model_input"
     geography = "Mumbai Metropolitan Region"
     source = "Shinde et al. 2019, Table 7"
+    year = 2019
     confidence = "medium"
     note = "operating-condition inputs of a Mumbai LCA"
 
-The three cases ``best``, ``central`` and ``worst`` are named by their
+The three cases ``best``, ``middle`` and ``worst`` are named by their
 effect on emissions per pkm. A parameter is a scalar, a table with ``value``
 (scalar with provenance), or a table with the three cases; ``evidence``,
-``geography`` and ``source`` may themselves be per-case tables.
+``geography``, ``source`` and ``year`` may themselves be per-case tables.
 ``power_mix`` is a packaged preset name, a table of the six generation
 shares, or a per-case table of either. Exact slugs take precedence over glob
 patterns.
@@ -41,7 +42,7 @@ if sys.version_info >= (3, 11):
 else:  # pragma: no cover
     import tomli as tomllib
 
-CASES = ("best", "central", "worst")
+CASES = ("best", "middle", "worst")
 EVIDENCE = (
     "observed",
     "model_input",
@@ -51,7 +52,7 @@ EVIDENCE = (
     "assumption",
 )
 CONFIDENCE = ("high", "medium", "low")
-PROVENANCE_KEYS = ("evidence", "geography", "source", "confidence", "note")
+PROVENANCE_KEYS = ("evidence", "geography", "source", "year", "confidence", "note")
 PACKAGED_DIR = pathlib.Path(__file__).parent / "data" / "scenarios"
 _GLOB_CHARS = set("*?[")
 
@@ -75,7 +76,7 @@ def _entry(spec, case, where):
     meta = {k: spec[k] for k in PROVENANCE_KEYS if k in spec}
     values = {k: v for k, v in spec.items() if k not in PROVENANCE_KEYS}
     value = values["value"] if set(values) == {"value"} else _pick(values, case, where)
-    for key in ("evidence", "geography", "source"):
+    for key in ("evidence", "geography", "source", "year"):
         if key in meta:
             meta[key] = _pick(meta[key], case, f"{where}.{key}")
     if meta.get("evidence") not in (None, *EVIDENCE):
@@ -120,7 +121,7 @@ class Scenario:
     """
 
     name: str
-    case: str = "central"
+    case: str = "middle"
     power_mix: object = None
     overrides: dict = dataclasses.field(default_factory=dict)
     description: str = ""
@@ -129,7 +130,7 @@ class Scenario:
     coefficients: object = None
 
     @classmethod
-    def load(cls, path, case="central"):
+    def load(cls, path, case="middle"):
         """Load a scenario for one of the three cases.
 
         ``path`` is a TOML file or the name of a packaged scenario (see

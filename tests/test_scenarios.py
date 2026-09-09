@@ -8,17 +8,19 @@ import pytest
 import cafein.lca
 from cafein.lca import Scenario, TransportLCA, mode
 
+from scenario_helpers import assert_provenance_complete
+
 TOML = textwrap.dedent("""
     name = "test"
     description = "three-case fixture"
 
     [power_mix]
     best = "100% solar, wind or hydro"
-    central = "India"
+    middle = "India"
     worst = {coal = 1.0}
 
     [modes."bus_*"]
-    occupancy = {best = 92, central = 53, worst = 25}
+    occupancy = {best = 92, middle = 53, worst = 25}
 
     [modes.bus_ice]
     lifetime_years = 12
@@ -29,7 +31,8 @@ TOML = textwrap.dedent("""
     [modes.bus_bev.lifetime_years]
     value = 10
     evidence = "assumption"
-    source = {best = "a", central = "b", worst = "c"}
+    source = {best = "a", middle = "b", worst = "c"}
+    year = {best = 2019, middle = 2020, worst = 2021}
     confidence = "low"
     """)
 
@@ -45,7 +48,7 @@ def toml_path(tmp_path_factory):
     "case,occupancy,power_mix",
     [
         ("best", 92, "100% solar, wind or hydro"),
-        ("central", 53, "India"),
+        ("middle", 53, "India"),
         ("worst", 25, {"coal": 1.0}),
     ],
 )
@@ -61,7 +64,11 @@ def test_load_resolves_cases_patterns_and_precedence(
     prov = s.provenance().set_index(["mode", "parameter"])
     assert (
         prov.loc[("bus_bev", "lifetime_years"), "source"]
-        == "abc"[("best", "central", "worst").index(case)]
+        == "abc"[("best", "middle", "worst").index(case)]
+    )
+    assert (
+        prov.loc[("bus_bev", "lifetime_years"), "year"]
+        == (2019, 2020, 2021)[("best", "middle", "worst").index(case)]
     )
     assert prov.loc[("bus_bev", "lifetime_years"), "evidence"] == "assumption"
     assert pd.isna(prov.loc[("bus_ice", "occupancy"), "evidence"])
@@ -72,25 +79,25 @@ def test_load_resolves_cases_patterns_and_precedence(
 @pytest.mark.parametrize(
     "body,case,error",
     [
-        ("[modes.no_such_mode]\noccupancy = 2", "central", KeyError),
-        ('[modes."tram_*"]\noccupancy = 2', "central", KeyError),
-        ("[modes.bus_ice]\nseats = 2", "central", TypeError),
-        ("[modes.bus_ice]\noccupancy = -1", "central", ValueError),
-        ("[modes.bus_ice]\noccupancy = {best = 1, central = 2}", "central", ValueError),
+        ("[modes.no_such_mode]\noccupancy = 2", "middle", KeyError),
+        ('[modes."tram_*"]\noccupancy = 2', "middle", KeyError),
+        ("[modes.bus_ice]\nseats = 2", "middle", TypeError),
+        ("[modes.bus_ice]\noccupancy = -1", "middle", ValueError),
+        ("[modes.bus_ice]\noccupancy = {best = 1, middle = 2}", "middle", ValueError),
         ("[modes.bus_ice]\noccupancy = 2", "typical", ValueError),
-        ("modes = 3", "central", AttributeError),
-        ("colour = 'red'", "central", ValueError),
+        ("modes = 3", "middle", AttributeError),
+        ("colour = 'red'", "middle", ValueError),
         (
             "[modes.bus_ice.occupancy]\nvalue = 2\nevidence = 'guess'",
-            "central",
+            "middle",
             ValueError,
         ),
         (
             "[modes.bus_ice.occupancy]\nvalue = 2\nconfidence = 'ok'",
-            "central",
+            "middle",
             ValueError,
         ),
-        ("[modes.bus_ice.occupancy]\nvalue = 2\nbest = 3", "central", ValueError),
+        ("[modes.bus_ice.occupancy]\nvalue = 2\nbest = 3", "middle", ValueError),
     ],
 )
 def test_load_rejects_invalid_scenarios(tmp_path, body, case, error):
@@ -121,11 +128,11 @@ def test_session_applies_scenario_before_keyword_overrides(toml_path):
 def test_packaged_scenarios_load_and_order_cases(name):
     results = {
         case: TransportLCA(scenario=Scenario.load(name, case=case)).summary()["total"]
-        for case in ("best", "central", "worst")
+        for case in ("best", "middle", "worst")
     }
     # cases are named by their effect on emissions per pkm
-    assert (results["best"] <= results["central"] + 1e-9).all()
-    assert (results["central"] <= results["worst"] + 1e-9).all()
+    assert (results["best"] <= results["middle"] + 1e-9).all()
+    assert (results["middle"] <= results["worst"] + 1e-9).all()
 
 
 def test_list_and_locate_packaged_scenarios():
@@ -136,3 +143,45 @@ def test_list_and_locate_packaged_scenarios():
     assert india["evidence"].notna().all() and india["source"].notna().all()
     with pytest.raises(FileNotFoundError):
         Scenario.load("atlantis")
+
+
+_COMPLETE_OVERRIDE = """
+    [modes.bus_ice.occupancy]
+    value = 40
+    evidence = "observed"
+    geography = "test city"
+    source = "operator report"
+    year = 2010
+    confidence = "high"
+    note = "boundary year is allowed"
+"""
+
+
+@pytest.mark.parametrize(
+    "override,complete",
+    [
+        (_COMPLETE_OVERRIDE, True),
+        (_COMPLETE_OVERRIDE.replace("year = 2010", "year = 2009"), False),
+        (_COMPLETE_OVERRIDE.replace("    year = 2010\n", ""), False),
+        (_COMPLETE_OVERRIDE.replace("year = 2010", 'year = "2010"'), False),
+        (_COMPLETE_OVERRIDE.replace("year = 2010", "year = inf"), False),
+        (
+            _COMPLETE_OVERRIDE.replace('source = "operator report"', 'source = ""'),
+            False,
+        ),
+        (
+            _COMPLETE_OVERRIDE.replace('    note = "boundary year is allowed"\n', ""),
+            False,
+        ),
+        ("[modes.bus_ice]\noccupancy = 40\n", False),
+    ],
+)
+def test_provenance_completeness_helper(tmp_path, override, complete):
+    path = tmp_path / "s.toml"
+    path.write_text('name = "s"\n' + textwrap.dedent(override))
+    scenario = Scenario.load(path)
+    if complete:
+        assert_provenance_complete(scenario)
+    else:
+        with pytest.raises(AssertionError):
+            assert_provenance_complete(scenario)

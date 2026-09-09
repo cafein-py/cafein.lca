@@ -10,9 +10,9 @@ kernelspec:
 
 # Scenarios
 
-The library's defaults are the source model's global central case. A
+The library's defaults are the source model's global base case. A
 *scenario* is a file that overrides them: an electricity mix and a set of
-per-mode parameter values, each given as three cases, best, central and
+per-mode parameter values, each given as three cases, best, middle and
 worst. A session built from a scenario therefore reports a range across
 the cases instead of one figure.
 
@@ -23,7 +23,7 @@ the cases instead of one figure.
 - [Read the provenance of a value](#read-the-provenance-of-a-value)
 - [Combine a scenario with overrides](#combine-a-scenario-with-overrides)
 - [Write your own scenario](#write-your-own-scenario)
-- [What best, central and worst mean](#what-best-central-and-worst-mean)
+- [What best, middle and worst mean](#what-best-middle-and-worst-mean)
 - [Where to next](#where-to-next)
 
 ```{code-cell}
@@ -47,7 +47,7 @@ and `india_metropolitan`, a composite of Delhi and Mumbai operating
 conditions with three cases, used throughout this page.
 
 `Scenario.load()` takes a packaged name or a path to your own file, and a
-`case`, which is `central` unless you say otherwise. Passing the scenario
+`case`, which is `middle` unless you say otherwise. Passing the scenario
 to a session applies it to every mode:
 
 ```{code-cell}
@@ -58,7 +58,7 @@ india.name, india.case, lca.power_mix
 
 The session took the scenario's electricity mix, the packaged `India`
 preset. The parameters a mode now runs with are available from the
-session; a diesel bus under the central case carries 53 passengers, drives
+session; a diesel bus under the middle case carries 53 passengers, drives
 55,000 km a year and lasts 12 years, against 17, 44,000 and 9 in the
 global defaults:
 
@@ -78,7 +78,7 @@ for name, unit in parameter_settings:
             "parameter": name,
             "unit": unit,
             "global default": getattr(default_bus, name),
-            "india_metropolitan, central": getattr(scenario_bus, name),
+            "india_metropolitan, middle": getattr(scenario_bus, name),
         }
     )
 
@@ -102,11 +102,11 @@ occupancy spreading the same vehicle over three times as many passengers.
 
 Every scenario carries three cases, named by their effect on emissions
 per passenger-km: `best` holds every low-emission value, `worst` every
-high-emission one, `central` the best estimate. Loading each case into
+high-emission one, `middle` the best estimate. Loading each case into
 its own session and running a few modes gives the envelope:
 
 ```{code-cell}
-case_settings = ["best", "central", "worst"]
+case_settings = ["best", "middle", "worst"]
 comparison_modes = [
     "private_car_ice",
     "private_car_bev",
@@ -149,15 +149,18 @@ The values are g CO₂e per passenger-km. The spread is wide: a factor of
 three to eight between best and worst for every mode shown. Compare modes
 *within* one column. The best and worst
 columns stack every optimistic or pessimistic assumption at once, so they
-are envelopes rather than likely outcomes, and the central column is the
+are envelopes rather than likely outcomes, and the middle column is the
 one to quote.
 
 ## Read the provenance of a value
 
-Every override in a packaged scenario carries its evidence type,
-geography, source, confidence and a note, and `provenance()` returns them
-as a table. The evidence vocabulary is `observed`, `model_input`,
-`capacity`, `projection`, `derived` and `assumption`. For the bus:
+An override in a packaged scenario can record its evidence type,
+geography, source, the data year of that source, confidence and a note,
+and `provenance()` returns them as a table. Not every value fills every
+field: the year and note are blank where an Indian value keeps the model
+default rather than a dated source. The evidence vocabulary is
+`observed`, `model_input`, `capacity`, `projection`, `derived` and
+`assumption`. For the bus:
 
 ```{code-cell}
 units = {
@@ -208,14 +211,14 @@ paper.
 ## Combine a scenario with overrides
 
 Keyword overrides on `calculate()` win over the scenario. A bus filled to
-its 70-passenger capacity under the otherwise unchanged central case:
+its 70-passenger capacity under the otherwise unchanged middle case:
 
 ```{code-cell}
 full_bus = lca.calculate("bus_ice", occupancy=70)
 round(full_bus.ghg_per_pkm, 1)
 ```
 
-The value is in g CO₂e per passenger-km and is lower than the central
+The value is in g CO₂e per passenger-km and is lower than the middle
 case's 23 in proportion to the occupancy, 53 against 70. A parameter
 object you build yourself is used exactly as given, so it bypasses the
 scenario altogether:
@@ -237,7 +240,7 @@ per-case table of either) and `[modes.<slug>]` tables. Keys may be
 canonical mode slugs or glob patterns such as `"bus_*"`; exact slugs win
 over patterns. A parameter is a scalar, a table with `value` plus
 provenance, or a table with the three cases plus provenance; `evidence`,
-`geography` and `source` may be given per case:
+`geography`, `source` and `year` may be given per case:
 
 ```toml
 name = "my_city"
@@ -248,11 +251,12 @@ battery_capacity_kwh = 250
 
 [modes."bus_*".occupancy]
 best = 60
-central = 30
+middle = 30
 worst = 15
-evidence = {best = "assumption", central = "observed", worst = "assumption"}
+evidence = {best = "assumption", middle = "observed", worst = "assumption"}
 geography = "my city"
 source = "operator report 2024"
+year = 2024
 confidence = "medium"
 ```
 
@@ -262,7 +266,7 @@ mistake surfaces at `Scenario.load()` rather than in a result. The
 packaged `india_metropolitan.toml` inside the package is a complete
 example with a source on every line.
 
-## What best, central and worst mean
+## What best, middle and worst mean
 
 The case names describe the emissions outcome, so the *direction* of each
 parameter differs. Put the low-emission value under `best` whatever its
@@ -280,7 +284,7 @@ magnitude:
 A long lifetime lowers manufacturing emissions per kilometre only by
 spreading them over more kilometres; it does not make the vehicle better. The packaged
 scenarios are tested so that emissions per passenger-km come out ordered
-best ≤ central ≤ worst for every mode.
+best ≤ middle ≤ worst for every mode.
 
 Two caveats apply to the packaged Indian scenario. Its metro rows
 describe one six-coach Mumbai train, so they must be changed together,

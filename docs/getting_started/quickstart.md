@@ -168,4 +168,4 @@ user guide maps each parameter to the component it drives.
 - [Sensitivity analysis](../user_guide/sensitivity_analysis): sweeping
   one parameter over a range and ranking which ones matter.
 - [Scenarios](../scenarios/scenarios): bundling regional assumptions into
-  a reusable file with best, central and worst cases.
+  a reusable file with best, middle and worst cases.

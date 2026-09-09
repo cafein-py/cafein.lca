@@ -10,7 +10,7 @@ from .lca import TransportLCA
 from .modes import list_modes, mode
 from .scenarios import Scenario, list_scenarios
 
-__version__ = "0.1.0"
+__version__ = "0.2.0.dev0"
 
 __all__ = [
     "TransportLCA",
