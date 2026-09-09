@@ -50,3 +50,16 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         with:
           fail_ci_if_error: false
+
+  integration:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install cafein.lca with the cafein extra
+        run: pip install ".[cafein]" pytest
+      - name: Run integration tests
+        run: pytest tests/test_integration.py -v

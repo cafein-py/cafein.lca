@@ -23,6 +23,9 @@ NEW
   listed by `list_scenarios()`; tutorial page.
 - Results per pkm/vkm/vehicle decomposed into the five life-cycle
   components, as pandas objects; `TransportLCA.summary()` for all modes.
+- Optional `cafein` extra (`pip install cafein.lca[cafein]`) pinning cafein
+  0.24.0, for use alongside the cafein routing package; the core install
+  stays dependency-light.
 
 TESTS
 
@@ -33,3 +36,6 @@ TESTS
 - Acceptance test reproducing the repository's Finland-2020 GHG/pkm table.
 - Formula-deviation audit of the workbook documented in
   docs/workbook-audit.md.
+- Integration job installing `cafein.lca[cafein]` and checking that
+  cafein.lca coexists with the cafein routing package under the shared
+  namespace; skipped when cafein is not installed.
