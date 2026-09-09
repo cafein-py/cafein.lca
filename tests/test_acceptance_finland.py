@@ -12,6 +12,7 @@ import pathlib
 import pytest
 
 from cafein.lca import TransportLCA
+from cafein.lca.export import COMPONENT_MAP
 
 CSV = pathlib.Path(__file__).parent / "data" / "finland_2020_ghg_per_pkm.csv"
 
@@ -60,12 +61,13 @@ CSV_MODES = {
     "Metro/urban train": "metro_urban_train",
 }
 
-#: CSV row label -> result components summed into it.
+#: CSV row label -> result components summed into it. The 5->4 grouping has
+#: one home in cafein.lca.export.COMPONENT_MAP (used by the export helpers).
 CSV_COMPONENTS = {
-    "Vehicle component": ("manufacturing", "delivery"),
-    "Fuel component": ("use",),
-    "Infrastructure componen": ("infrastructure",),
-    "Operational services": ("services",),
+    "Vehicle component": COMPONENT_MAP["vehicle"],
+    "Fuel component": COMPONENT_MAP["fuel"],
+    "Infrastructure componen": COMPONENT_MAP["infrastructure"],
+    "Operational services": COMPONENT_MAP["operations"],
 }
 
 #: The report figures (and hence the CSV) move the deadheading share of the
