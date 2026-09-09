@@ -22,7 +22,7 @@ charging.
 - [Use a packaged preset](#use-a-packaged-preset)
 - [Supply a custom mix](#supply-a-custom-mix)
 - [See which results respond](#see-which-results-respond)
-- [Understand the precedence rule](#understand-the-precedence-rule)
+- [Which mix takes precedence](#which-mix-takes-precedence)
 - [Compare regions](#compare-regions)
 - [Where to next](#where-to-next)
 
@@ -148,7 +148,7 @@ Servicing vehicles always use the session mix, even for a mode that pins
 its own region, because the source model derives their intensities from
 its default region.
 
-## Understand the precedence rule
+## Which mix takes precedence
 
 A mode may carry its own `electricity_region`. When it does, that region
 wins over the session mix for the mode's use phase. The packaged defaults

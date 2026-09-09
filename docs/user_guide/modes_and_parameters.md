@@ -19,10 +19,10 @@ lives.
 
 - [List the modes](#list-the-modes)
 - [Inspect a mode's parameters](#inspect-a-modes-parameters)
-- [Understand each parameter](#understand-each-parameter)
+- [What each parameter controls](#what-each-parameter-controls)
 - [Change parameters](#change-parameters)
 - [Read validation errors](#read-validation-errors)
-- [Know what is not a parameter](#know-what-is-not-a-parameter)
+- [Inputs fixed per mode](#inputs-fixed-per-mode)
 - [Where to next](#where-to-next)
 
 ```{code-cell}
@@ -100,7 +100,7 @@ The same object is reachable from a session with
 `TransportLCA.parameters()`, which also applies the session's scenario if
 one is set; without a scenario the two are identical.
 
-## Understand each parameter
+## What each parameter controls
 
 The table below explains every field. "Controls" names the components
 whose per-kilometre value changes when the parameter changes; the
@@ -198,7 +198,7 @@ except ValueError as error:
 Quantities must be zero or positive, and `electric_driving_share` must
 lie between 0 and 1; the message states the rule the value broke.
 
-## Know what is not a parameter
+## Inputs fixed per mode
 
 Some inputs of the model are fixed per mode and are not exposed as
 parameters: the material composition of the vehicle body, the number of
