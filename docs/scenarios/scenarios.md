@@ -23,7 +23,7 @@ the cases instead of one figure.
 - [Read the provenance of a value](#read-the-provenance-of-a-value)
 - [Combine a scenario with overrides](#combine-a-scenario-with-overrides)
 - [Write your own scenario](#write-your-own-scenario)
-- [Know what the cases mean](#know-what-the-cases-mean)
+- [What best, central and worst mean](#what-best-central-and-worst-mean)
 - [Where to next](#where-to-next)
 
 ```{code-cell}
@@ -262,7 +262,7 @@ mistake surfaces at `Scenario.load()` rather than in a result. The
 packaged `india_metropolitan.toml` inside the package is a complete
 example with a source on every line.
 
-## Know what the cases mean
+## What best, central and worst mean
 
 The case names describe the emissions outcome, so the *direction* of each
 parameter differs. Put the low-emission value under `best` whatever its

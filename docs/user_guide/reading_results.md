@@ -16,7 +16,7 @@ per vehicle, per vehicle-kilometre, and per passenger-kilometre.
 
 **How to?**
 
-- [Know the five components](#know-the-five-components)
+- [The five life-cycle components](#the-five-life-cycle-components)
 - [Move between per vehicle, per vehicle-km and per passenger-km](#move-between-per-vehicle-per-vehicle-km-and-per-passenger-km)
 - [Read energy as well as emissions](#read-energy-as-well-as-emissions)
 - [Get everything as one table](#get-everything-as-one-table)
@@ -37,7 +37,7 @@ from cafein.lca import TransportLCA
 lca = TransportLCA()
 ```
 
-## Know the five components
+## The five life-cycle components
 
 Take a shared e-scooter of the first generation, a mode where every
 component is non-zero. `per_pkm` gives the components in g CO₂e per

@@ -20,7 +20,7 @@ result.
 - [Sweep one parameter](#sweep-one-parameter)
 - [Find a break-even occupancy](#find-a-break-even-occupancy)
 - [Rank parameters with a tornado chart](#rank-parameters-with-a-tornado-chart)
-- [Know which parameters matter for which modes](#know-which-parameters-matter-for-which-modes)
+- [Which parameters matter most per mode](#which-parameters-matter-most-per-mode)
 - [Where to next](#where-to-next)
 
 One default session runs every sweep below, so only the swept input
@@ -202,11 +202,11 @@ and the battery size and vehicle weight on those two plus, for the
 weight, infrastructure, so their bars are shorter. Occupancy is
 asymmetric because the result scales with its inverse.
 
-## Know which parameters matter for which modes
+## Which parameters matter most per mode
 
 The pattern above generalises:
 
-- **Occupancy** is the strongest lever for every mode and the only one
+- **Occupancy** matters most for every mode and is the only one
   that scales the whole result.
 - **Lifetime and annual mileage** matter where manufacturing is large:
   short-lived shared micromobility, and heavy batteries.
