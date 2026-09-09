@@ -1,9 +1,9 @@
 # Citing
 
 The library is its own implementation of an attributional transport
-life-cycle assessment, but its default coefficient set is extracted from
-a study published by the International Transport Forum, and results
-computed with those defaults carry that study's citation with them.
+life-cycle assessment, but its default coefficient set, `itf-2020`, is
+extracted from a study published by the International Transport Forum, and
+results computed with that set carry the study's citation with them.
 
 **How to?**
 

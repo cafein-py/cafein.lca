@@ -93,7 +93,7 @@ def _read_reference():
 
 @pytest.mark.parametrize("csv_name,slug", CSV_MODES.items(), ids=CSV_MODES.values())
 def test_finland_mix_reproduces_repo_csv(csv_name, slug):
-    lca = TransportLCA(power_mix=FINLAND_2020)
+    lca = TransportLCA(power_mix=FINLAND_2020, coefficients="itf-2020")
     reference = _read_reference()[csv_name]
     per_pkm = lca.calculate(slug).per_pkm
     for label, components in CSV_COMPONENTS.items():

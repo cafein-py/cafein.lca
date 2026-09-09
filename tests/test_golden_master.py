@@ -62,7 +62,7 @@ VARIANTS = _variants()
 
 @pytest.fixture(scope="module")
 def lca():
-    return cafein.lca.TransportLCA()
+    return cafein.lca.TransportLCA(coefficients="itf-2020")
 
 
 def _params_for_variant(variant):

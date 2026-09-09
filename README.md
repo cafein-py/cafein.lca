@@ -13,9 +13,10 @@ occupancy, battery size, servicing logistics), while the per-mode
 technical data and the shared coefficient tables ship as packaged data.
 
 The calculation is a standard attributional life-cycle assessment. The
-default coefficient set is extracted from the International Transport
-Forum's *Good to Go?* study (see the attribution below) and is held to
-that source by the test suite. Regional scenarios replace selected
+default coefficient set, `itf-2020`, is extracted from the International
+Transport Forum's *Good to Go?* study (see the attribution below) and is
+held to that source by the test suite; `TransportLCA(coefficients=...)`
+names the set, so later sets can coexist. Regional scenarios replace selected
 assumptions, such as occupancy, lifetimes and mileage, with sourced local
 values while the remaining defaults stay in force; each scenario carries
 best, central and worst cases with the evidence and source behind every
