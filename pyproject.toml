@@ -43,7 +43,7 @@ Changelog = "https://github.com/cafein-py/cafein.lca/blob/main/CHANGELOG.md"
 [project.optional-dependencies]
 dev = ["pytest", "pytest-cov", "black", "flake8"]
 docs = ["sphinx", "myst-nb", "sphinx-book-theme==1.2.0", "sphinx-design", "matplotlib"]
-cafein = ["cafein==0.24.0"]
+cafein = ["cafein==0.25.0"]
 
 [tool.hatch.build.targets.wheel]
 # The wheel ships the cafein/lca/ subtree only; cafein/__init__.py belongs to

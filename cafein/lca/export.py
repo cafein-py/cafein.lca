@@ -3,8 +3,9 @@
 :func:`transit_factors` and :func:`street_factors` return long-format pandas
 frames whose columns match cafein's factor loaders (``load_factors`` and
 ``load_street_factors``): the key columns cafein resolves a leg on, the four
-life-cycle components in g CO2e, an explicit ``basis``, and provenance columns
-cafein carries through unchanged. See the "Exporting factors to cafein" guide.
+life-cycle components in g CO2e and their ``total``, an explicit ``basis``, and
+provenance columns cafein carries through unchanged. cafein sums the four
+components, not ``total``. See the "Exporting factors to cafein" guide.
 
 The two functions are exposed as :meth:`TransportLCA.transit_factors` and
 :meth:`TransportLCA.street_factors`, which pass the session so the electricity
@@ -21,6 +22,10 @@ STREET_KEY_COLUMNS = ["street_mode", "vehicle_class", "service_model"]
 COMPONENT_COLUMNS = ["vehicle", "fuel", "infrastructure", "operations"]
 PROVENANCE_COLUMNS = ["scenario", "scenario_sha256", "case", "cafein_lca_version"]
 
+#: The four components plus their `total`; all numeric. `total` is written for
+#: readers of the table — cafein keeps it but sums the components, not `total`.
+NUMERIC_COLUMNS = COMPONENT_COLUMNS + ["total"]
+
 #: cafein.lca's five life-cycle components grouped into cafein's four columns.
 COMPONENT_MAP = {
     "vehicle": ("manufacturing", "delivery"),
@@ -30,15 +35,23 @@ COMPONENT_MAP = {
 }
 
 TRANSIT_COLUMNS = (
-    TRANSIT_KEY_COLUMNS + ["mode"] + COMPONENT_COLUMNS + ["basis"] + PROVENANCE_COLUMNS
+    TRANSIT_KEY_COLUMNS
+    + ["mode"]
+    + COMPONENT_COLUMNS
+    + ["total", "basis"]
+    + PROVENANCE_COLUMNS
 )
 STREET_COLUMNS = (
-    STREET_KEY_COLUMNS + ["mode"] + COMPONENT_COLUMNS + ["basis"] + PROVENANCE_COLUMNS
+    STREET_KEY_COLUMNS
+    + ["mode"]
+    + COMPONENT_COLUMNS
+    + ["total", "basis"]
+    + PROVENANCE_COLUMNS
 )
 
-#: Every non-component column is a string; blanks are "" rather than NaN.
+#: Every non-numeric column is a string; blanks are "" rather than NaN.
 STRING_COLUMNS = [
-    c for c in TRANSIT_COLUMNS + STREET_COLUMNS if c not in COMPONENT_COLUMNS
+    c for c in TRANSIT_COLUMNS + STREET_COLUMNS if c not in NUMERIC_COLUMNS
 ]
 STRING_COLUMNS = list(dict.fromkeys(STRING_COLUMNS))
 
@@ -111,16 +124,18 @@ def _provenance(lca):
 
 
 def _components(series):
-    return {
+    values = {
         column: float(sum(series[c] for c in parts))
         for column, parts in COMPONENT_MAP.items()
     }
+    values["total"] = float(sum(values.values()))
+    return values
 
 
 def _frame(rows, columns):
     frame = pd.DataFrame(rows).reindex(columns=columns)
     for column in columns:
-        if column in COMPONENT_COLUMNS:
+        if column in NUMERIC_COLUMNS:
             frame[column] = frame[column].astype(float)
         else:
             frame[column] = frame[column].fillna("").astype(str)
