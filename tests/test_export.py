@@ -48,6 +48,10 @@ def test_component_mapping_and_basis(lca, helper, slug, per, basis):
     assert row["fuel"] == pytest.approx(series["use"])
     assert row["infrastructure"] == pytest.approx(series["infrastructure"])
     assert row["operations"] == pytest.approx(series["services"])
+    components = (
+        row["vehicle"] + row["fuel"] + row["infrastructure"] + row["operations"]
+    )
+    assert row["total"] == pytest.approx(components)
 
 
 def test_deadheading_uses_raw_engine_components(lca):
@@ -118,5 +122,6 @@ def test_csv_schema_round_trip(lca):
     assert row["route_type"] == "0"
     assert row["agency_id"] == "001"
     assert reloaded.set_index("mode").loc["bus_ice", "route_type"] == ""
-    # Components stay numeric.
+    # Components and the total stay numeric.
     assert reloaded["vehicle"].dtype.kind == "f"
+    assert reloaded["total"].dtype.kind == "f"

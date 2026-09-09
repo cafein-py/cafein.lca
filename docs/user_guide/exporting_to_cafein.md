@@ -67,7 +67,12 @@ Each row has three groups of columns.
 - The **components** are the mode's emissions in grams of CO₂-equivalent,
   split into `vehicle` (manufacturing and delivery), `fuel` (the use phase),
   `infrastructure`, and `operations` (the servicing of shared fleets and the
-  empty running of taxis and ridesourcing). They sum to the mode's total.
+  empty running of taxis and ridesourcing). They sum to `total`.
+- The **`total`** column is that sum, written so the table reads on its own.
+  cafein keeps the column but does not use it: it adds the four components it
+  selects (which lets it report operational-only or full emissions), so
+  including `total` in the sum would double-count. cafein 0.25 keeps `total`
+  without warning; earlier versions drop it with a warning.
 - The **`basis`** column says whether those numbers are per
   passenger-kilometre or per vehicle-kilometre. Transit and most street rows
   are per passenger-km; private-car rows are per vehicle-km, so cafein can

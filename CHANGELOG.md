@@ -24,14 +24,15 @@ NEW
 - Results per pkm/vkm/vehicle decomposed into the five life-cycle
   components, as pandas objects; `TransportLCA.summary()` for all modes.
 - Optional `cafein` extra (`pip install cafein.lca[cafein]`) pinning cafein
-  0.24.0, for use alongside the cafein routing package; the core install
+  0.25.0, for use alongside the cafein routing package; the core install
   stays dependency-light.
 - Export helpers `TransportLCA.transit_factors()` and `.street_factors()`
   return cafein-ready factor tables: the mode's four life-cycle components
-  (vehicle, fuel, infrastructure, operations), an explicit per-passenger-km
-  or per-vehicle-km `basis`, and scenario provenance, for use with the
-  `cafein` routing package through `factors=`. `Scenario` records its
-  `name` and file `sha256` for that provenance.
+  (vehicle, fuel, infrastructure, operations), their `total`, an explicit
+  per-passenger-km or per-vehicle-km `basis`, and scenario provenance, for
+  use with the `cafein` routing package through `factors=`. `Scenario`
+  records its `name` and file `sha256` for that provenance. cafein 0.25.0
+  keeps the `total` column without warning and computes from the components.
 - Named coefficient sets: the packaged tables are the set `itf-2020` under
   `cafein/lca/data/itf-2020/` with a `manifest.toml`.
   `TransportLCA(coefficients=...)` selects a set (default `itf-2020`, else a

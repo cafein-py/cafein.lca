@@ -7,6 +7,8 @@ only when ``cafein`` is installed, which the CI integration job arranges by
 installing ``cafein.lca[cafein]``; the regular test suite skips them.
 """
 
+import warnings
+
 import pytest
 
 import cafein
@@ -67,18 +69,32 @@ def test_cafein_consumes_exported_factors():
         },
     )
 
-    # cafein 0.24.0 accepts and keeps the export/provenance columns.
-    loaded_transit = em.load_factors(transit)
-    loaded_street = em.load_street_factors(street)
+    # cafein 0.25 keeps the export/provenance columns, including the derived
+    # `total`, without warning; the loaders emit no "unknown column" warning.
+    assert "total" in transit.columns and "total" in street.columns
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        loaded_transit = em.load_factors(transit)
+        loaded_street = em.load_street_factors(street)
+    messages = " ".join(str(w.message) for w in caught).lower()
+    assert "unknown" not in messages and "total" not in messages
     for frame in (loaded_transit, loaded_street):
-        for column in ("mode", "basis", "scenario_sha256", "cafein_lca_version"):
+        for column in (
+            "mode",
+            "basis",
+            "total",
+            "scenario_sha256",
+            "cafein_lca_version",
+        ):
             assert column in frame.columns
 
-    # cafein honours the exported basis: the private-car row resolves as
-    # vehicle-km (occupancy applied by the query surface), the bicycle row as
-    # passenger-km, and the resolved factor is the row's component sum.
+    # cafein honours the exported basis (private-car rows are vehicle-km) and
+    # sums the four components, ignoring `total`: a wrong `total` must not
+    # change the resolved factor.
+    tampered = street.copy()
+    tampered["total"] = 1.0e9
     car_factor, car_basis = em.street_factor_with_basis(
-        "car", factors=street, vehicle_class="BEV"
+        "car", factors=tampered, vehicle_class="BEV"
     )
     assert car_basis == "vehicle_km"
     car_row = street.set_index("mode").loc["private_car_bev"]
