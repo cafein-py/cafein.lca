@@ -13,6 +13,7 @@ manufacturing, delivery, use, operational services, and infrastructure.
 - [Normalisation](#normalisation)
 - [Session assumptions](#session-assumptions)
 - [Provenance of the default coefficients](#provenance-of-the-default-coefficients)
+- [Coefficient sets](#coefficient-sets)
 - [What the library adds](#what-the-library-adds)
 - [Background reading](#background-reading)
 - [Where to next](#where-to-next)
@@ -101,12 +102,13 @@ reported as not available.
 
 ## Session assumptions
 
-Two assumptions are set for a session rather than per mode. The
+A few assumptions are set for a session rather than per mode. The
 electricity mix applies to every mode that does not pin its own region
 and to all servicing vehicles. A scenario, described in the
 [Scenarios](../scenarios/scenarios) guide, bundles per-mode parameter
-overrides with a mix. Everything else is a parameter of the mode, listed
-in [Modes and parameters](../user_guide/modes_and_parameters), or packaged
+overrides with a mix. The coefficient set (below) is likewise chosen for
+the session. Everything else is a parameter of the mode, listed in
+[Modes and parameters](../user_guide/modes_and_parameters), or packaged
 data.
 
 ## Provenance of the default coefficients
@@ -115,8 +117,8 @@ All coefficients ship as CSV files inside the package: shared environment
 tables (generation mixes, electricity and hydrogen pathways, fuel
 factors, material and battery intensities, delivery legs, servicing
 vehicle types, infrastructure types) and one table of per-mode
-specifications. The default set was extracted once, by a script, from
-the calculation workbook that the International Transport Forum
+specifications. The default set, `itf-2020`, was extracted once, by a
+script, from the calculation workbook that the International Transport Forum
 published with its study *Good to Go? Assessing the Environmental
 Performance of New Mobility* (Cazzola and Crist, 2020); many of its
 coefficients originate in Argonne National Laboratory's GREET model. The
@@ -140,6 +142,20 @@ source are reproduced as published; they are listed, with their effect, in
 the [workbook audit](workbook_audit). Regional scenarios and future
 coefficient sets replace these defaults value by value, each with its own
 provenance.
+
+## Coefficient sets
+
+The packaged tables are a named coefficient set. The default is `itf-2020`
+— the tables above — under `cafein/lca/data/itf-2020/`, with a
+`manifest.toml` that records its source, version, extraction date and
+licence. `available_coefficient_sets()` lists the sets a build ships, and
+`TransportLCA(coefficients="itf-2020")` selects one: the argument, else a
+scenario file's `coefficients` key, else the default. `Result.coefficient_set`
+records which set produced a result. This release ships a single set, so a
+process uses `itf-2020` throughout; naming it explicitly lets later sets,
+sourced from other data, coexist with their own manifest and their own
+tests, and lets the golden-master and acceptance suites guard the `itf-2020`
+baseline by name.
 
 ## What the library adds
 
