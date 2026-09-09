@@ -13,6 +13,8 @@ A ``TransportLCA`` holds the session assumptions and runs calculations.
    cafein.lca.TransportLCA.calculate
    cafein.lca.TransportLCA.summary
    cafein.lca.TransportLCA.parameters
+   cafein.lca.TransportLCA.transit_factors
+   cafein.lca.TransportLCA.street_factors
 
 Modes and parameters
 --------------------

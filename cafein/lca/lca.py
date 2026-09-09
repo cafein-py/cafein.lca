@@ -146,3 +146,15 @@ class TransportLCA:
             series = result._series(metric, per)
             rows[slug] = series
         return pd.DataFrame(rows).T
+
+    def transit_factors(self, modes=None, identities=None):
+        """cafein-ready transit factor table (see ``cafein.lca.export``)."""
+        from . import export
+
+        return export.transit_factors(self, modes=modes, identities=identities)
+
+    def street_factors(self, modes=None, identities=None):
+        """cafein-ready street factor table (see ``cafein.lca.export``)."""
+        from . import export
+
+        return export.street_factors(self, modes=modes, identities=identities)

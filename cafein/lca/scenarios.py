@@ -30,6 +30,7 @@ patterns.
 
 import dataclasses
 import fnmatch
+import hashlib
 import pathlib
 import sys
 
@@ -124,6 +125,7 @@ class Scenario:
     overrides: dict = dataclasses.field(default_factory=dict)
     description: str = ""
     provenance_records: dict = dataclasses.field(default_factory=dict, repr=False)
+    sha256: str = ""
 
     @classmethod
     def load(cls, path, case="central"):
@@ -135,8 +137,9 @@ class Scenario:
         if case not in CASES:
             raise ValueError(f"case must be one of {', '.join(CASES)}, got {case!r}")
         path = _locate(path)
-        with open(path, "rb") as f:
-            doc = tomllib.load(f)
+        data = path.read_bytes()
+        sha256 = hashlib.sha256(data).hexdigest()
+        doc = tomllib.loads(data.decode("utf-8"))
         unknown = set(doc) - {"name", "description", "power_mix", "modes"}
         if unknown:
             raise ValueError(f"unknown top-level keys: {', '.join(sorted(unknown))}")
@@ -151,6 +154,7 @@ class Scenario:
             overrides=overrides,
             description=doc.get("description", ""),
             provenance_records=provenance,
+            sha256=sha256,
         )
 
     def parameters(self, slug):

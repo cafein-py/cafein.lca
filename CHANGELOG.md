@@ -26,6 +26,12 @@ NEW
 - Optional `cafein` extra (`pip install cafein.lca[cafein]`) pinning cafein
   0.24.0, for use alongside the cafein routing package; the core install
   stays dependency-light.
+- Export helpers `TransportLCA.transit_factors()` and `.street_factors()`
+  return cafein-ready factor tables: the mode's four life-cycle components
+  (vehicle, fuel, infrastructure, operations), an explicit per-passenger-km
+  or per-vehicle-km `basis`, and scenario provenance, for use with the
+  `cafein` routing package through `factors=`. `Scenario` records its
+  `name` and file `sha256` for that provenance.
 
 TESTS
 
@@ -39,3 +45,7 @@ TESTS
 - Integration job installing `cafein.lca[cafein]` and checking that
   cafein.lca coexists with the cafein routing package under the shared
   namespace; skipped when cafein is not installed.
+- Export-helper tests: `tests/test_export.py` covers the schema, the 5->4
+  component mapping, the basis rule and provenance; the cafein round-trip in
+  `tests/test_integration.py` checks cafein loads the exported tables and
+  honours their `basis`.
