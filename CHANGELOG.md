@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0 (unreleased)
+
+CHANGED
+
+- Renamed the middle scenario case from `central` to `middle`. Scenario
+  files, `Scenario.load(case=...)` and `Scenario.case` now use
+  `best`/`middle`/`worst`.
+
+NEW
+
+- Scenario provenance gained an optional `year` field, the data year of a
+  value's source, resolvable per case and returned by
+  `Scenario.provenance()`.
+
 ## 0.1.0 (2026-09-09)
 
 NEW

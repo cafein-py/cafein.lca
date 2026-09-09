@@ -72,14 +72,14 @@ def test_provenance_default_session(lca):
 
 
 def test_provenance_scenario_session():
-    scenario = Scenario.load("finland_2020", case="central")
+    scenario = Scenario.load("finland_2020", case="middle")
     session = TransportLCA(scenario=scenario)
     row = session.street_factors(modes=["private_car_bev"]).iloc[0]
     expected_sha = hashlib.sha256(
         scenarios._locate("finland_2020").read_bytes()
     ).hexdigest()
     assert row["scenario"] == scenario.name
-    assert row["case"] == "central"
+    assert row["case"] == "middle"
     assert row["scenario_sha256"] == scenario.sha256 == expected_sha
 
 

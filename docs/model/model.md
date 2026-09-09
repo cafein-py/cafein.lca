@@ -32,7 +32,7 @@ narrower vehicle assessments often omit, following the argument of
 Chester and Horvath (2009) that passenger-transport assessments should
 include infrastructure and supply chains.
 
-The 56 modes are the central cases of the default coefficient set. Its
+The 56 modes are the base cases of the default coefficient set. Its
 source also carries sensitivity variants of many modes; those are not
 exposed as modes, but they are used in the library's tests.
 
@@ -166,7 +166,7 @@ also drives the servicing vehicles of shared fleets. Scenario files
 supply per-mode overrides with their provenance and three cases. None of
 this changes a default result: a session created without arguments
 reproduces the
-default set's central cases exactly.
+default set's base cases exactly.
 
 ## Background reading
 

@@ -223,6 +223,6 @@ The pattern above generalises:
 ## Where to next
 
 - [Scenarios](../scenarios/scenarios): store a set of assumptions, with
-  best, central and worst cases and their provenance, in one reusable
+  best, middle and worst cases and their provenance, in one reusable
   file.
 - [The model](../model/model): the formulas behind each component.
