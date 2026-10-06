@@ -94,9 +94,74 @@ def test_identities_fill_named_keys_only(lca):
     assert frame.loc["bus_ice", "agency_id"] == ""
 
 
-def test_identities_unknown_column_raises(lca):
-    with pytest.raises(ValueError, match="unknown identity column"):
-        lca.street_factors(identities={"private_bike": {"route_type": "3"}})
+def test_identities_list_gives_one_row_per_value(lca):
+    frame = lca.transit_factors(
+        modes=["metro_urban_train", "bus_ice"],
+        identities={
+            "metro_urban_train": {"route_type": [0, "1", "109"]},
+            "bus_ice": {"route_type": "3"},
+        },
+    )
+    metro = frame[frame["mode"] == "metro_urban_train"]
+    assert metro["route_type"].tolist() == ["0", "1", "109"]
+    assert metro["total"].nunique() == 1
+    assert frame[frame["mode"] == "bus_ice"]["route_type"].tolist() == ["3"]
+
+
+def test_identities_non_list_values_keep_one_row(lca):
+    frame = lca.transit_factors(
+        modes=["bus_ice"],
+        identities={"bus_ice": {"route_id": ("550",), "agency_id": None}},
+    )
+    assert frame["route_id"].tolist() == ["('550',)"]
+    assert frame["agency_id"].tolist() == [""]
+
+
+@pytest.mark.parametrize(
+    "helper, identities, match",
+    [
+        (
+            "street_factors",
+            {"private_bike": {"route_type": "3"}},
+            "unknown identity column",
+        ),
+        (
+            "transit_factors",
+            {"bus_ice": {"route_type": ["3"], "agency_id": ["A", "B"]}},
+            "list at most one",
+        ),
+        ("transit_factors", {"bus_ice": {"route_type": []}}, "list no route_type"),
+        (
+            "transit_factors",
+            {"bus_ice": {"route_type": "3"}, "bus_bev": {"route_type": "3"}},
+            "both map to route_type '3'",
+        ),
+        (
+            "transit_factors",
+            {"bus_ice": {"route_type": ["3", "3"]}},
+            "'bus_ice' and 'bus_ice'",
+        ),
+        (
+            "transit_factors",
+            {
+                "bus_ice": {"route_id": "550", "route_type": "3"},
+                "bus_bev": {"route_id": "550", "route_type": "700"},
+            },
+            "both map to route_id '550'",
+        ),
+        (
+            "street_factors",
+            {
+                "private_bike": {"street_mode": "bicycle"},
+                "shared_bike": {"street_mode": "bicycle"},
+            },
+            "both map to street_mode",
+        ),
+    ],
+)
+def test_identities_refusals(lca, helper, identities, match):
+    with pytest.raises(ValueError, match=match):
+        getattr(lca, helper)(modes=list(identities), identities=identities)
 
 
 def test_wrong_domain_slug_raises(lca):

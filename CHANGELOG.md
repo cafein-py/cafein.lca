@@ -7,8 +7,15 @@ CHANGED
 - Renamed the middle scenario case from `central` to `middle`. Scenario
   files, `Scenario.load(case=...)` and `Scenario.case` now use
   `best`/`middle`/`worst`.
+- `transit_factors()` and `street_factors()` raise `ValueError` when two
+  rows would be matched by cafein on the same key (for transit its most
+  specific one: `trip_id`, `route_id`, `agency_id` with `route_type`, or
+  `route_type`), since cafein keeps only one of them.
 
 NEW
+
+- An `identities` value may be a list, giving the mode one row per element,
+  e.g. `{"metro_urban_train": {"route_type": ["0", "1", "2"]}}`.
 
 - Scenario provenance gained an optional `year` field, the data year of a
   value's source, resolvable per case and returned by
