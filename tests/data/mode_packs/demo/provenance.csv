@@ -1,0 +1,4 @@
+item,field,evidence,geography,source,year,confidence,note
+demo_rail,*,model_input,,itf-2020 column ED,2020,medium,copied from the metro mode
+demo_rail,occupancy,assumption,,test fixture,,low,half the metro occupancy
+Demo track,*,model_input,,itf-2020 Metro track,2020,medium,copied from the metro track
