@@ -10,7 +10,7 @@ kernelspec:
 
 # Modes and parameters
 
-The model covers 56 urban transport modes, each with its own default
+The model covers 57 urban transport modes, each with its own default
 parameters. A mode is chosen by its slug and its defaults come back as a
 `ModeParameters` object, which is where every changeable assumption
 lives.
@@ -57,8 +57,10 @@ modes.groupby(family).size().rename("modes")
   FCEV); **large** is the large private car in the same five powertrains;
 - **taxi** and **ridesourcing** are cars operated as services, including
   shared vans and minibuses, with empty driving between rides;
-- **bus** is an urban bus in five powertrains, and **metro** a metro or
-  urban train.
+- **bus** is an urban bus in five powertrains, **tram** a low-floor tram
+  (light rail), and **metro** a metro or urban train. The tram comes from
+  the library's own mode pack, not from the ITF workbook (see
+  [Mode packs](../model/model.md#mode-packs)).
 
 ## Inspect a mode's parameters
 

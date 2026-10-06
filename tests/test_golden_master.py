@@ -1,6 +1,7 @@
 """Golden-master test: reproduce the workbook's cached results.
 
-Covers every workbook mode column: the 56 canonical modes, plus all
+Covers every workbook mode column: the 56 workbook-backed modes (mode-pack
+modes have no column and are left out), plus all
 sensitivity-variant columns — expressed as `.replace()` overrides of their
 central case where the workbook allows it (see tests/data/variants.csv), and
 as direct column fixtures otherwise. Expectations the engine intentionally
@@ -16,7 +17,8 @@ import pathlib
 import pytest
 
 import cafein.lca
-from cafein.lca.modes import CANONICAL_MODES, _mode_by_column, mode
+from cafein.lca.config import DEFAULT_COEFFICIENTS
+from cafein.lca.modes import CANONICAL_MODES, _data_for, _mode_by_column, mode
 from cafein.lca.results import COMPONENTS
 
 DATA = pathlib.Path(__file__).parent / "data"
@@ -35,7 +37,12 @@ NUMERIC_OVERRIDES = {
     "hydrogen_consumption_per_100km",
     "electric_driving_share",
 }
-SLUG_BY_COLUMN = {col: slug for slug, col in CANONICAL_MODES.items()}
+# The workbook's modes only; mode-pack modes have no workbook column.
+SLUG_BY_COLUMN = {
+    col: slug
+    for slug, col in CANONICAL_MODES.items()
+    if _data_for(mode(slug)).source == DEFAULT_COEFFICIENTS
+}
 
 
 def _golden():

@@ -42,9 +42,11 @@ describes each in one line:
 cafein.lca.list_scenarios()
 ```
 
-Two are shipped: `finland_2020`, which changes only the electricity mix,
-and `india_metropolitan`, a composite of Delhi and Mumbai operating
-conditions with three cases, used throughout this page.
+Three are shipped: `finland_2020`, which changes only the electricity
+mix; `india_metropolitan`, a composite of Delhi and Mumbai operating
+conditions with three cases, used throughout this page; and `germany`,
+German operating conditions with the 2025 electricity mix, also with three
+cases.
 
 `Scenario.load()` takes a packaged name or a path to your own file, and a
 `case`, which is `middle` unless you say otherwise. Passing the scenario
@@ -291,6 +293,13 @@ describe one six-coach Mumbai train, so they must be changed together,
 and their ridership is planned rather than measured. The model also has
 no CNG fuel type, though CNG powers most Delhi and Mumbai buses, taxis
 and auto-rickshaws; those modes run here on diesel or petrol instead.
+
+The German scenario overrides a value only where German evidence supports
+it, so taxis, ridesourcing and several battery and weight values keep their
+defaults. Its metro occupancy and electricity use are proxies: German
+U-Bahn figures from Hamburg and national statistics, applied to the 940
+places of a Munich train. The tram's best case is the manufacturer's design
+load (164 passengers), not an observed average; its middle case assumes 43.
 
 ## Where to next
 
