@@ -14,6 +14,7 @@ manufacturing, delivery, use, operational services, and infrastructure.
 - [Session assumptions](#session-assumptions)
 - [Provenance of the default coefficients](#provenance-of-the-default-coefficients)
 - [Coefficient sets](#coefficient-sets)
+- [Mode packs](#mode-packs)
 - [What the library adds](#what-the-library-adds)
 - [Background reading](#background-reading)
 - [Where to next](#where-to-next)
@@ -156,6 +157,24 @@ process uses `itf-2020` throughout; naming it explicitly lets later sets,
 sourced from other data, coexist with their own manifest and their own
 tests, and lets the golden-master and acceptance suites guard the `itf-2020`
 baseline by name.
+
+## Mode packs
+
+Some modes have no column in the source workbook. A mode pack adds them on
+top of the coefficient set, in its own directory under
+`cafein/lca/data/modes/`, so their data never mix with the `itf-2020`
+tables. A pack holds a `manifest.toml`, a `modes.csv` with the same columns
+as the set's own (one row per mode, named by its slug), any new
+infrastructure types it needs, and a `provenance.csv` with a source for
+every value it sets. The library refuses to load a pack in which a value has
+no source, or which reuses a mode name or an infrastructure type of the
+set.
+
+Pack modes appear in `list_modes()` and work like any other mode.
+`Result.mode_source` names where a result's mode data came from: the
+coefficient set or the pack. `mode_provenance(slug)` lists the sources
+behind a mode's default values, as a table shaped like a scenario's
+provenance.
 
 ## What the library adds
 
