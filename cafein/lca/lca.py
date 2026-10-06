@@ -158,7 +158,13 @@ class TransportLCA:
         ghg["vkm"] = np.append(ghg["vehicle"][:4] / lifetime_km_total, inf_g_vkm)
         energy["pkm"] = energy["vkm"] / occupancy_effective
         ghg["pkm"] = ghg["vkm"] / occupancy_effective
-        return Result(params, energy, ghg, coefficient_set=self.coefficients)
+        return Result(
+            params,
+            energy,
+            ghg,
+            coefficient_set=self.coefficients,
+            mode_source=data.source,
+        )
 
     def summary(self, per="pkm", metric="ghg"):
         """DataFrame of all canonical modes x components (like the report

@@ -1,0 +1,22 @@
+item,field,evidence,geography,source,year,confidence,note
+tram_light_rail,name,assumption,,cafein.lca rail-2026 pack,2026,high,mode label
+tram_light_rail,lifetime_years,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 8",2022,high,maintenance modelled for a 30-year lifetime
+tram_light_rail,annual_km,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 8 (customer scenario)",2022,medium,"80,000 km a year; the EPD's average scenario has 90,000"
+tram_light_rail,occupancy,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 8 (customer scenario: 43 persons, 20 % passenger load)",2022,medium,"the EPD scenario closest to the observed German load factor of trams, Stadtbahn and U-Bahn (19 %, UBA Texte 156/2020, Table 67)"
+tram_light_rail,electricity_consumption_kwh_per_km,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 8 (customer scenario, EN 50591)",2022,medium,4.23 kWh/km at 43 persons and 30 % braking-energy recovery
+tram_light_rail,vehicle_weight_kg,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 6",2022,high,"four-section basic configuration, about 44 t; no traction battery"
+tram_light_rail,delivery_weight_kg,derived,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 6",2022,high,equals the vehicle weight
+tram_light_rail,delivery_weight_computed,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,medium,"delivery weight given directly, as for the metro"
+tram_light_rail,delivery_km_*,model_input,Germany,"Siemens Mobility, Avenio EPD S-P-03441, p. 7: delivery estimated at 500 km road transport",2022,medium,entered as 500 km by combustion heavy truck (heavy_truck_a); the EPD names no powertrain; other legs 0
+tram_light_rail,fluids_*,derived,,"itf-2020 coefficient set, column ED (Metro/urban train), scaled by 44,000 / 186,000 kg",2020,low,the workbook's per-train fluids scaled to the tram's mass and marked weight-scaled
+tram_light_rail,share_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,medium,material shares of the workbook's rail vehicles; 80.6 % metals against the EPD's 80 % (p. 7)
+tram_light_rail,battery_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,no traction battery
+tram_light_rail,production_region,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,medium,as for the metro
+tram_light_rail,electricity_region,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,World: the mode inherits the session's electricity mix
+tram_light_rail,fuel_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,"electric traction, no fuel"
+tram_light_rail,hydrogen_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,no hydrogen
+tram_light_rail,electric_driving_share,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,fully electric
+tram_light_rail,service_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,no servicing vehicle
+tram_light_rail,vehicles_per_service_trip,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,no servicing vehicle
+tram_light_rail,services_*,model_input,,"itf-2020 coefficient set, column ED (Metro/urban train)",2020,high,no servicing vehicle
+tram_light_rail,infra*,model_input,,itf-2020 infrastructure type 'Light rail track' and category 'Light rail',2020,low,"the workbook's light-rail track: US sources including SF Caltrain, usage assumed from the bus lane (workbook audit items 10 and 11)"

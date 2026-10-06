@@ -80,7 +80,7 @@ def test_load_resolves_cases_patterns_and_precedence(
     "body,case,error",
     [
         ("[modes.no_such_mode]\noccupancy = 2", "middle", KeyError),
-        ('[modes."tram_*"]\noccupancy = 2', "middle", KeyError),
+        ('[modes."ferry_*"]\noccupancy = 2', "middle", KeyError),
         ("[modes.bus_ice]\nseats = 2", "middle", TypeError),
         ("[modes.bus_ice]\noccupancy = -1", "middle", ValueError),
         ("[modes.bus_ice]\noccupancy = {best = 1, middle = 2}", "middle", ValueError),

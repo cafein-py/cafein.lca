@@ -14,6 +14,7 @@ manufacturing, delivery, use, operational services, and infrastructure.
 - [Session assumptions](#session-assumptions)
 - [Provenance of the default coefficients](#provenance-of-the-default-coefficients)
 - [Coefficient sets](#coefficient-sets)
+- [Mode packs](#mode-packs)
 - [What the library adds](#what-the-library-adds)
 - [Background reading](#background-reading)
 - [Where to next](#where-to-next)
@@ -32,9 +33,10 @@ narrower vehicle assessments often omit, following the argument of
 Chester and Horvath (2009) that passenger-transport assessments should
 include infrastructure and supply chains.
 
-The 56 modes are the base cases of the default coefficient set. Its
-source also carries sensitivity variants of many modes; those are not
-exposed as modes, but they are used in the library's tests.
+56 modes are the base cases of the default coefficient set. Its source
+also carries sensitivity variants of many modes; those are not exposed as
+modes, but they are used in the library's tests. A tram mode comes from
+the library's own mode pack (see [Mode packs](#mode-packs)).
 
 ## The five stages
 
@@ -156,6 +158,49 @@ process uses `itf-2020` throughout; naming it explicitly lets later sets,
 sourced from other data, coexist with their own manifest and their own
 tests, and lets the golden-master and acceptance suites guard the `itf-2020`
 baseline by name.
+
+## Mode packs
+
+Some modes have no column in the source workbook. A mode pack adds them on
+top of the coefficient set, in its own directory under
+`cafein/lca/data/modes/`, so their data never mix with the `itf-2020`
+tables. A pack holds a `manifest.toml`, a `modes.csv` with the same columns
+as the set's own (one row per mode, named by its slug), any new
+infrastructure types it needs, and a `provenance.csv` with a source for
+every value it sets. The library refuses to load a pack in which a value has
+no source, or which reuses a mode name or an infrastructure type of the
+set.
+
+Pack modes appear in `list_modes()` and work like any other mode.
+`Result.mode_source` names where a result's mode data came from: the
+coefficient set or the pack. `mode_provenance(slug)` lists the sources
+behind a mode's default values, as a table shaped like a scenario's
+provenance.
+
+The library ships one pack, `rail-2026`, with a tram mode,
+`tram_light_rail`. Its vehicle is the four-section Siemens Avenio low-floor
+tram (about 44 t, 217 places), from the manufacturer's environmental product
+declaration (EPD S-P-03441): 30 years of service, 80,000 km a year, 43
+passengers on average and 4.23 kWh per kilometre. These are the EPD's
+customer scenario, which assumes a 20 % passenger load. The material shares
+and fluids follow the workbook's metro, and the track is the workbook's
+light-rail track. `mode_provenance("tram_light_rail")` lists the source of
+every value.
+
+The model and the sources count differently, so the tram does not
+reproduce them exactly:
+
+| Quantity | `tram_light_rail` | Source |
+|---|---|---|
+| Production footprint per tram | 237 t CO₂e (manufacturing stage) | 298 t CO₂e: EPD materials and manufacturing (0.674 g per passenger-km × 164 passengers × 90,000 km × 30 years) |
+| Vehicle, per passenger-km | 2.3 g CO₂e | 4.8 g CO₂e: UBA Texte 156/2020, Table 73 (trams, Stadtbahn and U-Bahn pooled; German fleet, 2017) |
+| Infrastructure, per passenger-km | 22.0 g CO₂e | 14.0 g CO₂e: UBA Texte 156/2020, Table 76 (same pooled fleet) |
+
+The EPD and the model use different background data, and the model's
+production footprint is about 20 % lower. Per passenger-km, the tram's 43
+passengers carry a large share of the light-rail track's footprint; UBA's
+pooled figures also include U-Bahn trains, which carry more passengers per
+vehicle.
 
 ## What the library adds
 
