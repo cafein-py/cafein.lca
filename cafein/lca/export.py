@@ -112,6 +112,70 @@ def _check_identities(identities, key_columns):
             )
 
 
+def _key_sets(slug, mapping):
+    """One key mapping per row: a list value gives one row per element."""
+    listed = [c for c, v in mapping.items() if isinstance(v, list)]
+    if len(listed) > 1:
+        raise ValueError(
+            f"identities for {slug!r} list values in several columns "
+            f"({', '.join(sorted(listed))}); list at most one"
+        )
+    if not listed:
+        return [mapping]
+    column = listed[0]
+    if not mapping[column]:
+        raise ValueError(f"identities for {slug!r} list no {column} values")
+    return [{**mapping, column: value} for value in mapping[column]]
+
+
+def _key_string(value):
+    # Same conversion as _frame's fillna("").astype(str), for scalars and not.
+    if value is None or (pd.api.types.is_scalar(value) and pd.isna(value)):
+        return ""
+    return str(value)
+
+
+def _transit_bucket(row):
+    """cafein's resolution rung for a transit row (None for an empty key).
+
+    cafein files a row under its most specific key: trip, route,
+    agency + route_type, then route_type.
+    """
+    if row["trip_id"]:
+        return ("trip_id", row["trip_id"])
+    if row["route_id"]:
+        return ("route_id", row["route_id"])
+    if row["route_type"]:
+        if row["agency_id"]:
+            return ("agency_id, route_type", row["agency_id"], row["route_type"])
+        return ("route_type", row["route_type"])
+    return None
+
+
+def _street_bucket(row):
+    """cafein matches street rows on the whole key triple."""
+    key = tuple(row[c] for c in STREET_KEY_COLUMNS)
+    if not any(key):
+        return None
+    return (", ".join(STREET_KEY_COLUMNS),) + key
+
+
+def _check_unique_buckets(rows, bucket):
+    # cafein keeps the later of two rows at the same rung without a warning.
+    seen = {}
+    for row in rows:
+        key = bucket(row)
+        if key is None:
+            continue
+        if key in seen:
+            values = ", ".join(repr(v) for v in key[1:])
+            raise ValueError(
+                f"{seen[key]!r} and {row['mode']!r} both map to {key[0]} "
+                f"{values}; cafein would keep only one of them"
+            )
+        seen[key] = row["mode"]
+
+
 def _provenance(lca):
     scenario = lca.scenario
     if scenario is None:
@@ -142,7 +206,7 @@ def _frame(rows, columns):
     return frame
 
 
-def _factor_table(lca, modes, identities, key_columns, columns, per_vkm_modes):
+def _factor_table(lca, modes, identities, key_columns, columns, per_vkm_modes, bucket):
     identities = identities or {}
     _check_identities(identities, key_columns)
     version = _version()
@@ -156,14 +220,16 @@ def _factor_table(lca, modes, identities, key_columns, columns, per_vkm_modes):
         else:
             components = _components(result.per_pkm)
             basis = "passenger_km"
-        row = {column: "" for column in key_columns}
-        row.update(identities.get(slug, {}))
-        row["mode"] = slug
-        row.update(components)
-        row["basis"] = basis
-        row.update(provenance)
-        row["cafein_lca_version"] = version
-        rows.append(row)
+        for keys in _key_sets(slug, identities.get(slug, {})):
+            row = {column: "" for column in key_columns}
+            row.update({c: _key_string(v) for c, v in keys.items()})
+            row["mode"] = slug
+            row.update(components)
+            row["basis"] = basis
+            row.update(provenance)
+            row["cafein_lca_version"] = version
+            rows.append(row)
+    _check_unique_buckets(rows, bucket)
     return _frame(rows, columns)
 
 
@@ -186,19 +252,29 @@ def transit_factors(lca, modes=None, identities=None):
     identities : mapping, optional
         ``{slug: {column: value}}`` filling cafein's transit key columns
         (``trip_id``, ``route_id``, ``agency_id``, ``route_type``) for the
-        named rows; other rows keep empty keys. An unknown column raises
-        ``ValueError``.
+        named rows; other rows keep empty keys. A list value gives the mode
+        one row per element (e.g. ``{"route_type": ["0", "900"]}``); at most
+        one column per mode may hold a list. An unknown column, an empty
+        list, or two rows that cafein would file under the same key (its
+        most specific one: ``trip_id``, ``route_id``, ``agency_id`` with
+        ``route_type``, or ``route_type``) raise ``ValueError``.
 
     Returns
     -------
     DataFrame
-        One row per mode with the transit schema; ``basis`` is always
-        ``passenger_km``. With empty keys the frame is a template — populate
-        the identity columns before loading it into cafein.
+        One row per mode and identity, with the transit schema; ``basis``
+        is always ``passenger_km``. With empty keys the frame is a template
+        — populate the identity columns before loading it into cafein.
     """
     modes = _validate_modes(modes, TRANSIT_MODES, "transit")
     return _factor_table(
-        lca, modes, identities, TRANSIT_KEY_COLUMNS, TRANSIT_COLUMNS, frozenset()
+        lca,
+        modes,
+        identities,
+        TRANSIT_KEY_COLUMNS,
+        TRANSIT_COLUMNS,
+        frozenset(),
+        _transit_bucket,
     )
 
 
@@ -215,17 +291,19 @@ def street_factors(lca, modes=None, identities=None):
     identities : mapping, optional
         ``{slug: {column: value}}`` filling cafein's street key columns
         (``street_mode``, ``vehicle_class``, ``service_model``) for the named
-        rows; other rows keep empty keys. An unknown column raises
+        rows; other rows keep empty keys. A list value gives the mode one row
+        per element; at most one column per mode may hold a list. An unknown
+        column, an empty list, or two rows with the same key triple raise
         ``ValueError``.
 
     Returns
     -------
     DataFrame
-        One row per mode with the street schema. Private-car rows are per
-        vehicle-km (``basis == "vehicle_km"``) so cafein can apply a
-        query-time occupancy; every other row is per passenger-km. With empty
-        keys the frame is a template — populate the identity columns before
-        loading it into cafein.
+        One row per mode and identity, with the street schema. Private-car
+        rows are per vehicle-km (``basis == "vehicle_km"``) so cafein can
+        apply a query-time occupancy; every other row is per passenger-km.
+        With empty keys the frame is a template — populate the identity
+        columns before loading it into cafein.
     """
     modes = _validate_modes(modes, STREET_MODES, "street")
     return _factor_table(
@@ -235,4 +313,5 @@ def street_factors(lca, modes=None, identities=None):
         STREET_KEY_COLUMNS,
         STREET_COLUMNS,
         _STREET_VEHICLE_KM_MODES,
+        _street_bucket,
     )

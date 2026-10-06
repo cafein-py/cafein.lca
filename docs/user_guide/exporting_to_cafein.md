@@ -118,6 +118,29 @@ transit = lca.transit_factors(
 transit[["route_id", "route_type", "mode", "basis"]]
 ```
 
+One mode can also stand for several route types. Give a list, and the mode
+gets one row per value, each with the same numbers:
+
+```{code-cell}
+rail = lca.transit_factors(
+    modes=["metro_urban_train"],
+    identities={"metro_urban_train": {"route_type": ["0", "1", "2"]}},
+)
+rail[["route_type", "mode", "total"]]
+```
+
+The three rows differ only in `route_type`. The basic route types are usually enough: cafein files GTFS's extended codes
+under them, `900`–`999` under tram (`0`), `400`–`499` under metro (`1`),
+`100`–`199` under rail (`2`) and `700`–`899` under bus (`3`). A code you list
+explicitly takes precedence, so a row for `109` gives suburban trains their
+own factor while `2` still covers the rest. The fallback also means a row for
+`2` reaches long-distance trains (`101`, `102`) unless you give them a row of
+their own.
+
+Only one column per mode can hold a list. Two rows that cafein would match on
+the same key, such as two modes both given route type `3`, raise a
+`ValueError`, because cafein would keep one of them without a warning.
+
 ## Save and reload as CSV
 
 The frames write to CSV like any other:
