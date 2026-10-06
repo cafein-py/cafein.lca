@@ -70,6 +70,59 @@ the workbook's own cached values.
    `0_Total` decomposition, and the Finland acceptance test applies the same
    split when comparing against the CSV.
 
+## Rail inputs (reproduced as published)
+
+The workbook's only rail mode, column ED ("Metro/urban train"), is built
+from the per-carriage data in `Tech_Spec_Rail`. Energy use and empty mass
+are the averages of three carriages (rows 9, 10 and 13: Metro Rome Line C,
+Bombardier Azur and Metro Oslo) multiplied by six carriages per train,
+giving 17.72 kWh per train-km (`3_Use!ED4`) and 186 t (`0_Total!ED10`). The
+material shares average eight vehicles (`Tech_Spec_Rail` columns J–Q),
+split their metals into steel and aluminium by Metro Oslo's ratio, and add
+maintenance materials from two of them (SPACIUM and Regina X55). The
+suburban and intercity vehicles on the sheet enter only these material
+shares; no mode column is built from them. The mass in `Tech_Spec_Rail!W27`
+also averages the empty cell D116, which `AVERAGE` skips, so its value is
+unchanged.
+
+9. **`0_Total` row 16 — metro occupancy is 823/1,000 of the sheet's own
+   London load.** Column ED sets the average number of passengers to
+   `ROUND(Tech_Specs_Infra!C282 * Tech_Specs_Infra!C287, -1)`: 823 places
+   per train times
+   an "average metro occupancy" that the sheet labels a share of capacity.
+   That share (`C287 = C286 / C274`) divides London Underground
+   passenger-km (19.38 billion) by train-km (83.6 million), which gives
+   passengers per train-km in thousands (0.2318) rather than a share of
+   capacity. The result is 823 × 0.2318 ≈ 190. The next row (C288)
+   computes the same London figure directly as 231.8 passengers per
+   train-km, and taking the share as passenger-km over place-km (C283)
+   would also give 232 passengers, or 230 after the same rounding. The six metro variants DX–EC take
+   their occupancy from ED16. The engine keeps 190; with 230, every
+   per-passenger-km component of the metro would be about 17 % lower.
+
+10. **`Tech_Specs_Infra` rows 175 and 179 — a heavy-rail line in the
+    light-rail track average.** The light-rail track intensities (row 15:
+    6,700 t of concrete, entered as 837.5 t of cement, and 260 t of steel
+    per km of one-way track) average several estimates. Two of them
+    (rows 175 and 179) are `AVERAGEIF` means over the sources labelled
+    "Light Rail" in rows 147–156, which include SF Caltrain (row 153). The
+    same sheet's Chester (2008) table labels Caltrain heavy rail, all at
+    surface level (row 165). No workbook column uses light-rail track, so
+    the published results are unaffected. The packaged
+    `infrastructure_types.csv` keeps the published intensities (837.5 t of
+    cement and 260 t of steel per km), so any mode assigned light-rail
+    track inherits this average.
+
+11. **`Tech_Specs_Infra` row 230 — light-rail track usage is an
+    assumption.** The traffic that light-rail track is spread over, 72,077
+    vehicle-km per km of track per year, is the bus-lane figure divided by
+    four and multiplied by 1.25 (`B230 = B229 / 4 * 1.25`); the sheet gives
+    no source for it. Metro track usage (row 231) comes from London
+    Underground train-km and track length (rows 271–281). The packaged
+    `infrastructure_types.csv` keeps the published 72,077 vehicle-km, so
+    any mode assigned light-rail track has its track footprint spread over
+    this assumed traffic.
+
 ## External-workbook links
 
 Material compositions, fluids, battery pack characteristics and several

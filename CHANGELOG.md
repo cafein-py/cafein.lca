@@ -13,6 +13,9 @@ NEW
 - Scenario provenance gained an optional `year` field, the data year of a
   value's source, resolvable per case and returned by
   `Scenario.provenance()`.
+- The workbook audit documents how the metro mode's rail inputs are
+  derived and three rail-related quirks: the metro occupancy, the
+  light-rail track materials and the light-rail track usage.
 
 ## 0.1.0 (2026-09-09)
 
