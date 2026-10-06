@@ -35,8 +35,8 @@ the repository is connected to Zenodo.
 The Python code is released under the MIT licence, which lets you use,
 modify and redistribute it with the licence notice attached.
 
-The MIT licence does not cover the packaged datasets. They are extracted
-from the ITF workbook (© OECD/ITF 2020) and are used and adapted with
+The MIT licence does not cover the packaged datasets. The default
+coefficient set is extracted from the ITF workbook (© OECD/ITF 2020) and are used and adapted with
 citation under the
 [OECD terms and conditions](https://www.oecd.org/termsandconditions/).
 Some of the coefficients originate in Argonne National Laboratory's GREET
@@ -44,6 +44,10 @@ model and reach the library through the workbook, so the workbook is the
 source to cite for them.
 
 This is an adaptation of OECD/ITF work and is not endorsed by the OECD.
+
+The tram mode's vehicle data come from Siemens Mobility's environmental
+product declaration for the Avenio tram (EPD S-P-03441, 2022);
+`mode_provenance("tram_light_rail")` lists them value by value.
 
 If you redistribute or adapt the datasets in another tool, keep the
 citation and that note. Results you compute with the library are your own

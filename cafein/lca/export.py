@@ -67,6 +67,7 @@ TRANSIT_MODES = (
     "bus_bev",
     "bus_bev_two_packs",
     "bus_fcev",
+    "tram_light_rail",
     "metro_urban_train",
 )
 STREET_MODES = tuple(s for s in CANONICAL_MODES if s not in TRANSIT_MODES)
@@ -247,7 +248,7 @@ def transit_factors(lca, modes=None, identities=None):
     lca : TransportLCA
         The session; its scenario, case and electricity mix drive the rows.
     modes : iterable of str, optional
-        Transit mode slugs (default: all bus and metro/urban-train modes).
+        Transit mode slugs (default: all bus, tram and metro modes).
         A non-transit slug raises ``ValueError``.
     identities : mapping, optional
         ``{slug: {column: value}}`` filling cafein's transit key columns

@@ -6,8 +6,8 @@
 of urban transport modes per passenger-km and per vehicle-km, decomposed
 into vehicle and battery manufacturing, delivery, use, the servicing of
 shared fleets, and infrastructure; the first four are also available per
-vehicle. It covers 56 modes, from
-private e-scooters to metro trains. The main assumptions behind a result
+vehicle. It covers 57 modes, from
+private e-scooters to trams and metro trains. The main assumptions behind a result
 are named parameters (electricity mix, vehicle lifetime, mileage,
 occupancy, battery size, servicing logistics), while the per-mode
 technical data and the shared coefficient tables ship as packaged data.
@@ -86,12 +86,15 @@ The documentation at https://cafein-lca.readthedocs.io covers:
 
 ## Data attribution and license
 
-The Python code is MIT-licensed. The packaged datasets are extracted from the
-ITF workbook © OECD/ITF 2020, used and adapted with citation under the OECD
+The Python code is MIT-licensed. The default coefficient set is extracted from
+the ITF workbook © OECD/ITF 2020, used and adapted with citation under the OECD
 terms and conditions; several coefficients within it derive from Argonne
 National Laboratory's [GREET](https://greet.anl.gov/) model. This is an
 adaptation of OECD/ITF work and is not endorsed by the OECD. Cite the
 original work when using the numbers:
+
+The tram mode's vehicle data come from Siemens Mobility's environmental
+product declaration for the Avenio tram (EPD S-P-03441, 2022).
 
 > Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
 > Performance of New Mobility*, International Transport Forum, Paris.

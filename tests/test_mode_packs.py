@@ -12,6 +12,8 @@ import pytest
 
 from cafein.lca import TransportLCA, config, mode, mode_provenance
 from cafein.lca import modes as modes_module
+from cafein.lca.engine import delivery
+from cafein.lca.export import STREET_MODES, TRANSIT_MODES
 
 PACKS = pathlib.Path(__file__).parent / "data" / "mode_packs"
 
@@ -38,6 +40,22 @@ def test_pack_mode_joins_registry(use_packs):
     provenance = mode_provenance("demo_rail")
     assert provenance["parameter"].tolist() == ["*", "occupancy", "Demo track: *"]
     assert provenance["year"].tolist()[0] == 2020
+
+
+def test_packaged_tram_mode():
+    row = TransportLCA().transit_factors(modes=["tram_light_rail"]).iloc[0]
+    assert row["total"] > 0
+    assert "tram_light_rail" in TRANSIT_MODES
+    assert "tram_light_rail" not in STREET_MODES
+    assert TransportLCA().calculate("tram_light_rail").mode_source == "rail-2026"
+    sources = mode_provenance("tram_light_rail").set_index("parameter")["source"]
+    assert sources["occupancy"].startswith("Siemens Mobility, Avenio EPD S-P-03441")
+    # Delivery: 44 t over 500 km by combustion heavy truck (leg heavy_truck_a).
+    params = mode("tram_light_rail")
+    energy, _ = delivery.run(params, modes_module._data_for(params), 0.0)
+    leg = config.DELIVERY_LEGS.index("heavy_truck_a")
+    intensity = config.conf.delivery_legs["energy_mj_per_tkm"][leg]
+    assert energy == pytest.approx(44.0 * 500 * intensity)
 
 
 # (pack directory, file, old text, new text, when it fails, message)
