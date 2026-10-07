@@ -12,6 +12,8 @@ The two functions are exposed as :meth:`TransportLCA.transit_factors` and
 mix, scenario and case come from it.
 """
 
+import re
+
 import pandas as pd
 
 from .modes import CANONICAL_MODES
@@ -67,9 +69,19 @@ TRANSIT_MODES = (
     "bus_bev",
     "bus_bev_two_packs",
     "bus_fcev",
+    "tram_light_rail",
     "metro_urban_train",
+    "suburban_regional_rail",
 )
 STREET_MODES = tuple(s for s in CANONICAL_MODES if s not in TRANSIT_MODES)
+
+#: GTFS basic route types and the transit mode each maps to by default.
+GTFS_ROUTE_TYPES = {
+    "0": "tram_light_rail",
+    "1": "metro_urban_train",
+    "2": "suburban_regional_rail",
+    "3": "bus_ice",
+}
 
 #: Street modes exported per vehicle-km, matching cafein's "car" convention
 #: (query-time occupancy division): exactly the private-car slugs.
@@ -247,7 +259,8 @@ def transit_factors(lca, modes=None, identities=None):
     lca : TransportLCA
         The session; its scenario, case and electricity mix drive the rows.
     modes : iterable of str, optional
-        Transit mode slugs (default: all bus and metro/urban-train modes).
+        Transit mode slugs (default: all bus, tram, metro and suburban rail
+        modes).
         A non-transit slug raises ``ValueError``.
     identities : mapping, optional
         ``{slug: {column: value}}`` filling cafein's transit key columns
@@ -276,6 +289,67 @@ def transit_factors(lca, modes=None, identities=None):
         frozenset(),
         _transit_bucket,
     )
+
+
+def gtfs_identities(route_types=None):
+    """Transit identities keyed by GTFS ``route_type``.
+
+    The result feeds :func:`transit_factors`:
+    ``transit_factors(modes=list(ids), identities=ids)``. By default each
+    basic route type maps to one mode: tram (``0``) to
+    ``tram_light_rail``, metro (``1``) to ``metro_urban_train``, rail
+    (``2``) to ``suburban_regional_rail`` and bus (``3``) to ``bus_ice``.
+    cafein files the extended route types 900-999, 400-499, 100-199 and
+    700-899 under these basic codes, so the default also serves feeds that
+    use codes in those ranges.
+
+    Parameters
+    ----------
+    route_types : mapping, optional
+        ``{route_type: slug}`` entries applied over the default map: a new
+        code adds a row (``{"109": "suburban_regional_rail"}``), a default
+        code takes another mode (``{"3": "bus_bev"}``), and ``None`` drops a
+        code (``{"2": None}``). Codes may be integers or digit strings and
+        are written without leading zeros.
+
+    Returns
+    -------
+    dict
+        ``{slug: {"route_type": code}}``, with a list of codes for a mode
+        that several codes map to.
+
+    Raises
+    ------
+    ValueError
+        If a code is not a whole number or is given twice (``2`` and
+        ``"2"``), a slug is not a transit mode, or ``None`` drops a code the
+        map does not hold.
+    """
+    overrides = {}
+    for code, slug in (route_types or {}).items():
+        if not re.fullmatch(r"[0-9]+", str(code)):
+            raise ValueError(f"{code!r} is not a GTFS route_type code")
+        key = str(int(code))
+        if key in overrides:
+            raise ValueError(f"route_type {key!r} is given twice")
+        overrides[key] = slug
+    mapping = dict(GTFS_ROUTE_TYPES)
+    for code, slug in overrides.items():
+        if slug is None:
+            if code not in mapping:
+                raise ValueError(f"route_type {code!r} is not in the map")
+            del mapping[code]
+        elif slug in TRANSIT_MODES:
+            mapping[code] = slug
+        else:
+            raise ValueError(f"{slug!r} is not a transit mode")
+    codes = {}
+    for code, slug in mapping.items():
+        codes.setdefault(slug, []).append(code)
+    return {
+        slug: {"route_type": values[0] if len(values) == 1 else values}
+        for slug, values in codes.items()
+    }
 
 
 def street_factors(lca, modes=None, identities=None):

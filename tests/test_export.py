@@ -12,7 +12,7 @@ import io
 import pandas as pd
 import pytest
 
-from cafein.lca import Scenario, TransportLCA, __version__
+from cafein.lca import Scenario, TransportLCA, __version__, gtfs_identities
 from cafein.lca import scenarios
 from cafein.lca.export import (
     READ_CSV_DTYPES,
@@ -162,6 +162,52 @@ def test_identities_non_list_values_keep_one_row(lca):
 def test_identities_refusals(lca, helper, identities, match):
     with pytest.raises(ValueError, match=match):
         getattr(lca, helper)(modes=list(identities), identities=identities)
+
+
+@pytest.mark.parametrize(
+    "route_types, expected",
+    [
+        (
+            None,
+            {
+                "tram_light_rail": "0",
+                "metro_urban_train": "1",
+                "suburban_regional_rail": "2",
+                "bus_ice": "3",
+            },
+        ),
+        (
+            {"0": None, 109: "suburban_regional_rail", "3": "bus_bev"},
+            {
+                "metro_urban_train": "1",
+                "suburban_regional_rail": ["2", "109"],
+                "bus_bev": "3",
+            },
+        ),
+    ],
+)
+def test_gtfs_identities(lca, route_types, expected):
+    ids = gtfs_identities(route_types)
+    assert ids == {slug: {"route_type": code} for slug, code in expected.items()}
+    frame = lca.transit_factors(modes=list(ids), identities=ids)
+    assert frame.groupby("mode")["route_type"].apply(list).to_dict() == {
+        slug: code if isinstance(code, list) else [code]
+        for slug, code in expected.items()
+    }
+
+
+@pytest.mark.parametrize(
+    "route_types, match",
+    [
+        ({"tram": "tram_light_rail"}, "not a GTFS route_type code"),
+        ({"3": "private_bike"}, "not a transit mode"),
+        ({"5": None}, "not in the map"),
+        ({2: "bus_bev", "02": None}, "given twice"),
+    ],
+)
+def test_gtfs_identities_refusals(route_types, match):
+    with pytest.raises(ValueError, match=match):
+        gtfs_identities(route_types)
 
 
 def test_wrong_domain_slug_raises(lca):

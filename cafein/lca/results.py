@@ -25,11 +25,14 @@ class Result:
     like the ``#N/A`` in ``0_Total``.
     """
 
-    def __init__(self, params, energy, ghg, coefficient_set=None):
+    def __init__(self, params, energy, ghg, coefficient_set=None, mode_source=None):
         #: The parameter object used for the calculation.
         self.parameters = params
         #: Name of the coefficient set the session used (e.g. ``itf-2020``).
         self.coefficient_set = coefficient_set
+        #: Where the mode's default data come from: the coefficient set or the
+        #: mode pack that defines the mode (see ``cafein.lca.mode_provenance``).
+        self.mode_source = mode_source
         self._frames = {"energy": energy, "ghg": ghg}
 
     def _series(self, metric, per):
