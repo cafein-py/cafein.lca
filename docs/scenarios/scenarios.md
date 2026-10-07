@@ -301,8 +301,12 @@ U-Bahn figures from Hamburg and national statistics, applied to the 940
 places of a Munich train. The tram's best case is the manufacturer's design
 load (164 passengers), not an observed average; its middle case assumes 43.
 The suburban train keeps its Paris RER NG vehicle and takes German
-operation: 250,000 km a year over 35 years, and 314 passengers, the German
-regional-rail load factor (27 %) applied to its 1,145 places.
+operation: 250,000 km a year over 35 years. In the best and middle cases it
+carries 314 passengers, the German regional-rail load factor (27 %) applied
+to its 1,145 places; the worst case uses the German mean of 82 passengers per
+regional train. Car mileages are KBA's 2025 figures, measured from odometer
+readings at periodic inspections, except the electric car's best case,
+which keeps UBA's survey-based 13,000 km a year (2017).
 
 ## Where to next
 

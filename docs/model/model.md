@@ -230,7 +230,7 @@ share, whatever the train's size.
 |---|---|---|
 | Production footprint per train | 1,612 t CO₂e (manufacturing stage) | 1,134 t CO₂e: EPD upstream and core modules (0.393 g per passenger-km × 500 passengers × 5,766,000 km) |
 | Track, per km of track and year | 22.6 t CO₂e (13.1 t of materials ÷ 0.58) | 21.5 t CO₂e: UBA Texte 96/2013, all German rail infrastructure (1.57 Mt a year on 73,000 km of track, 2008) |
-| Track, per passenger-km at the German regional-rail load (about 92 passengers per train) | 13.6 g CO₂e | 13.9 g CO₂e: UBA Texte 156/2020, Table 76 (Schienennahverkehr, 2017) |
+| Track, per passenger-km at UBA's 2017 regional-rail load (about 92 passengers per train) | 13.6 g CO₂e | 13.9 g CO₂e: UBA Texte 156/2020, Table 76 (Schienennahverkehr, 2017) |
 
 The model's production footprint is about 40 % above the EPD's, through
 the workbook's material shares and background data. The track agrees with

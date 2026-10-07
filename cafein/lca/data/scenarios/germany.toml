@@ -14,7 +14,8 @@
 # Avenio EPD S-P-03441 (2022) and "U-Bahn München" data sheet (2019); Alstom,
 # RER NG EPD S-P-05994 (2022); MVG, "MVG in Zahlen" (2026); Hamburger
 # Hochbahn AG, Lagebericht 2025; VDV-Statistik 2023; AG Energiebilanzen,
-# Bruttostromerzeugung (June 2026).
+# Bruttostromerzeugung (June 2026); KBA, Verkehr in Kilometern 2025;
+# Bundesnetzagentur, Marktuntersuchung Eisenbahnen 2018.
 
 name = "germany"
 description = "German operating conditions (UBA, studies, Munich and Hamburg operators) and the 2025 electricity mix, three cases"
@@ -55,13 +56,13 @@ confidence = "high"
 note = "service life from the KBA fleet age distribution"
 
 [modes.private_car_ice.annual_km]
-value = 10677
+value = 8406
 evidence = "observed"
 geography = "Germany"
-source = "UBA Texte 156/2020, Table 17 (Benzin-4T)"
-year = 2017
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Benzin)"
+year = 2025
 confidence = "high"
-note = "petrol cars, Fahrleistungserhebung 2014 projected to 2017"
+note = "petrol cars, from odometer differences between periodic inspections"
 
 [modes.private_car_ice.vehicle_weight_kg]
 best = 1240
@@ -85,14 +86,14 @@ note = "170 g CO2/km over the itf-2020 gasoline factor of 2,320.7 g CO2 per litr
 
 [modes.private_car_bev.annual_km]
 best = 13000
-middle = 8542
-worst = 8542
+middle = 11312
+worst = 11312
 evidence = {best = "model_input", middle = "observed", worst = "observed"}
 geography = "Germany"
-source = {best = "UBA Texte 156/2020, Table 19 (Elektro, durchschnittliche FL, after MiD 2017)", middle = "UBA Texte 156/2020, Table 17 (BEV)", worst = "UBA Texte 156/2020, Table 17 (BEV)"}
-year = 2017
+source = {best = "UBA Texte 156/2020, Table 19 (Elektro, durchschnittliche FL, after MiD 2017)", middle = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Elektro (BEV))", worst = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Elektro (BEV))"}
+year = {best = 2017, middle = 2025, worst = 2025}
 confidence = "medium"
-note = "UBA notes the 8,542 km rests on few BEVs and MiD 2017's 13,000 km is less robust"
+note = "middle and worst from odometer differences between periodic inspections; the BEV mean rose from 9,563 km (2023) as the fleet grew"
 
 [modes.private_car_bev.electricity_consumption_kwh_per_km]
 best = 0.184
@@ -104,6 +105,24 @@ source = {best = "Böhmeke & Koch 2021, section 3 (VW ID.3, 18.4 kWh/100 km)", m
 year = {best = 2021, middle = 2023, worst = 2018}
 confidence = "medium"
 note = "best is one model; charging losses not stated in middle and worst"
+
+[modes.private_car_hev.annual_km]
+value = 11421
+evidence = "observed"
+geography = "Germany"
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Hybrid Benzin)"
+year = 2025
+confidence = "medium"
+note = "petrol hybrids without plug-in; KBA's class includes mild hybrids"
+
+[modes.private_car_phev.annual_km]
+value = 13227
+evidence = "observed"
+geography = "Germany"
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Plug-in-Hybrid Benzin)"
+year = 2025
+confidence = "high"
+note = "petrol plug-in hybrids"
 
 # -------------------------------------------------------------------- mopeds
 [modes.private_moped_ice.occupancy]
@@ -356,13 +375,15 @@ note = "proxy: Hamburg traction current including heating, applied to the C2's p
 
 # -------------------------------------------------------- suburban/regional rail
 [modes.suburban_regional_rail.occupancy]
-value = 314.1
-evidence = "derived"
+best = 314.1
+middle = 314.1
+worst = 82
+evidence = {best = "derived", middle = "derived", worst = "observed"}
 geography = "Germany"
-source = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)"
+source = {best = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)", middle = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)", worst = "Bundesnetzagentur, Marktuntersuchung Eisenbahnen 2018, p. 24, Abbildung 18 (mean passengers per train, SPNV)"}
 year = 2017
 confidence = "low"
-note = "proxy: the German regional-rail load factor (27 %) applied to the RER NG's places"
+note = "best and middle apply the German regional-rail load factor (27 %) to the RER NG's 1,145 places; worst is the German mean of 82 passengers per regional train, carried here by the RER NG"
 
 [modes.suburban_regional_rail.annual_km]
 value = 250000
