@@ -1,0 +1,413 @@
+# Germany: operating conditions from German statistics, studies and operator
+# reports, with the 2025 electricity mix. Cases are named by their effect on
+# emissions per pkm: "best" holds every low-emission value, "worst" every
+# high-emission one. Every value carries its evidence type, geography,
+# source, data year and confidence. A value is overridden only where German
+# (or Germany-inclusive European) evidence supports it; every other
+# parameter keeps its itf-2020 default.
+#
+# Sources: Allekotte et al. 2020 (UBA Texte 156/2020, Ökologische Bewertung
+# von Verkehrsarten); Weller et al. 2019 (doi 10.3389/fmech.2019.00045);
+# Weiss et al. 2024 (10.3390/su16177529); Böhmeke & Koch 2021
+# (10.1007/s41104-021-00081-6); Schelte et al. 2021 (10.3390/su13158297);
+# Heide, Guo & Göhlich 2025 (10.3390/wevj16070378); Siemens Mobility,
+# Avenio EPD S-P-03441 (2022) and "U-Bahn München" data sheet (2019); Alstom,
+# RER NG EPD S-P-05994 (2022); MVG, "MVG in Zahlen" (2026); Hamburger
+# Hochbahn AG, Lagebericht 2025; VDV-Statistik 2023; AG Energiebilanzen,
+# Bruttostromerzeugung (June 2026); KBA, Verkehr in Kilometern 2025;
+# Bundesnetzagentur, Marktuntersuchung Eisenbahnen 2018.
+
+name = "germany"
+description = "German operating conditions (UBA, studies, Munich and Hamburg operators) and the 2025 electricity mix, three cases"
+
+# AG Energiebilanzen, "Bruttostromerzeugung in Deutschland nach
+# Energieträgern", release 18 June 2026, 2025 column (preliminary):
+# Mineralöl 4.2, Erdgas 86.3, Braunkohle 74.4 + Steinkohle 29.9, Kernenergie
+# 0.0, Biomasse 42.4 + renewable Hausmüll 5.6, and other renewables 243.6 TWh
+# (the published renewables total 291.6 less biomass and renewable Hausmüll;
+# its listed parts, wind 134.2 + hydro 17.1 + PV 92.2 + geothermal 0.2, round
+# to 243.7). Shares over these 486.4 TWh ("Sonstige", 22.8 TWh incl. pumped
+# storage, has no model category). Same mix in all cases.
+[power_mix]
+oil = 0.00863486842105263
+natural_gas = 0.17742598684210525
+coal = 0.2144325657894737
+nuclear = 0.0
+biomass = 0.09868421052631578
+other_renewables = 0.5008223684210527
+
+# ---------------------------------------------------------------- private cars
+[modes."private_car_*".occupancy]
+value = 1.456
+evidence = "derived"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 67 (Pkw: 934.9 bn pkm / 642.3 bn vkm)"
+year = 2017
+confidence = "high"
+note = "persons per car over all car travel"
+
+[modes."private_car_*".lifetime_years]
+value = 13
+evidence = "observed"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (all Pkw drive types; KBA fleet data)"
+year = 2017
+confidence = "high"
+note = "service life from the KBA fleet age distribution"
+
+[modes.private_car_ice.annual_km]
+value = 8406
+evidence = "observed"
+geography = "Germany"
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Benzin)"
+year = 2025
+confidence = "high"
+note = "petrol cars, from odometer differences between periodic inspections"
+
+[modes.private_car_ice.vehicle_weight_kg]
+best = 1240
+middle = 1300
+worst = 1396
+evidence = "observed"
+geography = "Germany"
+source = {best = "Weller et al. 2019, p. 13 (DIN mass of petrol new registrations, Euro 6c)", middle = "UBA Texte 156/2020, Table 17 (Benzin-4T, Leergewicht)", worst = "Weller et al. 2019, Table 12 (HBEFA 4.1, Euro 6ab petrol)"}
+year = {best = 2018, middle = 2017, worst = 2018}
+confidence = "medium"
+note = "mass definitions differ: DIN mass, empty weight, HBEFA mass"
+
+[modes.private_car_ice.fuel_consumption_per_100km]
+value = 7.33
+evidence = "derived"
+geography = "Germany"
+source = "Weller et al. 2019, Table 12 (HBEFA 4.1, Euro 6ab petrol, 170 g CO2/km)"
+year = 2018
+confidence = "medium"
+note = "170 g CO2/km over the itf-2020 gasoline factor of 2,320.7 g CO2 per litre"
+
+[modes.private_car_bev.annual_km]
+best = 13000
+middle = 11312
+worst = 11312
+evidence = {best = "model_input", middle = "observed", worst = "observed"}
+geography = "Germany"
+source = {best = "UBA Texte 156/2020, Table 19 (Elektro, durchschnittliche FL, after MiD 2017)", middle = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Elektro (BEV))", worst = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Elektro (BEV))"}
+year = {best = 2017, middle = 2025, worst = 2025}
+confidence = "medium"
+note = "middle and worst from odometer differences between periodic inspections; the BEV mean rose from 9,563 km (2023) as the fleet grew"
+
+[modes.private_car_bev.electricity_consumption_kwh_per_km]
+best = 0.184
+middle = 0.207
+worst = 0.248
+evidence = {best = "observed", middle = "observed", worst = "derived"}
+geography = {best = "Germany", middle = "Germany, Netherlands, UK", worst = "Germany"}
+source = {best = "Böhmeke & Koch 2021, section 3 (VW ID.3, 18.4 kWh/100 km)", middle = "Weiss et al. 2024, Table 1 (real-world mean of 342 models, 20.7 kWh/100 km)", worst = "Weller et al. 2019, Table 12 (HBEFA 4.1 BEV, 119 g CO2/km at 480 g/kWh)"}
+year = {best = 2021, middle = 2023, worst = 2018}
+confidence = "medium"
+note = "best is one model; charging losses not stated in middle and worst"
+
+[modes.private_car_hev.annual_km]
+value = 11421
+evidence = "observed"
+geography = "Germany"
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Hybrid Benzin)"
+year = 2025
+confidence = "medium"
+note = "petrol hybrids without plug-in; KBA's class includes mild hybrids"
+
+[modes.private_car_phev.annual_km]
+value = 13227
+evidence = "observed"
+geography = "Germany"
+source = "KBA, Verkehr in Kilometern 2025, Table VK 1.7 (Pkw, Plug-in-Hybrid Benzin)"
+year = 2025
+confidence = "high"
+note = "petrol plug-in hybrids"
+
+# -------------------------------------------------------------------- mopeds
+[modes.private_moped_ice.occupancy]
+value = 1.0
+evidence = "derived"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 67 (Moped: 4.7 bn pkm / 4.7 bn vkm)"
+year = 2017
+confidence = "high"
+note = "equals the itf-2020 default"
+
+[modes.private_moped_ice.annual_km]
+value = 3000
+evidence = "observed"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Kleinkraftrad Benzin-2T)"
+year = 2017
+confidence = "medium"
+note = "Fahrleistungserhebung 2014 projected to 2017"
+
+[modes.private_moped_ice.lifetime_years]
+value = 12
+evidence = "assumption"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Kleinkraftrad Benzin-2T)"
+year = 2017
+confidence = "medium"
+note = "UBA: Nutzungsdauer geschätzt"
+
+[modes.private_moped_bev.battery_capacity_kwh]
+value = 1.85
+evidence = "observed"
+geography = "Germany"
+source = "Schelte et al. 2021, Table 1 (market median of e-mopeds)"
+year = 2021
+confidence = "medium"
+note = "data year not stated; publication year"
+
+[modes."*_moped_bev".electricity_consumption_kwh_per_km]
+value = 0.034
+evidence = "model_input"
+geography = "Germany"
+source = "Schelte et al. 2021, section 2.4.1 (1.47 kWh over a 43 km range)"
+year = 2021
+confidence = "low"
+note = "one model (Kumpan 1954 Ri), battery side; data year not stated, publication year"
+
+[modes.shared_moped_bev.occupancy]
+value = 1.3
+evidence = "model_input"
+geography = "Germany"
+source = "Schelte et al. 2021, Table 4 (utilization rate)"
+year = 2021
+confidence = "low"
+note = "a model input of the study; data year not stated, publication year"
+
+[modes.shared_moped_bev.annual_km]
+value = 6607
+evidence = "derived"
+geography = "Germany"
+source = "Schelte et al. 2021, Tables 2 and 4 (18.1 km per day)"
+year = 2021
+confidence = "low"
+note = "18.1 km/day x 365 from 61 summer days of provider data; likely overstates"
+
+[modes.shared_moped_bev.lifetime_years]
+best = 7.57
+middle = 7.57
+worst = 4.54
+evidence = "derived"
+geography = "Germany"
+source = {best = "Schelte et al. 2021, p. 8 (50,000 km lifetime)", middle = "Schelte et al. 2021, p. 8 (50,000 km lifetime)", worst = "Schelte et al. 2021, Table 5 (short-lifetime scenario, 30,000 km)"}
+year = 2021
+confidence = "low"
+note = "lifetime km over 6,607 km a year"
+
+[modes.shared_moped_bev.service_km_per_vehicle_day]
+best = 25
+middle = 75
+worst = 75
+evidence = "model_input"
+geography = "Germany"
+source = {best = "Schelte et al. 2021, Table 5 (three-battery scenario, 25 km per van-day)", middle = "Schelte et al. 2021, section 2.4.1 (a van travels 75 km daily to supply 50 e-mopeds)", worst = "Schelte et al. 2021, section 2.4.1 (a van travels 75 km daily to supply 50 e-mopeds)"}
+year = 2021
+confidence = "medium"
+note = "van km per day, with 50 e-mopeds served per van-day"
+
+[modes.shared_moped_bev.vehicles_per_service_trip]
+value = 50
+evidence = "model_input"
+geography = "Germany"
+source = "Schelte et al. 2021, section 2.4.1 (50 e-mopeds per van-day)"
+year = 2021
+confidence = "medium"
+note = "pairs with service_km_per_vehicle_day"
+
+[modes.shared_moped_bev.battery_capacity_kwh]
+value = 1.479
+evidence = "observed"
+geography = "Germany"
+source = "Schelte et al. 2021, Table 1 (Kumpan 1954 Ri, one battery)"
+year = 2021
+confidence = "medium"
+note = "data year not stated; publication year"
+
+# --------------------------------------------------------------------- buses
+[modes."bus_*".occupancy]
+best = 17.6
+middle = 17.6
+worst = 15.0
+evidence = {best = "observed", middle = "observed", worst = "derived"}
+geography = "Germany"
+source = {best = "Heide, Guo & Göhlich 2025, section 3.3.2, citing VDV-Statistik 2019", middle = "Heide, Guo & Göhlich 2025, section 3.3.2, citing VDV-Statistik 2019", worst = "UBA Texte 156/2020, Table 67 (Nahlinienbus: 37.5 bn pkm / 2.5 bn vkm)"}
+year = {best = 2019, middle = 2019, worst = 2017}
+confidence = "high"
+note = "the newer national figure as middle, UBA 2017 as worst"
+
+[modes."bus_*".annual_km]
+best = 61656
+middle = 47028
+worst = 47028
+evidence = {best = "derived", middle = "observed", worst = "observed"}
+geography = {best = "Berlin (BVG)", middle = "Germany", worst = "Germany"}
+source = {best = "Heide, Guo & Göhlich 2025, section 3 (1510 buses, 93.1 million revenue km a year)", middle = "UBA Texte 156/2020, Table 17 (Nahlinienbus Diesel)", worst = "UBA Texte 156/2020, Table 17 (Nahlinienbus Diesel)"}
+year = {best = 2023, middle = 2017, worst = 2017}
+confidence = "medium"
+note = "best is revenue km only"
+
+[modes."bus_*".lifetime_years]
+value = 12
+evidence = "observed"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Nahlinienbus Diesel; KBA fleet data)"
+year = 2017
+confidence = "high"
+note = "service life from the KBA fleet age distribution"
+
+[modes."bus_*".service_km_per_vehicle_day]
+best = 11.2
+middle = 13.0
+worst = 13.0
+evidence = "derived"
+geography = {best = "Aachen (ASEAG)", middle = "Berlin (BVG)", worst = "Berlin (BVG)"}
+source = {best = "UBA Texte 156/2020, section 3.5.3.2 (empty and depot runs about 8 % of vehicle-km, ASEAG 2018)", middle = "Heide, Guo & Göhlich 2025, Tables 12 and 13 (diesel baseline, 110,665 km over 8,498 blocks a week)", worst = "Heide, Guo & Göhlich 2025, Tables 12 and 13 (diesel baseline, 110,665 km over 8,498 blocks a week)"}
+year = {best = 2018, middle = 2024, worst = 2024}
+confidence = "medium"
+note = "best: 0.08 / 0.92 x 47,028 km / 365; middle: km per block, about one bus-day"
+
+[modes.bus_ice.vehicle_weight_kg]
+value = 12910
+evidence = "observed"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Nahlinienbus Diesel, Leergewicht)"
+year = 2017
+confidence = "high"
+note = "KBA fleet data"
+
+[modes.bus_ice.fuel_consumption_per_100km]
+best = 41.6
+middle = 41.6
+worst = 51.2
+evidence = "derived"
+geography = "Germany"
+source = {best = "UBA Texte 156/2020, Table 69 (Nahlinienbus TTW 928 kJ/pkm)", middle = "UBA Texte 156/2020, Table 69 (Nahlinienbus TTW 928 kJ/pkm)", worst = "UBA Texte 156/2020, section 3.1.1 (city bus about 22 MJ diesel per 100 place-km)"}
+year = 2017
+confidence = "medium"
+note = "litres gasoline-equivalent: 928 kJ x 15.0 pkm/vkm, or 22 MJ x 78 places, over 33.488 MJ per litre"
+
+# ---------------------------------------------------------------------- tram
+[modes.tram_light_rail.occupancy]
+best = 164
+middle = 43
+worst = 43
+evidence = "model_input"
+geography = "Germany"
+source = {best = "Siemens Avenio EPD S-P-03441, p. 8 (average scenario, design load)", middle = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario, 20 % load)", worst = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario, 20 % load)"}
+year = 2022
+confidence = "medium"
+note = "best is a design load (80 % of seats and 3 standing per m2), not an observed average"
+
+[modes.tram_light_rail.electricity_consumption_kwh_per_km]
+best = 3.87
+middle = 4.23
+worst = 4.23
+evidence = "model_input"
+geography = "Germany"
+source = {best = "Siemens Avenio EPD S-P-03441, p. 8 (average scenario)", middle = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario)", worst = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario)"}
+year = 2022
+confidence = "medium"
+note = "each scenario's consumption at its own load and braking recovery"
+
+[modes.tram_light_rail.annual_km]
+best = 90000
+middle = 80000
+worst = 80000
+evidence = "model_input"
+geography = "Germany"
+source = {best = "Siemens Avenio EPD S-P-03441, p. 8 (average scenario)", middle = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario)", worst = "Siemens Avenio EPD S-P-03441, p. 8 (customer scenario)"}
+year = 2022
+confidence = "medium"
+note = "paired with the scenario's load and consumption"
+
+# --------------------------------------------------------------------- metro
+[modes.metro_urban_train.vehicle_weight_kg]
+value = 180000
+evidence = "observed"
+geography = "Munich (C2 train)"
+source = "Siemens Mobility, U-Bahn München data sheet (Leergewicht ca. 180 t)"
+year = 2019
+confidence = "high"
+note = "six-car train with 940 places"
+
+[modes.metro_urban_train.occupancy]
+best = 155.4
+middle = 146.5
+worst = 146.5
+evidence = "derived"
+geography = {best = "Germany (U-Bahn)", middle = "Hamburg (U-Bahn)", worst = "Hamburg (U-Bahn)"}
+source = {best = "VDV-Statistik 2023 (U-Bahn 5,928 M pkm / 35,869 M place-km) x 940 places", middle = "Hamburger Hochbahn AG, Lagebericht 2025 (1,423,933 thousand pkm / 9,137 M Nutzplatzkm) x 940 places", worst = "Hamburger Hochbahn AG, Lagebericht 2025 (1,423,933 thousand pkm / 9,137 M Nutzplatzkm) x 940 places"}
+year = {best = 2023, middle = 2025, worst = 2025}
+confidence = "low"
+note = "proxy: Munich publishes no U-Bahn pkm; a German load factor applied to the C2's 940 places"
+
+[modes.metro_urban_train.annual_km]
+value = 99174
+evidence = "derived"
+geography = "Munich"
+source = "MVG, MVG in Zahlen 2026 (U-Bahn 12,000,000 km a year, 121 trains)"
+year = 2025
+confidence = "medium"
+note = "train-km per train"
+
+[modes.metro_urban_train.lifetime_years]
+value = 41.0
+evidence = "derived"
+geography = "Munich"
+source = "MVG, MVG in Zahlen 2026 (U-Bahn about 4,063,000 km until retirement)"
+year = 2025
+confidence = "medium"
+note = "lifetime km over 99,174 km a year"
+
+[modes.metro_urban_train.electricity_consumption_kwh_per_km]
+value = 11.84
+evidence = "derived"
+geography = "Hamburg (U-Bahn)"
+source = "Hamburger Hochbahn AG, Lagebericht 2025 (0.0126 kWh per Nutzplatzkm) x 940 places"
+year = 2025
+confidence = "low"
+note = "proxy: Hamburg traction current including heating, applied to the C2's places"
+
+# -------------------------------------------------------- suburban/regional rail
+[modes.suburban_regional_rail.occupancy]
+best = 314.1
+middle = 314.1
+worst = 82
+evidence = {best = "derived", middle = "derived", worst = "observed"}
+geography = "Germany"
+source = {best = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)", middle = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)", worst = "Bundesnetzagentur, Marktuntersuchung Eisenbahnen 2018, p. 24, Abbildung 18 (mean passengers per train, SPNV)"}
+year = 2017
+confidence = "low"
+note = "best and middle apply the German regional-rail load factor (27 %) to the RER NG's 1,145 places; worst is the German mean of 82 passengers per regional train, carried here by the RER NG"
+
+[modes.suburban_regional_rail.annual_km]
+value = 250000
+evidence = "model_input"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Eisenbahn Nahverkehr; DB AG, personal communication)"
+year = 2017
+confidence = "medium"
+note = "train-km per train"
+
+[modes.suburban_regional_rail.lifetime_years]
+value = 35
+evidence = "model_input"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Eisenbahn Nahverkehr; DB AG, personal communication)"
+year = 2017
+confidence = "medium"
+note = "German regional trains"
+
+[modes.suburban_regional_rail.electricity_consumption_kwh_per_km]
+value = 10.41
+evidence = "derived"
+geography = "Germany"
+source = "Alstom, RER NG EPD S-P-05994, p. 11 (9.1 kWh/km running; 151 kW standby, 7 h a day on 310 days)"
+year = 2022
+confidence = "low"
+note = "9.1 kWh/km plus the standby energy spread over 250,000 km a year (1.31 kWh/km)"

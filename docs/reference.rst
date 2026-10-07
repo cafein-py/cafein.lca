@@ -15,6 +15,7 @@ A ``TransportLCA`` holds the session assumptions and runs calculations.
    cafein.lca.TransportLCA.parameters
    cafein.lca.TransportLCA.transit_factors
    cafein.lca.TransportLCA.street_factors
+   cafein.lca.gtfs_identities
    cafein.lca.available_coefficient_sets
 
 Modes and parameters
@@ -25,6 +26,7 @@ Modes and parameters
 
    cafein.lca.list_modes
    cafein.lca.mode
+   cafein.lca.mode_provenance
    cafein.lca.parameters.ModeParameters
    cafein.lca.parameters.ModeParameters.replace
    cafein.lca.parameters.ModeParameters.lifetime_km
@@ -37,6 +39,7 @@ Results
 
    cafein.lca.results.Result
    cafein.lca.results.Result.coefficient_set
+   cafein.lca.results.Result.mode_source
    cafein.lca.results.Result.per_pkm
    cafein.lca.results.Result.per_vkm
    cafein.lca.results.Result.energy_per_pkm

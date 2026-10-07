@@ -11,6 +11,8 @@ CHANGED
   rows would be matched by cafein on the same key (for transit its most
   specific one: `trip_id`, `route_id`, `agency_id` with `route_type`, or
   `route_type`), since cafein keeps only one of them.
+- `transit_factors()` exports the two new rail modes by default, so its
+  default table has eight rows instead of six.
 
 NEW
 
@@ -23,6 +25,20 @@ NEW
 - The workbook audit documents how the metro mode's rail inputs are
   derived and three rail-related quirks: the metro occupancy, the
   light-rail track materials and the light-rail track usage.
+- Mode packs add modes from other sources on top of the coefficient set,
+  under `cafein/lca/data/modes/`, with a source for every value.
+  `Result.mode_source` names where a result's mode data came from, and
+  `mode_provenance(slug)` lists the sources of a mode's default values.
+- The `rail-2026` pack adds two transit modes: `tram_light_rail` (Siemens
+  Avenio tram, from its EPD) and `suburban_regional_rail` (Alstom RER NG
+  train, from its EPD), the latter on a new heavy-rail track type built
+  from German network data.
+- A packaged `germany` scenario: German operating conditions for cars,
+  mopeds, buses, trams, U-Bahn and suburban trains, with the 2025
+  electricity mix, in three cases.
+- `gtfs_identities()` maps the GTFS basic route types to transit modes
+  (tram, metro, suburban/regional rail, bus) for `transit_factors()`, with
+  overrides for extended route types.
 
 ## 0.1.0 (2026-09-09)
 

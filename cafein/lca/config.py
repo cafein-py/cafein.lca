@@ -28,6 +28,20 @@ def available_coefficient_sets():
     return sorted(d.name for d in DATA_DIR.iterdir() if (d / "manifest.toml").is_file())
 
 
+#: Mode packs: modes whose data come from sources other than the coefficient
+#: set, one directory with a ``manifest.toml`` per pack.
+MODE_PACKS_DIR = DATA_DIR / "modes"
+
+
+def mode_pack_dirs():
+    """Directories of the packaged mode packs, sorted by name."""
+    if not MODE_PACKS_DIR.is_dir():
+        return []
+    return sorted(
+        d for d in MODE_PACKS_DIR.iterdir() if (d / "manifest.toml").is_file()
+    )
+
+
 POWER_SOURCES = ["oil", "natural_gas", "coal", "nuclear", "biomass", "other_renewables"]
 MATERIALS = [
     "steel",
@@ -63,8 +77,31 @@ PRODUCTION_REGIONS = {
 
 
 def _read(name):
-    with open(COEFFICIENTS_DIR / name, newline="") as f:
+    return _read_csv(COEFFICIENTS_DIR / name)
+
+
+def _read_csv(path):
+    with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
+
+
+def _header(path):
+    with open(path, newline="", encoding="utf-8") as f:
+        return next(csv.reader(f))
+
+
+def _read_checked(path, expected, where):
+    """Rows of a mode-pack CSV whose header is exactly ``expected``."""
+    if sorted(_header(path)) != sorted(expected):
+        raise ValueError(
+            f"{where} {path.name} needs exactly the columns "
+            f"{', '.join(sorted(expected))}, once each"
+        )
+    rows = _read_csv(path)
+    for i, r in enumerate(rows, start=2):
+        if None in r or None in r.values():
+            raise ValueError(f"{where} {path.name} line {i}: wrong number of fields")
+    return rows
 
 
 def _num(value):
@@ -161,7 +198,21 @@ class _Conf:
 
     @functools.cached_property
     def infrastructure_types(self):
-        return {r["infrastructure"]: r for r in _read("infrastructure_types.csv")}
+        types = {r["infrastructure"]: r for r in _read("infrastructure_types.csv")}
+        # Mode packs may add types; they never replace the set's own.
+        for pack in mode_pack_dirs():
+            path = pack / "infrastructure_types.csv"
+            if not path.is_file():
+                continue
+            expected = _header(COEFFICIENTS_DIR / "infrastructure_types.csv")
+            for r in _read_checked(path, expected, f"mode pack '{pack.name}'"):
+                if r["infrastructure"] in types:
+                    raise ValueError(
+                        f"mode pack '{pack.name}' redefines infrastructure type "
+                        f"'{r['infrastructure']}'"
+                    )
+                types[r["infrastructure"]] = r
+        return types
 
     @functools.cached_property
     def constants(self):

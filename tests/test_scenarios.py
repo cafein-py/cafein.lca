@@ -80,7 +80,7 @@ def test_load_resolves_cases_patterns_and_precedence(
     "body,case,error",
     [
         ("[modes.no_such_mode]\noccupancy = 2", "middle", KeyError),
-        ('[modes."tram_*"]\noccupancy = 2', "middle", KeyError),
+        ('[modes."ferry_*"]\noccupancy = 2', "middle", KeyError),
         ("[modes.bus_ice]\nseats = 2", "middle", TypeError),
         ("[modes.bus_ice]\noccupancy = -1", "middle", ValueError),
         ("[modes.bus_ice]\noccupancy = {best = 1, middle = 2}", "middle", ValueError),
@@ -124,7 +124,7 @@ def test_session_applies_scenario_before_keyword_overrides(toml_path):
     assert TransportLCA(power_mix="EU 28", scenario=scenario).power_mix == "EU 28"
 
 
-@pytest.mark.parametrize("name", ["india_metropolitan", "finland_2020"])
+@pytest.mark.parametrize("name", ["india_metropolitan", "finland_2020", "germany"])
 def test_packaged_scenarios_load_and_order_cases(name):
     results = {
         case: TransportLCA(scenario=Scenario.load(name, case=case)).summary()["total"]
@@ -136,13 +136,84 @@ def test_packaged_scenarios_load_and_order_cases(name):
 
 
 def test_list_and_locate_packaged_scenarios():
-    assert set(cafein.lca.list_scenarios()) == {"india_metropolitan", "finland_2020"}
+    assert set(cafein.lca.list_scenarios()) == {
+        "india_metropolitan",
+        "finland_2020",
+        "germany",
+    }
     finland = Scenario.load("finland_2020")
     assert finland.overrides == {} and finland.power_mix["nuclear"] > 0.3
     india = Scenario.load("india_metropolitan").provenance()
     assert india["evidence"].notna().all() and india["source"].notna().all()
     with pytest.raises(FileNotFoundError):
         Scenario.load("atlantis")
+
+
+# The parameters the Germany scenario sets, per mode (its research table).
+_GERMANY_OVERRIDES = {
+    "private_car_ice": {
+        "occupancy",
+        "lifetime_years",
+        "annual_km",
+        "vehicle_weight_kg",
+        "fuel_consumption_per_100km",
+    },
+    "private_car_bev": {
+        "occupancy",
+        "lifetime_years",
+        "annual_km",
+        "electricity_consumption_kwh_per_km",
+    },
+    "private_car_hev": {"occupancy", "lifetime_years", "annual_km"},
+    "private_car_phev": {"occupancy", "lifetime_years", "annual_km"},
+    "private_car_fcev": {"occupancy", "lifetime_years"},
+    "private_moped_ice": {"occupancy", "annual_km", "lifetime_years"},
+    "private_moped_bev": {"battery_capacity_kwh", "electricity_consumption_kwh_per_km"},
+    "shared_moped_bev": {
+        "occupancy",
+        "annual_km",
+        "lifetime_years",
+        "service_km_per_vehicle_day",
+        "vehicles_per_service_trip",
+        "battery_capacity_kwh",
+        "electricity_consumption_kwh_per_km",
+    },
+    **{
+        slug: {"occupancy", "annual_km", "lifetime_years", "service_km_per_vehicle_day"}
+        for slug in ["bus_hev", "bus_bev", "bus_bev_two_packs", "bus_fcev"]
+    },
+    "bus_ice": {
+        "occupancy",
+        "annual_km",
+        "lifetime_years",
+        "service_km_per_vehicle_day",
+        "vehicle_weight_kg",
+        "fuel_consumption_per_100km",
+    },
+    "tram_light_rail": {"occupancy", "annual_km", "electricity_consumption_kwh_per_km"},
+    "metro_urban_train": {
+        "vehicle_weight_kg",
+        "occupancy",
+        "annual_km",
+        "lifetime_years",
+        "electricity_consumption_kwh_per_km",
+    },
+    "suburban_regional_rail": {
+        "occupancy",
+        "annual_km",
+        "lifetime_years",
+        "electricity_consumption_kwh_per_km",
+    },
+}
+
+
+@pytest.mark.parametrize("case", ["best", "middle", "worst"])
+def test_germany_scenario_is_sourced_and_covers_its_table(case):
+    scenario = Scenario.load("germany", case=case)
+    assert_provenance_complete(scenario)
+    rows = scenario.provenance()
+    overrides = rows.groupby("mode")["parameter"].apply(set).to_dict()
+    assert overrides == _GERMANY_OVERRIDES
 
 
 _COMPLETE_OVERRIDE = """

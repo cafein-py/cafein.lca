@@ -22,6 +22,7 @@ you hand it to cafein, or save it as CSV, edit it, and load it back.
 - [Export a factor table](#export-a-factor-table)
 - [What the columns mean](#what-the-columns-mean)
 - [Fill in the cafein identities](#fill-in-the-cafein-identities)
+- [Key transit modes by GTFS route type](#key-transit-modes-by-gtfs-route-type)
 - [Save and reload as CSV](#save-and-reload-as-csv)
 - [Load the tables into cafein](#load-the-tables-into-cafein)
 - [Where to next](#where-to-next)
@@ -141,6 +142,57 @@ Only one column per mode can hold a list. Two rows that cafein would match on
 the same key, such as two modes both given route type `3`, raise a
 `ValueError`, because cafein would keep one of them without a warning.
 
+## Key transit modes by GTFS route type
+
+Most transit tables only need one row per kind of vehicle, keyed by the
+GTFS `route_type` of each leg. `gtfs_identities()` builds that mapping for
+the four basic route types: tram (`0`), metro (`1`), rail (`2`) and bus
+(`3`).
+
+```{code-cell}
+from cafein.lca import gtfs_identities
+
+ids = gtfs_identities()
+ids
+```
+
+Each of the four modes gets one route type. Pass the mapping's keys as
+`modes`, so that the table holds only the mapped modes:
+
+```{code-cell}
+by_type = lca.transit_factors(modes=list(ids), identities=ids)
+by_type[["route_type", "mode", "total"]]
+```
+
+The table has one row per basic route type, with each mode's total in grams
+of CO₂-equivalent per passenger-km. Because cafein files the extended codes
+in the ranges listed above under the basic ones, these four rows also cover
+a feed that uses codes in those ranges.
+
+To change the map, pass `{route_type: mode}` entries; `None` drops a code.
+The next table keeps the suburban-rail factor off long-distance trains:
+it drops the basic rail code and lists the extended codes for regional rail
+(`106`) and suburban railway (`109`) instead. It also gives buses the
+battery-electric bus:
+
+```{code-cell}
+ids = gtfs_identities(
+    {
+        "2": None,
+        "106": "suburban_regional_rail",
+        "109": "suburban_regional_rail",
+        "3": "bus_bev",
+    }
+)
+by_type = lca.transit_factors(modes=list(ids), identities=ids)
+by_type[["route_type", "mode", "total"]]
+```
+
+The suburban mode now has two rows, `106` and `109`, with the same numbers.
+Legs on long-distance routes (`101`, `102`) match none of these rows, so
+cafein takes their factor from its shipped defaults; in cafein 0.29 its rail
+row carries the metro and urban-train numbers.
+
 ## Save and reload as CSV
 
 The frames write to CSV like any other:
@@ -204,5 +256,5 @@ step on the cafein side, once a release of `cafein.lca` is on PyPI.
   by building the session from a scenario first.
 - [Reading results](reading_results): the five components the exported four
   are grouped from.
-- [API reference](../reference): `transit_factors` and `street_factors` in
-  full.
+- [API reference](../reference): `transit_factors`, `street_factors` and
+  `gtfs_identities` in full.
