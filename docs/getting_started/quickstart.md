@@ -87,7 +87,7 @@ component.
 
 ## Compare modes
 
-`summary()` runs that same breakdown for all 57 modes and returns a
+`summary()` runs that same breakdown for all 58 modes and returns a
 DataFrame, one row per mode. A few rows are enough to compare:
 
 ```{code-cell}
@@ -161,7 +161,7 @@ user guide maps each parameter to the component it drives.
 
 - [Reading results](../user_guide/reading_results): the components in
   detail, and the per-vehicle and per-vehicle-km views.
-- [Modes and parameters](../user_guide/modes_and_parameters): all 57
+- [Modes and parameters](../user_guide/modes_and_parameters): all 58
   modes and every parameter you can change.
 - [Electricity mix](../user_guide/electricity_mix): running the model for
   a country or a custom grid.

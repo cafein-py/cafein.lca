@@ -6,8 +6,8 @@
 of urban transport modes per passenger-km and per vehicle-km, decomposed
 into vehicle and battery manufacturing, delivery, use, the servicing of
 shared fleets, and infrastructure; the first four are also available per
-vehicle. It covers 57 modes, from
-private e-scooters to trams and metro trains. The main assumptions behind a result
+vehicle. It covers 58 modes, from
+private e-scooters to trams, metro and suburban trains. The main assumptions behind a result
 are named parameters (electricity mix, vehicle lifetime, mileage,
 occupancy, battery size, servicing logistics), while the per-mode
 technical data and the shared coefficient tables ship as packaged data.
@@ -94,7 +94,11 @@ adaptation of OECD/ITF work and is not endorsed by the OECD. Cite the
 original work when using the numbers:
 
 The tram mode's vehicle data come from Siemens Mobility's environmental
-product declaration for the Avenio tram (EPD S-P-03441, 2022).
+product declaration for the Avenio tram (EPD S-P-03441, 2022), and the
+suburban train's from Alstom's declaration for the RER NG train (EPD
+S-P-05994, 2022). The suburban train's heavy-rail track comes from UBA
+Texte 96/2013 and the Bundesnetzagentur's Marktuntersuchung Eisenbahnen
+2018.
 
 > Cazzola, P. and P. Crist (2020), *Good to Go? Assessing the Environmental
 > Performance of New Mobility*, International Transport Forum, Paris.

@@ -1,7 +1,10 @@
 name = "rail-2026"
-description = "Rail modes not in the ITF workbook, built on the itf-2020 coefficient set: a tram/light-rail mode from the Siemens Avenio environmental product declaration."
+description = "Rail modes not in the ITF workbook, built on the itf-2020 coefficient set: a tram/light-rail mode from the Siemens Avenio environmental product declaration, and a suburban/regional rail mode from the Alstom RER NG declaration running on a heavy-rail track type derived from German network data."
 builds_on = "itf-2020"
 sources = [
     "Siemens Mobility GmbH (2022). Avenio: Environmental Product Declaration according to ISO 14025 Type III. EPD registration S-P-03441 (EPD-IES-0003441:002), The International EPD System.",
+    "Alstom (2022). RER NG: Environmental Product Declaration in accordance with ISO 14025. EPD registration S-P-05994, The International EPD System.",
+    "Mottschall, M. and Bergmann, T. (2013). Treibhausgas-Emissionen durch Infrastruktur und Fahrzeuge des Straßen-, Schienen- und Luftverkehrs sowie der Binnenschifffahrt in Deutschland. UBA Texte 96/2013, Umweltbundesamt, Dessau-Roßlau.",
+    "Bundesnetzagentur (2018). Marktuntersuchung Eisenbahnen 2018. Bundesnetzagentur, Bonn.",
     "Cazzola, P. and Crist, P. (2020). Good to Go? Assessing the Environmental Performance of New Mobility. International Transport Forum Policy Papers, Paris (via the itf-2020 coefficient set).",
 ]

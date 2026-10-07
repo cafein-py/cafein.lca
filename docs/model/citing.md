@@ -46,8 +46,11 @@ source to cite for them.
 This is an adaptation of OECD/ITF work and is not endorsed by the OECD.
 
 The tram mode's vehicle data come from Siemens Mobility's environmental
-product declaration for the Avenio tram (EPD S-P-03441, 2022);
-`mode_provenance("tram_light_rail")` lists them value by value.
+product declaration for the Avenio tram (EPD S-P-03441, 2022), and the
+suburban train's from Alstom's declaration for the RER NG train (EPD
+S-P-05994, 2022), with its track from UBA Texte 96/2013 and the
+Bundesnetzagentur's Marktuntersuchung Eisenbahnen 2018;
+`mode_provenance(slug)` lists them value by value.
 
 If you redistribute or adapt the datasets in another tool, keep the
 citation and that note. Results you compute with the library are your own

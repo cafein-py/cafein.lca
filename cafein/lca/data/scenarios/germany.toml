@@ -11,9 +11,10 @@
 # Weiss et al. 2024 (10.3390/su16177529); Böhmeke & Koch 2021
 # (10.1007/s41104-021-00081-6); Schelte et al. 2021 (10.3390/su13158297);
 # Heide, Guo & Göhlich 2025 (10.3390/wevj16070378); Siemens Mobility,
-# Avenio EPD S-P-03441 (2022) and "U-Bahn München" data sheet (2019); MVG,
-# "MVG in Zahlen" (2026); Hamburger Hochbahn AG, Lagebericht 2025;
-# VDV-Statistik 2023; AG Energiebilanzen, Bruttostromerzeugung (June 2026).
+# Avenio EPD S-P-03441 (2022) and "U-Bahn München" data sheet (2019); Alstom,
+# RER NG EPD S-P-05994 (2022); MVG, "MVG in Zahlen" (2026); Hamburger
+# Hochbahn AG, Lagebericht 2025; VDV-Statistik 2023; AG Energiebilanzen,
+# Bruttostromerzeugung (June 2026).
 
 name = "germany"
 description = "German operating conditions (UBA, studies, Munich and Hamburg operators) and the 2025 electricity mix, three cases"
@@ -352,3 +353,40 @@ source = "Hamburger Hochbahn AG, Lagebericht 2025 (0.0126 kWh per Nutzplatzkm) x
 year = 2025
 confidence = "low"
 note = "proxy: Hamburg traction current including heating, applied to the C2's places"
+
+# -------------------------------------------------------- suburban/regional rail
+[modes.suburban_regional_rail.occupancy]
+value = 314.1
+evidence = "derived"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 67 (Schienennahverkehr: 54.9 bn pkm / 200.1 bn place-km) x 1,145 places (Alstom, RER NG EPD S-P-05994, p. 7)"
+year = 2017
+confidence = "low"
+note = "proxy: the German regional-rail load factor (27 %) applied to the RER NG's places"
+
+[modes.suburban_regional_rail.annual_km]
+value = 250000
+evidence = "model_input"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Eisenbahn Nahverkehr; DB AG, personal communication)"
+year = 2017
+confidence = "medium"
+note = "train-km per train"
+
+[modes.suburban_regional_rail.lifetime_years]
+value = 35
+evidence = "model_input"
+geography = "Germany"
+source = "UBA Texte 156/2020, Table 17 (Eisenbahn Nahverkehr; DB AG, personal communication)"
+year = 2017
+confidence = "medium"
+note = "German regional trains"
+
+[modes.suburban_regional_rail.electricity_consumption_kwh_per_km]
+value = 10.41
+evidence = "derived"
+geography = "Germany"
+source = "Alstom, RER NG EPD S-P-05994, p. 11 (9.1 kWh/km running; 151 kW standby, 7 h a day on 310 days)"
+year = 2022
+confidence = "low"
+note = "9.1 kWh/km plus the standby energy spread over 250,000 km a year (1.31 kWh/km)"

@@ -4,8 +4,8 @@
 
 `cafein.lca` estimates the energy use and greenhouse-gas emissions of one
 passenger-kilometre by an urban transport mode, counting the vehicle's
-whole life from manufacturing to the road it runs on. It covers 57 modes,
-from private e-scooters to trams and metro trains, and reports every result in five
+whole life from manufacturing to the road it runs on. It covers 58 modes,
+from private e-scooters to trams, metro and suburban trains, and reports every result in five
 life-cycle components: vehicle and battery manufacturing, delivery, use,
 the servicing of shared fleets, and infrastructure. The electricity mix,
 vehicle lifetime, mileage, occupancy and the rest are explicit parameters,

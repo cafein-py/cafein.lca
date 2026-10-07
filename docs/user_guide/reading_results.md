@@ -240,7 +240,7 @@ because track is heavy per kilometre even when spread over many trains.
 
 ## Where to next
 
-- [Modes and parameters](modes_and_parameters): the 57 modes and every
+- [Modes and parameters](modes_and_parameters): the 58 modes and every
   parameter behind these numbers.
 - [Electricity mix](electricity_mix): the assumption that moves the use
   component of electric modes.

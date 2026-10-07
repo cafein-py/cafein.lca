@@ -12,7 +12,7 @@ import pytest
 
 from cafein.lca import TransportLCA, config, mode, mode_provenance
 from cafein.lca import modes as modes_module
-from cafein.lca.engine import delivery
+from cafein.lca.engine import delivery, infrastructure
 from cafein.lca.export import STREET_MODES, TRANSIT_MODES
 
 PACKS = pathlib.Path(__file__).parent / "data" / "mode_packs"
@@ -42,12 +42,29 @@ def test_pack_mode_joins_registry(use_packs):
     assert provenance["year"].tolist()[0] == 2020
 
 
-def test_packaged_tram_mode():
-    row = TransportLCA().transit_factors(modes=["tram_light_rail"]).iloc[0]
-    assert row["total"] > 0
-    assert "tram_light_rail" in TRANSIT_MODES
-    assert "tram_light_rail" not in STREET_MODES
-    assert TransportLCA().calculate("tram_light_rail").mode_source == "rail-2026"
+def test_packaged_rail_modes():
+    slugs = ["tram_light_rail", "suburban_regional_rail"]
+    table = TransportLCA().transit_factors(modes=slugs)
+    assert (table["total"] > 0).all()
+    for slug in slugs:
+        assert slug in TRANSIT_MODES and slug not in STREET_MODES
+        assert TransportLCA().calculate(slug).mode_source == "rail-2026"
+        # The mode row repeats its track type's values.
+        data = modes_module._data_for(mode(slug))
+        track = config.conf.infrastructure_types[data.infra1_type]
+        assert data.infra1_materials + (
+            data.infra1_lifetime_years,
+            data.infra1_annual_use_mvkm,
+        ) == tuple(
+            float(track[c])
+            for c in (
+                "asphalt_t_per_km",
+                "cement_t_per_km",
+                "steel_t_per_km",
+                "lifetime_years",
+                "annual_use_mvkm",
+            )
+        )
     sources = mode_provenance("tram_light_rail").set_index("parameter")["source"]
     assert sources["occupancy"].startswith("Siemens Mobility, Avenio EPD S-P-03441")
     # Delivery: 44 t over 500 km by combustion heavy truck (leg heavy_truck_a).
@@ -56,6 +73,17 @@ def test_packaged_tram_mode():
     leg = config.DELIVERY_LEGS.index("heavy_truck_a")
     intensity = config.conf.delivery_legs["energy_mj_per_tkm"][leg]
     assert energy == pytest.approx(44.0 * 500 * intensity)
+    # Heavy rail track: a year's cement and steel per km of track, over the
+    # 0.58 imputable share of the pack's own type and a year's train-km.
+    params = mode("suburban_regional_rail")
+    _, ghg = infrastructure.run(params, modes_module._data_for(params))
+    c = config.conf.constant
+    rec = c("infra_recycled_share_steel")
+    steel = (1 - rec) * c("infra_ghg_virgin_steel_g_per_kg") + rec * c(
+        "infra_ghg_recycled_steel_g_per_kg"
+    )
+    per_km = 1.743e3 * c("infra_ghg_cement_g_per_kg") + 4.965e3 * steel
+    assert ghg == pytest.approx(per_km / 0.58 / (1104e6 / 60800))
 
 
 # (pack directory, file, old text, new text, when it fails, message)

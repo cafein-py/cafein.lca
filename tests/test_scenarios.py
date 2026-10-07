@@ -198,6 +198,12 @@ _GERMANY_OVERRIDES = {
         "lifetime_years",
         "electricity_consumption_kwh_per_km",
     },
+    "suburban_regional_rail": {
+        "occupancy",
+        "annual_km",
+        "lifetime_years",
+        "electricity_consumption_kwh_per_km",
+    },
 }
 
 
